@@ -25,17 +25,17 @@ defined, fund-appropriate return.
 
 ## Status right now
 
-Research and scripting are done and grounded in real data (Aloha Capital's
-public site + live vidIQ trend data). Actual video generation is **blocked**
-until you authorize two things — see `production-pipeline.md` for exactly
-what to do:
+Both **Aloha Capital OS** and **HeyGen (HyperFrames)** are connected. Once
+Aloha Capital OS was live, real project data corrected the initial,
+web-research-only knowledge base significantly — Aloha10x is a value-add
+**commercial** real estate acquisitions/development fund with two PPM
+tranches (fixed-return notes, and $500K+ profit participation), not the
+unrelated fixed-yield note platform the first research pass turned up. See
+the revision history at the top of `knowledge-base.md` for the full story.
+All three `video-concepts/` scripts and the brand brief are rebuilt around
+the confirmed structure and real, live project data (Lily Plaza, Franklin
+Produce, 3 Waterside Crossing — the one closed/realized deal, Williamsburg
+VA, Baltimore Light Street).
 
-1. **HeyGen (HyperFrames)** — needed to render your avatar delivering the
-   scripted lines.
-2. **Aloha Capital OS** — an MCP server literally named for this company;
-   almost certainly the source of truth for current fund terms, brand
-   assets, and maybe a real content/asset library. This should replace the
-   scraped-web-search numbers in `knowledge-base.md` once connected.
-
-Everything in `video-concepts/` is written so it can be produced the moment
-those are connected — no re-ideation needed.
+Next step is production: rendering avatar footage via HyperFrames and
+generating b-roll via Higgsfield for the first approved concept.

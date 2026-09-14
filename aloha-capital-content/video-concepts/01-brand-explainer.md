@@ -1,34 +1,37 @@
-# Concept 1 — Brand Explainer: "You Don't Have to Flip a House to Make Money From One"
+# Concept 1 — Brand Explainer: "We Bought This for $700K. It's Now Worth $5.5M."
 
-**Pillar**: Explainer · **Length**: 45s · **Format**: Vertical 9:16,
-talking-head (HeyGen avatar) + b-roll intercut, dynamic captions
-**Trend basis**: numbers-forward hook + fast talking-head/b-roll pacing
-(see `trend-research.md` patterns 1 & 3)
-**Primary CTA**: "Link in bio to see the two ways to get started."
-
-> Numbers in brackets are placeholders pending the compliance pass in
-> `knowledge-base.md` — confirm current figures before recording.
+**Pillar**: Transformation / brand explainer · **Length**: 45s · **Format**:
+Vertical 9:16, before/after reveal + talking-head (HeyGen avatar) + b-roll
+**Trend basis**: before/after transformation (highest-performing pattern
+found, `trend-research.md` pattern 7) + numbers-as-hook (pattern 1)
+**Anchor project**: Franklin Produce, Franklinville, NJ — industrial cold
+storage (NNN). Purchase $700,000 → ARV $5,500,000. **This is a projected
+figure, not yet realized (status: Stabilized) — must be labeled
+"projected."**
+**Primary CTA**: "Two ways to get in — link in bio."
 
 ## Scene-by-scene
 
 | # | Time | Visual | VO / On-screen | Typography/Graphics | Music/SFX | Cut |
 |---|---|---|---|---|---|---|
-| 1 | 0:00–0:03 | Avatar, direct address, neutral warm-toned background | VO: "You don't need to flip a house to make real estate money." | Bold caption on "flip a house" strikethrough animation | Music hits hard on beat 1 | Hard cut in |
-| 2 | 0:03–0:07 | B-roll: fast montage — sledgehammer/reno clip, "For Sale" sign, spreadsheet — each 1s | VO: "No renovations. No tenants. No 2am maintenance calls." | Each b-roll clip gets a 2-word label ("No Reno," "No Tenants," "No Calls") | Quick riser | 3 quick cuts, beat-matched |
-| 3 | 0:07–0:14 | Avatar, cut to document close-up (deed/note) insert | VO: "Aloha Capital puts your capital into first-position loans, secured directly by real property — you're in the senior position if anything ever goes wrong." | Big text: "FIRST-LIEN POSITION" | Music settles to steady groove | Cut to insert, back to avatar |
-| 4 | 0:14–0:22 | Avatar + split-screen b-roll of properties across different cities/states | VO: "It's spread across [50+] markets, underwritten by a team that's issued over [4,000] loans." | Number callouts pop in: "[50+] MARKETS" / "[4,000+] LOANS" | — | Split-screen wipe |
-| 5 | 0:22–0:32 | Avatar, two-column graphic appears beside them | VO: "Two ways in: put it in our income fund starting at [$50K], or hand-pick individual notes starting at [$25K] — [targeted 10–13%]." | Two-column lower-third: "FUND — $50K+ · quarterly liquidity" / "NOTES — $25K+ · pick your deal" | Subtle chime per column reveal | Graphic slides in |
-| 6 | 0:32–0:40 | Avatar, direct address, warmer/closer framing | VO: "This isn't guaranteed, and past performance isn't a promise — but it's real estate income without becoming a landlord." | Small-print disclaimer bar (persistent, legally required, not just this frame) | Music pulls back | Push in on avatar |
-| 7 | 0:40–0:45 | Logo lockup end card | On-screen: "Aloha Capital — link in bio" | Logo + CTA animate in | Music resolves | Fade out |
+| 1 | 0:00–0:04 | Drone establishing shot of Franklin Produce **as acquired** (vacant/underused industrial shell) | VO: "We bought this building for $700,000." | Big text: "$700,000" stamped on the b-roll | Low tension pad | Hold on drone shot |
+| 2 | 0:04–0:07 | Hard wipe/cut to the **stabilized** cold-storage facility, active, leased | VO: "Today it's worth [$5.5 million] — projected." | Big text counts up from $700K → $5.5M; small persistent "PROJECTED" tag | Beat drop | Wipe transition |
+| 3 | 0:07–0:14 | Avatar, direct address | VO: "That's not a flip. That's what happens when you take an overlooked industrial building and reposition it into NNN-leased cold storage — a property type tenants are actively competing for." | Lower-third: "Franklin Produce · Franklinville, NJ · Industrial Cold Storage (NNN)" | Music settles into groove | Cut to avatar |
+| 4 | 0:14–0:20 | Split-screen: avatar small, b-roll montage of 2–3 other projects (Lily Plaza exterior, Baltimore Light Street rendering/site) | VO: "This is what we do — find the property everyone else passed on, and develop it into something worth multiples more." | Quick labels per clip: project name + city | Riser | 3 quick cuts |
+| 5 | 0:20–0:30 | Avatar, two-column graphic appears | VO: "There are two ways to invest with us. Buy a note and earn a fixed return. Or, at [$500,000] and up, take direct profit participation in deals like this one." | Two columns: "NOTE — fixed return" / "PROFIT PARTICIPATION — $500K+ · deal-level upside" | Chime per column | Graphic slides in |
+| 6 | 0:30–0:38 | Avatar, direct address, closer framing | VO: "Every number I just showed you is a projection on an active deal, not a guarantee — but it's the kind of upside a fixed savings account was never going to give you." | Persistent disclaimer bar: "Projected returns on an active project. Not a guarantee. See offering documents." | Music pulls back | Push in |
+| 7 | 0:38–0:45 | Logo end card | On-screen: "Aloha Capital — link in bio" | Logo + CTA | Resolve | Fade out |
 
 ## Production notes
 
-- Avatar wardrobe/setting: keep it consistent with a "founder/operator"
-  register, not "salesperson" — matches the voice guardrail in
-  `brand-brief.md` (numbers-forward, not hypey).
-- Document/property b-roll: generate via Higgsfield once this concept is
-  approved (deed close-up, multi-city property montage, spreadsheet/
-  underwriting graphic).
-- Disclaimer bar in scene 6 should stay on-screen (small, legible) from
-  scene 3 onward once compliance finalizes required wording — don't wait
-  to introduce it at the end.
+- **Compliance**: scene 2's "PROJECTED" tag must stay on screen the entire
+  time the $5.5M figure is visible, not just flash once — per the
+  guardrail in `knowledge-base.md`. Do not swap in 3 Waterside Crossing
+  here (its numbers are real, but a smaller multiple) — this concept is
+  explicitly the "projected" flagship story; Concept 3 is the realized one.
+- Before/after reveal (scenes 1–2) is the single most important shot in
+  this video per the trend data — worth a dedicated Higgsfield generation
+  pass and iteration if the first result doesn't read clearly at a glance,
+  sound off.
+- Avatar wardrobe/setting: founder/operator register, not salesperson —
+  per `brand-brief.md` voice guardrail.
