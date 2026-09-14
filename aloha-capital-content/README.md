@@ -37,5 +37,30 @@ the confirmed structure and real, live project data (Lily Plaza, Franklin
 Produce, 3 Waterside Crossing — the one closed/realized deal, Williamsburg
 VA, Baltimore Light Street).
 
-Next step is production: rendering avatar footage via HyperFrames and
-generating b-roll via Higgsfield for the first approved concept.
+**Update — production attempted, two hard environment limits found:**
+
+1. **Avatar rendering is unavailable from this session, full stop.** Hosted
+   HyperFrames `compose`/`render_video` is explicitly disabled for CLI/cloud
+   sessions like this one (HeyGen's own restriction — it only works from
+   claude.ai web/desktop chat). The documented workaround — installing the
+   standalone `heygen` CLI for local avatar generation — is also blocked
+   here: its installer domain is denied by this environment's network
+   egress policy, and building it from source instead was denied by this
+   session's own security controls (running code from an unattached
+   external repo). The same controls also block running the local
+   HyperFrames renderer (`npx hyperframes ...`) at all, so even a
+   no-avatar cut can't be fully assembled/rendered from this session.
+2. **Real b-roll generation via Higgsfield works fine** (it's an MCP tool
+   call, not a blocked local CLI) — 5 video clips + 2 stills for Concept 3
+   (3 Waterside Crossing) are generated; see
+   `assets/03-proof-case-study/b-roll-manifest.md`. They could not be
+   downloaded into this repo either (same CDN egress block), so that file
+   records the live URLs instead — **open and save them soon**, they may be
+   time-limited.
+
+**Net effect**: research, scripts, brand direction, and real b-roll are done
+and usable today. Avatar rendering and final assembly need either a
+claude.ai web/desktop chat session, or your own machine's terminal with
+`heygen auth login` completed normally — this sandboxed session can't do
+either step, and further attempts here would just be working around a
+deliberate security boundary rather than a fixable bug.

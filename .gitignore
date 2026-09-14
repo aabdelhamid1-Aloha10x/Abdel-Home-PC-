@@ -1,0 +1,4 @@
+# HyperFrames/heygen local skill tooling (reinstall with: npx skills add heygen-com/hyperframes)
+.agents/
+.claude/
+skills-lock.json
