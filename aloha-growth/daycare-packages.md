@@ -150,7 +150,7 @@ They will not buy a Blueprint to learn what they already know. They'd buy **thin
 | Cash-rich or growing | $1.5M+ | Package 3 as expansion partner | Need capital, sites and a multi-location system |
 
 ## Updated ladder
-0. **Fill Sprint** ($1.5K-$3K) as the entry point and lead generator
+0. **Fill Sprint** ($1.5K-$3K) as the entry point and lead generator (see `fill-sprint.md`)
 1. **Growth Blueprint** ($7.5K)
 2. **Fill and Systemize** ($15K + $5K/month)
 3. **Scale Partner** (retainer + performance or equity)
