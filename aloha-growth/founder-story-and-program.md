@@ -17,7 +17,7 @@ Three things I look at with every owner:
 2. **Make the work repeatable.** Who owns the task, what a good result looks like, how it's checked.
 3. **Find the real bottleneck before spending more.** Leads, follow-up and delivery are different problems with different fixes.
 
-> Notes for you: your file didn't include revenue by year, headcount or fleet size. Add those if you want proof points. I did not invent any. It also says "A&H Logistics," not "Ant". Confirm the name you want used.
+> Notes for you: your file didn't include revenue by year, headcount or fleet size. Add those if you want proof points. I did not invent any.
 
 ## 2. The Program: from six figures to seven to eight
 
@@ -61,6 +61,6 @@ If they want it, our team carries out the blueprint: operations, sales and marke
 **Offer framing:** "Only 3 spots in the founding cohort. Full diagnostic and blueprint, with the option for us to build it with you."
 
 ## 4. Next steps
-1. Confirm the company name and any revenue proof points.
+1. Add any revenue proof points for A&H Logistics.
 2. Set the cohort pricing and whether the diagnostic is free or paid.
 3. Shortlist candidate businesses. I can use Clay to source them if you give me an industry and revenue range.
