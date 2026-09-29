@@ -1,7 +1,9 @@
-# VSL Script: "One Rented Truck" (about 8-9 minutes)
+# VSL Script (short cut): "One Rented Truck" (about 5 minutes)
+
+> The full 7-minute shooting script is `05-shoot-script.md`. Use this file as the short version or for cutting a 4-5 minute edit.
 
 **Audience:** daycare owners in South Jersey and Philadelphia doing $500K+ a year.
-**Speaker:** the founder (HeyGen avatar). **Read pace:** about 150 words per minute, roughly 1,250 words.
+**Speaker:** the founder (HeyGen avatar). **Read pace:** about 150 words per minute, roughly 750 spoken words.
 **Rules for this script:** every fact below came from the founder. Items in [BRACKETS] must be filled with real information or cut. Do not add results, testimonials or guarantees that aren't real and approved.
 
 Format: `[TIME]` | **VISUAL / ON-SCREEN** | *SPOKEN WORDS*
