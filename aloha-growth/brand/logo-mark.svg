@@ -1,6 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Aloha Growth mark">
-  <path d="M8 44 A24 24 0 0 1 56 44" fill="none" stroke="#C9A96E" stroke-width="3" stroke-linecap="round"/>
-  <rect x="19" y="40" width="6" height="12" rx="3" fill="currentColor"/>
-  <rect x="29" y="32" width="6" height="20" rx="3" fill="currentColor"/>
-  <rect x="39" y="24" width="6" height="28" rx="3" fill="currentColor"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Aloha Growth mark: a schoolhouse with a child reaching up under a rising sun">
+  <path d="M16 52 A16 16 0 0 1 48 52 Z" fill="#C9A96E"/>
+  <path d="M7 30 L32 8 L57 30 V52 a4 4 0 0 1 -4 4 H11 a4 4 0 0 1 -4 -4 Z" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linejoin="round"/>
+  <circle cx="32" cy="27" r="4.6" fill="currentColor"/>
+  <rect x="28" y="34" width="8" height="15" rx="4" fill="currentColor"/>
+  <path d="M29.5 38 L23.5 31.5 M34.5 38 L40.5 31.5" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/>
 </svg>
