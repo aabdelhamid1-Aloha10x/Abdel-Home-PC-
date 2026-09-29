@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Aloha Growth mark">
+  <path d="M8 44 A24 24 0 0 1 56 44" fill="none" stroke="#C9A96E" stroke-width="3" stroke-linecap="round"/>
+  <rect x="19" y="40" width="6" height="12" rx="3" fill="currentColor"/>
+  <rect x="29" y="32" width="6" height="20" rx="3" fill="currentColor"/>
+  <rect x="39" y="24" width="6" height="28" rx="3" fill="currentColor"/>
+</svg>
