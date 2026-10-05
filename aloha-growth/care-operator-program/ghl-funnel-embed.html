@@ -1,0 +1,186 @@
+<!--
+  Aloha Growth: Care Operator Program qualifying funnel
+  Paste into a GHL "Custom JS/HTML" element (funnel or website page).
+  Only edit the CONFIG block below.
+-->
+<div id="cop-funnel" aria-live="polite"></div>
+
+<style>
+  #cop-funnel{--ink:#0b1b33;--teal:#1f8a86;--gold:#b88a2e;--bg:#fff;--line:#d9d4c7;--muted:#5b6678;max-width:560px;margin:0 auto;padding:22px;border-radius:24px;background:var(--bg);color:var(--ink);font:16px/1.45 Inter,system-ui,-apple-system,Segoe UI,sans-serif;box-shadow:0 20px 60px -20px rgba(0,0,0,.35);box-sizing:border-box}
+  #cop-funnel *{box-sizing:border-box}
+  #cop-funnel .cop-top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+  #cop-funnel .cop-eyebrow{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+  #cop-funnel .cop-back{background:none;border:0;color:var(--muted);font-size:14px;cursor:pointer;padding:6px}
+  #cop-funnel .cop-bar{height:6px;border-radius:99px;background:#eceae3;margin:12px 0 18px;overflow:hidden}
+  #cop-funnel .cop-bar i{display:block;height:100%;background:var(--teal);border-radius:99px;transition:width .3s}
+  #cop-funnel h3{font:700 22px/1.2 Georgia,'Times New Roman',serif;margin:0 0 6px;outline:none}
+  #cop-funnel .cop-hint{font-size:14px;color:var(--muted);margin:0 0 4px}
+  #cop-funnel .cop-opts{display:grid;gap:10px;margin-top:14px}
+  #cop-funnel .cop-opt{display:flex;align-items:center;gap:12px;width:100%;min-height:52px;padding:12px 14px;text-align:left;font:inherit;color:var(--ink);background:#faf8f2;border:1.5px solid var(--line);border-radius:14px;cursor:pointer}
+  #cop-funnel .cop-opt:hover{border-color:var(--teal)}
+  #cop-funnel .cop-opt:focus-visible,#cop-funnel .cop-btn:focus-visible,#cop-funnel .cop-back:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+  #cop-funnel .cop-opt[aria-pressed="true"]{border-color:var(--teal);background:#e8f4f3}
+  #cop-funnel .cop-dot{flex:none;width:20px;height:20px;border:2px solid #aab;border-radius:50%}
+  #cop-funnel .cop-multi .cop-dot{border-radius:6px}
+  #cop-funnel .cop-opt[aria-pressed="true"] .cop-dot{background:var(--teal);border-color:var(--teal)}
+  #cop-funnel .cop-btn{margin-top:16px;width:100%;min-height:50px;border:0;border-radius:99px;background:var(--teal);color:#fff;font:700 16px inherit;cursor:pointer}
+  #cop-funnel .cop-btn[disabled]{opacity:.45;cursor:not-allowed}
+  #cop-funnel .cop-msg{color:var(--muted);margin:10px 0 0}
+  #cop-funnel iframe{display:block;width:100%;border:0;min-height:640px;margin-top:12px}
+  #cop-funnel .cop-link{display:block;margin-top:14px;text-align:center;font-size:14px;color:var(--teal);background:none;border:0;cursor:pointer;text-decoration:underline;width:100%}
+  @media (prefers-reduced-motion:reduce){#cop-funnel .cop-bar i{transition:none}}
+</style>
+
+<script src="https://link.msgsndr.com/js/form_embed.js" async></script>
+<script>
+(function () {
+  /* ============================ CONFIG ============================ */
+  var CONFIG = {
+    FORM_ID: "PASTE_GHL_FORM_ID",
+    CALENDAR_ID: "PASTE_GHL_CALENDAR_ID",
+    // Option labels that disqualify (must match the wording in STEPS below)
+    DQ_EXPERIENCE: ["Less than 1 year"],
+    DQ_CAPITAL: ["Under $10K"],
+    DQ_TIMELINE: ["Just exploring"],
+    // After a QUALIFIED person submits the GHL form, GHL must redirect to this
+    // page's URL with ?cop_step=book  (set in Form > Settings > On submit > Redirect URL)
+    BOOK_PARAM: "cop_step"
+  };
+  /* ================================================================ */
+
+  var root = document.getElementById("cop-funnel");
+  var P = function (a, b) { return a.indexOf(b) > -1; };
+  var YEARS = ["Less than 1 year", "1–2 years", "3–5 years", "5+ years"];
+  var LCAP = ["Under $10K", "$10K–$25K", "$25K–$50K", "$50K–$100K", "$100K+"];
+  var GCAP = ["Under $10K", "$10K–$25K", "$25K–$50K", "$50K+"];
+  var READY = ["None yet", "1–5", "6–15", "16+"];
+  var NOWC = ["Under 20", "20–50", "51–100", "100+"];
+  var TIME = ["Right now", "Within 1–3 months", "3–6 months", "Just exploring"];
+
+  function step(key, q, opts, o) {
+    o = o || {};
+    return { key: key, q: q, opts: opts, multi: !!o.multi, dq: o.dq || null, pts: o.pts || null };
+  }
+  var T = step("cop_timeline", "When do you want to start?", TIME, {
+    dq: ["not_ready", CONFIG.DQ_TIMELINE], pts: function (v) { return v === TIME[0] || v === TIME[1]; }
+  });
+  var STEPS = {
+    launch: [
+      step("cop_type", "What type of care business do you want to open?", ["Child care center", "Home daycare", "Home care (seniors or adults)", "Not sure yet"]),
+      step("cop_years", "How many years have you worked in daycare or home care?", YEARS, { dq: ["no_experience", CONFIG.DQ_EXPERIENCE], pts: function (v) { return YEARS.indexOf(v) > 1; } }),
+      step("cop_role", "What's your current role?", ["Director or manager", "Lead teacher or caregiver", "I run a licensed home daycare", "I run a home care agency without an office", "Other"]),
+      step("cop_ready_clients", "Do you have children or clients ready to enroll with you right away?", READY, { pts: function (v) { return READY.indexOf(v) > 0; } }),
+      step("cop_capital", "How much capital can you put toward launching in the next 90 days?", LCAP, { dq: ["no_capital", CONFIG.DQ_CAPITAL], pts: function (v) { return LCAP.indexOf(v) > 1; } }),
+      T
+    ],
+    scale: [
+      step("cop_type", "What type of business do you run?", ["Child care center", "Home daycare", "Home care agency", "Other"]),
+      step("cop_locations", "How many locations do you have?", ["1", "2–3", "4+"]),
+      step("cop_clients_now", "How many children or clients are you serving now?", NOWC, { pts: function (v) { return NOWC.indexOf(v) > 0; } }),
+      step("cop_revenue", "Approximate annual revenue?", ["Under $250K", "$250K–$500K", "$500K–$1M", "$1M+"]),
+      step("cop_challenges", "What's your biggest challenge right now?", ["Profitability", "Enrollment or getting clients", "Staffing", "Everything depends on me", "Opening the next location"], { multi: true }),
+      step("cop_growth_budget", "How much can you invest in growth over the next 90 days?", GCAP, { dq: ["no_capital", CONFIG.DQ_CAPITAL], pts: function (v) { return GCAP.indexOf(v) > 1; } }),
+      T
+    ]
+  };
+  var Q1 = [
+    { label: "I run a daycare or home care business WITH a location", value: "scale" },
+    { label: "I have daycare or home care experience but NO location of my own yet", value: "launch" },
+    { label: "I'm new to the care industry", value: "new" }
+  ];
+
+  var state = { path: null, i: 0, a: {}, dq: null, hist: [], multi: [] };
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function score() {
+    var n = 0;
+    (STEPS[state.path] || []).forEach(function (s) { var v = state.a[s.key]; if (s.pts && v && s.pts(v)) n++; });
+    return n;
+  }
+  function head(pct, back) {
+    return '<div class="cop-top"><span class="cop-eyebrow">Apply in 60 seconds</span>' +
+      (back ? '<button class="cop-back" type="button" data-act="back">← Back</button>' : "") + "</div>" +
+      '<div class="cop-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pct + '"><i style="width:' + Math.max(pct, 4) + '%"></i></div>';
+  }
+  function focusHeading() { var h = root.querySelector("h3"); if (h) { h.setAttribute("tabindex", "-1"); h.focus({ preventScroll: true }); } }
+
+  function render() {
+    var p = new URLSearchParams(location.search);
+    if (p.get(CONFIG.BOOK_PARAM) === "book") return renderBook();
+    if (state.dq || (state.path && state.i > STEPS[state.path].length)) return renderForm();
+    if (!state.path) {
+      root.innerHTML = head(0, false) + "<h3>Which best describes you right now?</h3>" +
+        '<div class="cop-opts">' + Q1.map(function (o) { return '<button class="cop-opt" type="button" data-q1="' + o.value + '"><span class="cop-dot"></span>' + esc(o.label) + "</button>"; }).join("") + "</div>";
+      return;
+    }
+    var list = STEPS[state.path], s = list[state.i - 1], total = list.length + 2;
+    var cur = state.a[s.key];
+    root.innerHTML = head(Math.round((state.i / total) * 100), true) + "<h3>" + esc(s.q) + "</h3>" +
+      (s.multi ? '<p class="cop-hint">Pick all that apply.</p>' : "") +
+      '<div class="cop-opts' + (s.multi ? " cop-multi" : "") + '">' + s.opts.map(function (o, idx) {
+        var on = s.multi ? P(state.multi, o) : cur === o;
+        return '<button class="cop-opt" type="button" data-opt="' + idx + '" aria-pressed="' + on + '"><span class="cop-dot"></span>' + esc(o) + "</button>";
+      }).join("") + "</div>" +
+      (s.multi ? '<button class="cop-btn" type="button" data-act="next"' + (state.multi.length ? "" : " disabled") + ">Continue</button>" : "");
+    focusHeading();
+  }
+
+  function renderForm() {
+    var q = state.dq === null;
+    var params = new URLSearchParams();
+    params.set("cop_path", state.path || "launch");
+    params.set("cop_qualified", q ? "yes" : "no");
+    params.set("cop_dq_reason", state.dq || "");
+    params.set("cop_score", String(score()));
+    Object.keys(state.a).forEach(function (k) { params.set(k, state.a[k]); });
+    var src = "https://api.leadconnectorhq.com/widget/form/" + encodeURIComponent(CONFIG.FORM_ID) + "?" + params.toString();
+    root.innerHTML = head(92, true) +
+      "<h3>" + (q ? "Last step: where should we reach you?" : "Thanks. Where should we send you resources?") + "</h3>" +
+      '<iframe id="inline-' + esc(CONFIG.FORM_ID) + '" src="' + esc(src) + '" title="Application contact details" data-form-id="' + esc(CONFIG.FORM_ID) + '" data-layout="{\'id\':\'INLINE\'}" data-layout-iframe-id="inline-' + esc(CONFIG.FORM_ID) + '" data-form-name="Care Operator Application" loading="lazy"></iframe>' +
+      (q ? '<button class="cop-link" type="button" data-act="book">Already applied? Book your call</button>' : "");
+    focusHeading();
+  }
+
+  function renderBook() {
+    root.innerHTML = head(100, false) + "<h3>You're a fit. Book your strategy call.</h3>" +
+      '<iframe id="' + esc(CONFIG.CALENDAR_ID) + '_booking" src="https://api.leadconnectorhq.com/widget/booking/' + encodeURIComponent(CONFIG.CALENDAR_ID) + '" title="Book your strategy call" scrolling="no" style="min-height:700px"></iframe>';
+    focusHeading();
+  }
+
+  function advance(from) {
+    state.hist.push(from);
+    state.i = from + 1;
+    render();
+  }
+
+  root.addEventListener("click", function (e) {
+    var t = e.target.closest("button"); if (!t) return;
+    if (t.dataset.q1) {
+      var v = t.dataset.q1; state.a = { cop_situation: v };
+      if (v === "new") { state.path = "launch"; state.dq = "no_experience"; state.hist.push(0); render(); return; }
+      state.path = v; state.dq = null; state.i = 1; state.hist = [0]; render(); return;
+    }
+    if (t.dataset.opt !== undefined) {
+      var s = STEPS[state.path][state.i - 1], val = s.opts[+t.dataset.opt];
+      if (s.multi) { var ix = state.multi.indexOf(val); if (ix > -1) state.multi.splice(ix, 1); else state.multi.push(val); render(); return; }
+      state.a[s.key] = val;
+      if (s.dq && P(s.dq[1], val)) { state.dq = s.dq[0]; state.hist.push(state.i); render(); return; }
+      state.dq = null; advance(state.i); return;
+    }
+    var act = t.dataset.act;
+    if (act === "next") { var m = STEPS[state.path][state.i - 1]; state.a[m.key] = state.multi.join("; "); state.multi = []; advance(state.i); }
+    if (act === "back") {
+      var prev = state.hist.pop();
+      if (prev === undefined) return;
+      state.dq = null; state.i = prev;
+      if (prev === 0) { state.path = null; state.a = {}; }
+      var ps = state.path && prev >= 1 ? STEPS[state.path][prev - 1] : null;
+      state.multi = ps && ps.multi && state.a[ps.key] ? state.a[ps.key].split("; ") : [];
+      render();
+    }
+    if (act === "book") { renderBook(); }
+  });
+
+  render();
+})();
+</script>
