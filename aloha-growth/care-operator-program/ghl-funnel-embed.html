@@ -36,7 +36,10 @@
 (function () {
   /* ============================ CONFIG ============================ */
   var CONFIG = {
+    // FORM A: for QUALIFIED people. On submit it must redirect to this page's URL + ?cop_step=book
     FORM_ID: "PASTE_GHL_FORM_ID",
+    // FORM B: for people who do NOT qualify. On submit it shows a thank-you message (no redirect).
+    FORM_ID_NOT_QUALIFIED: "PASTE_GHL_FORM_B_ID",
     CALENDAR_ID: "PASTE_GHL_CALENDAR_ID",
     // Option labels that disqualify (must match the wording in STEPS below)
     DQ_EXPERIENCE: ["Less than 1 year"],
@@ -133,10 +136,11 @@
     params.set("cop_dq_reason", state.dq || "");
     params.set("cop_score", String(score()));
     Object.keys(state.a).forEach(function (k) { params.set(k, state.a[k]); });
-    var src = "https://api.leadconnectorhq.com/widget/form/" + encodeURIComponent(CONFIG.FORM_ID) + "?" + params.toString();
+    var fid = (!q && CONFIG.FORM_ID_NOT_QUALIFIED && CONFIG.FORM_ID_NOT_QUALIFIED.indexOf("PASTE") !== 0) ? CONFIG.FORM_ID_NOT_QUALIFIED : CONFIG.FORM_ID;
+    var src = "https://api.leadconnectorhq.com/widget/form/" + encodeURIComponent(fid) + "?" + params.toString();
     root.innerHTML = head(92, true) +
       "<h3>" + (q ? "Last step: where should we reach you?" : "Thanks. Where should we send you resources?") + "</h3>" +
-      '<iframe id="inline-' + esc(CONFIG.FORM_ID) + '" src="' + esc(src) + '" title="Application contact details" data-form-id="' + esc(CONFIG.FORM_ID) + '" data-layout="{\'id\':\'INLINE\'}" data-layout-iframe-id="inline-' + esc(CONFIG.FORM_ID) + '" data-form-name="Care Operator Application" loading="lazy"></iframe>' +
+      '<iframe id="inline-' + esc(fid) + '" src="' + esc(src) + '" title="Application contact details" data-form-id="' + esc(fid) + '" data-layout="{\'id\':\'INLINE\'}" data-layout-iframe-id="inline-' + esc(fid) + '" data-form-name="Care Operator Application" loading="lazy"></iframe>' +
       (q ? '<button class="cop-link" type="button" data-act="book">Already applied? Book your call</button>' : "");
     focusHeading();
   }
