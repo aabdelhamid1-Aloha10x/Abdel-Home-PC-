@@ -90,3 +90,18 @@ Quote(s) saved to the work order; if within limits and a single best option exis
 
 ## 9. SMS through Vapi
 Vapi is a voice platform. Texting is done by the app through Twilio (same number if it is a Twilio number imported into Vapi). A Vapi-provided number cannot send texts. Inbound texts from shops/drivers land in the Shared inbox and attach to the work order. Keep opt-in/opt-out records per recipient.
+
+## 8.6 REVISION: two-stage negotiation (replaces the pushy parts of 8.4)
+Principle: the shop must never feel the caller is cheap. The agent is warm, appreciative and quick to say yes. Total pushback on the phone is ONE gentle ask, not a ladder.
+### Stage 1: on the call (light touch, at most 1-2 soft asks)
+- Get the facts first: flat rate or hourly + cap, service-call/diagnostic fee, travel, after-hours, parts, supplies/environmental fees, tax, ETA, warranty.
+- Then ONE easy ask, phrased as a favor, only if the price is above target: "Is there any room on the service call fee if we do the repair with you?" or "Best you can do on the labor?" Accept the first reasonable answer.
+- Never haggle twice on the same item, never mention being cheap, never threaten to go elsewhere, never go silent or stall. If the shop sounds reluctant, the agent stops pushing, thanks them and moves on.
+- Priority on a breakdown is SPEED and a yes. When the truck is down and the deadline is tight, the agent skips Stage 1 negotiation entirely and books.
+- Over the auto-limit: "Let me confirm with my manager and I'll call you right back."
+### Stage 2: at payment (after the work is done, friendly and professional)
+- Handled by the Accounting/Autopilot flow with a short call, text or email from the persona once the invoice arrives: thank them for the quick turnaround, check the invoice against the quote, and ask for small reasonable adjustments in this order: (1) remove or reduce sales tax if the company has a resale/exempt certificate on file (only when legally valid, never invent an exemption), (2) remove duplicate or unquoted fees (shop supplies, environmental, admin), (3) a small prompt-payment or fleet courtesy discount in exchange for paying quickly (e.g., "we can pay today by ACH if you can take off the shop fees").
+- Offer something real in return: fast payment (the app only records money; the owner pays), repeat business, a good review/rating in the preferred-shop list.
+- Never dispute work quality as a tactic. If the invoice is above the not-to-exceed quote, ask for the quote reference and a corrected invoice.
+- Outcome logged on the work order: quoted vs invoiced vs paid, savings achieved, shop reaction notes. A shop that pushed back gets a "keep happy" flag so the assistant protects that relationship.
+Targets: Stage 1 aims at 0-5% off (mostly fees), Stage 2 at 5-10% off the invoice (tax, fees, courtesy discount). Never at the cost of the shop's willingness to take the next call.
