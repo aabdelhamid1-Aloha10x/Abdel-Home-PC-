@@ -105,3 +105,17 @@ Principle: the shop must never feel the caller is cheap. The agent is warm, appr
 - Never dispute work quality as a tactic. If the invoice is above the not-to-exceed quote, ask for the quote reference and a corrected invoice.
 - Outcome logged on the work order: quoted vs invoiced vs paid, savings achieved, shop reaction notes. A shop that pushed back gets a "keep happy" flag so the assistant protects that relationship.
 Targets: Stage 1 aims at 0-5% off (mostly fees), Stage 2 at 5-10% off the invoice (tax, fees, courtesy discount). Never at the cost of the shop's willingness to take the next call.
+
+## 8.7 PAYMENT HANDOFF (money stays record-only; the owner pays)
+Decision: Masar OS never moves money and never stores card numbers or bank logins. The AI collects HOW to pay and hands it to the owner; the owner pays outside the app and marks it paid.
+### What the AI collects from the shop (call, text or email)
+Preferred payment method and details: pay link / invoice portal URL, Zelle (phone or email + registered name), ACH (remit-to name, routing and account, only if the shop volunteers it), check (payee name + mailing address), card over the phone (the owner calls, the AI does NOT take or read card numbers), cash/other. Also: exact invoice number and amount, due date, any prompt-pay discount, W-9 request, who to contact about payment.
+### Where it goes
+- A Needs-you item "Pay shop" (also on the work order > Payment tab) shows: shop, work order, quoted vs invoiced amount, savings achieved, payment method + details, due date, invoice file. Buttons: Approve and Share (sends the details to the owner by in-app notification/text/email), Ask shop to correct invoice, Mark paid, Dispute.
+- Who approves: Owner or Operations manager at any amount; Shop manager up to the company limit (default $1,500). Above the limit needs a second approver. Nobody approves their own created item. Everything audit logged.
+- Mark paid captures: date, method, amount, reference/confirmation number, optional receipt upload. The AI can then send the shop a short "paid, thank you" text with the reference.
+### Safety (vendor payment fraud is the main risk)
+- Payment details (Zelle, bank, remit-to) are stored encrypted per company and visible only to Owner, Operations manager and Accounting roles; masked elsewhere.
+- Any change to a shop's saved payment details is flagged and requires a verification call-back to the number already on file before it can be used (the AI never trusts a "new bank details" text or email on its own).
+- The AI never pays, never promises a payment date it was not given, and never reads out card numbers.
+- Saved vendor profile: shop name, contacts, preferred method, W-9 on file, tax-exempt status, payment history, "keep happy" flag.
