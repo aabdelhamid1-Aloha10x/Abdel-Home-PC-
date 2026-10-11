@@ -119,3 +119,40 @@ Preferred payment method and details: pay link / invoice portal URL, Zelle (phon
 - Any change to a shop's saved payment details is flagged and requires a verification call-back to the number already on file before it can be used (the AI never trusts a "new bank details" text or email on its own).
 - The AI never pays, never promises a payment date it was not given, and never reads out card numbers.
 - Saved vendor profile: shop name, contacts, preferred method, W-9 on file, tax-exempt status, payment history, "keep happy" flag.
+
+## 10. BREAKDOWN CASE OWNER (Autopilot, maintenance): owns the problem from A to Z
+Voices chosen by the owner: Garret (shops, mechanics, brokers) and Eryn (driver check-ins). Persona names per company.
+Principle: one breakdown = one CASE. The AI is the case owner until the case is closed. It never "hands off and forgets". It keeps a live timeline, sets timers, follows up, relays, escalates only what needs a human, and closes the case with a summary.
+
+### 10.1 Case states
+New (driver report / DVIR / ELD fault) > Triage (gather facts, decide mobile vs tow vs shop) > Sourcing (calls shops, collect quotes) > Dispatching (provider chosen, ETA agreed) > En route > On site > Diagnosing > Estimate review (auto-approve / negotiate / needs approval) > Authorized > Repairing > Waiting parts > Complete > Verified with driver > Payment handoff > Closed. Side states: Provider failed (cancel and re-source), Escalated (human took over), On hold.
+
+### 10.2 What it does at each step
+1. TRIAGE: confirms with the driver (chat/text/call) location, drivable or not, symptoms, safety, load deadline. If unsafe: tells the driver to stay in a safe place and alerts the on-duty manager immediately.
+2. SOURCING: calls shops/mobile techs (Section 8). Picks the provider by ETA, all-in price, rating, distance, availability.
+3. SEND LOCATION: texts the provider the driver's exact location: Google Maps link plus coordinates (lat,long), nearest exit/mile marker, truck description (unit, color, trailer), and the driver's first name and phone. Location is shared only for this case and stops when the case closes; the driver is told it is being shared.
+4. TELL THE DRIVER (chat + SMS): "{Provider/company name}, tech {name}, {phone}, is on the way. ETA {time window}. Stay with the truck. I'll update you." Includes what to have ready (keys, paperwork) and what the tech will do. Updates at every status change.
+5. LISTEN to the driver: any question or change from the driver (how long? are they here? they're done? new problem?) is read and answered or relayed to the provider by the AI right away, in plain words. New issues become new line items on the case.
+6. FOLLOW UP with the provider on timers (see 10.3). Never wait silently.
+7. ESTIMATE REVIEW when the tech calls or texts with the diagnosis and estimate: record it as structured quote lines. If total <= auto-limit and not a safety item: approve by voice/text immediately ("Go ahead, you're approved up to $X; call me if it goes above"). If above the limit: negotiate lightly (Section 8.6 Stage 1), then ask the owner/Ops manager/Shop manager for approval with a one-tap card (price, plan, risk of waiting, recommendation, how long the provider can hold). Relay the decision to the provider right away. Tell the driver what was decided and the new ETA.
+8. PARTS: if the tech goes for parts, ask the ETA and put a timer; update the driver and dispatch of the new ETA/deadline risk.
+9. PROVIDER FAILS (cannot do the work, no-show, cannot fix, too expensive, wrong parts): politely cancel, record why, tell the driver, and RESTART Sourcing with the next best option. Repeat until solved. Tow becomes an option when repair on site is not possible; the AI arranges tow + shop with the same ownership.
+10. COMPLETION: confirms with the tech the work is done, asks for the invoice/work description, confirms with the driver the truck runs and he is rolling, updates the load and dispatch ETA, resets PM dates if relevant, marks the truck back in service.
+11. PAYMENT HANDOFF to the owner (Section 8.7), THANK-YOU to the shop, quote vs invoice review, then CLOSE with a summary: timeline, total cost, downtime, savings, shop rating note, what to watch for (repeat issue).
+
+### 10.3 Timers and follow-up rules (defaults, configurable per company)
+- Provider ETA stated as 45-60 min: check the driver's chat at 30 min; if no tech by the START of the window + 5 min, call the provider ("Hey, checking on the tech for unit 214, ETA was 45 to 60, where is he now?"); if no answer in 5 min, call again and text; if still nothing at the END of the window, start backup sourcing in parallel and tell the driver.
+- On site with no update for 45 min: ask for a status. Waiting on parts: check at the promised time. Repair done but not confirmed: ask the driver.
+- Driver silent for 30 min during an open case: ping by chat; after 2 pings, call (Eryn voice).
+- Every timer has a max number of retries, then it escalates to a human with the full timeline.
+- All calls obey calling hours, consent and do-not-disturb rules (Section 7), except genuine safety cases.
+
+### 10.4 Authority and limits (guardrails)
+- Auto-approve up to the company limit per case and per month; never approve safety-critical work (brakes, steering, tires on the road) without a human; never exceed not-to-exceed amounts; never promise payment dates; money stays record-only (owner pays).
+- Needs-you cards: estimate above limit, second opinion needed, driver unhappy/unsafe, provider disputes, anything unusual. The AI always includes its recommendation.
+- Everything is audit logged: calls (recording, transcript), texts, decisions, approvals, who approved.
+
+### 10.5 Data model additions
+breakdown_cases(id, company_id, truck_id, driver_id, load_id, status, opened_at, closed_at, location_lat, location_lng, location_text, drivable, severity, summary, total_cost, downtime_minutes, owner_user_id/ai), case_events(case_id, at, kind, actor ai/driver/provider/staff, channel call/sms/chat/app, text, media, call_id), case_providers(case_id, shop_id, role mobile/shop/tow, status contacted/quoted/chosen/en_route/on_site/failed/cancelled, eta_from, eta_to, quote_id, failure_reason), case_timers(case_id, due_at, kind, retries, status), case_approvals(case_id, amount, requested_from, decision, decided_by, at, relayed_to_provider_at). Inbound texts/calls from providers and drivers attach to the case automatically (by phone number and recent case).
+### 10.6 Metrics shown on the Autopilot dashboard
+Time to first provider contact, time to ETA agreed, time on site, total downtime, cost vs target, % cases closed with no human touch, number of re-sourcing loops, driver satisfaction reply, savings.
