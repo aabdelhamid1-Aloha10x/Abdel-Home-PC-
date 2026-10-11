@@ -1,0 +1,12 @@
+PHASE 4: MAINTENANCE + SAFETY. Attached: SPEC_P4_maint_safety.md.
+ROUTES: /app/maintenance (overview, work-orders, work-orders/:id, schedules, inspections, shops); /app/safety (readiness, documents, driver-files, drug-alcohol, incidents, hos).
+TABLES: work_orders(number, truck_id/trailer_id, type, priority, status open/scheduled/in_shop/waiting_parts/done, shop_id, opened_by, est_cost, actual_cost, lines jsonb, notes, from_message_id), pm_schedules(asset, task, interval miles/days, last_done, next_due), inspections/dvirs(driver_id, truck_id, type pre/post, defects jsonb, photos, status, signed_at, mechanic_review), shops(name, contact, rates), documents(entity, kind, issued, expires, file, status), driver_qualification_files(driver_id, checklist items, status), drug_alcohol_tests(driver_id, type, date, result, mro, file), incidents(date, driver_id, truck_id, type, severity, description, photos, status, dot_recordable), hos_logs(driver_id, date, duty segments jsonb, violations jsonb, source manual/eld), eld_connections.
+BEHAVIOR: PM due engine (daily scheduled function) creates work orders and notifications; a DVIR defect creates a work order and marks the truck "out of service" if flagged; documents expire chips and a Readiness score per driver and truck computed from real rows (licence, medical, DQ file complete, inspection, drug test) feeding the planner "blocked" checks; incident wizard with photos; drug/alcohol records are visible only to Safety + Owner (RLS, not just UI); HOS page shows imported logs (CSV import now, ELD feed in phase 9) with violation detection by the rules in project knowledge. Every list uses DataTable. Documents use Storage signed URLs; expiry reminders create notifications 30/14/7 days before.
+
+ACCEPTANCE (verify each, report results; say plainly what is NOT done):
+[ ] Every route listed renders with real data and no console errors, at 390px and desktop, light and dark.
+[ ] Every button, tab, toggle, filter, bulk action, menu item and row click on these pages performs its real action and persists after reload. List any you did not wire.
+[ ] Every create/edit/delete/status change writes audit_log and respects role permissions (UI and RLS). Test with two companies and two roles.
+[ ] Plan limits enforced (UI and database) where mentioned.
+[ ] Sample data extended: seed function adds the demo rows for this phase (is_demo=true) and removal works.
+Reply with: routes added, tables and policies added, edge functions added, checklist results, gaps.
