@@ -58,3 +58,35 @@ Pass = outcome logged, no invented prices, honest about being AI when asked, und
 - Recording notice where the state requires it (shop and broker calls: say "this call may be recorded" only where required; configurable per state).
 - AI-voiced calls to consumers need prior express consent (TCPA); the use cases above are business and employee calls only. No cold calling.
 - Calling hours 8am-8pm in the recipient's local time; shop calls during shop hours.
+
+## 8. Breakdown call to a shop or mobile mechanic (extends use case A)
+### 8.1 Case file the agent receives BEFORE dialing (built from the driver's Issue report + Phase 4 + ELD)
+- Who/where: company name, driver first name and callback number, exact location (address, highway and mile marker, GPS link), nearest city, "can the truck move?" (drivable / limp / not drivable).
+- Truck: unit number, year, make, model, engine, last 6 of VIN, trailer type and whether loaded (reefer/dry), fault codes (from ELD when connected), symptoms in the driver's words, when it started, recent related work orders.
+- Urgency: load delivery deadline, detention exposure, safety/out-of-service flag.
+- Money: auto-approval limit, target price, walk-away price, payment method (company card / PO / invoice), who can authorize above the limit.
+- Evidence: photos/videos the driver uploaded (links).
+The agent describes the problem exactly, in plain words, in this order: where the truck is and whether it moves > what it is (year/make/engine) > what it is doing > fault codes > deadline.
+
+### 8.2 Photos and texts while on the phone
+- Tool send_media(to, text, media_urls): sends MMS (or a link) from the company number while the call continues. The agent asks "What's the best number to text pictures to?" and says "Sending them now, let me know when they come through." It waits for confirmation and takes the shop's answer ("looks like X").
+- Landline or no-MMS shops: fall back to email or a short link page with the photos.
+- Requirement: texting must run through a Twilio-style number registered for Masar AI Inc. Vapi itself is voice; if the number is a Vapi-provided number it cannot text. Verify which number type is used.
+
+### 8.3 Quote capture (structured, so quotes compare fairly)
+Record per shop: type (shop / mobile / tow+shop), availability and ETA to truck, diagnostic or service-call (road call) fee and whether it is waived when they do the repair, travel/mileage charge, after-hours or weekend surcharge, labor (FLAT RATE for the job or HOURLY rate + estimated hours + "not to exceed" cap), parts estimate and markup, shop supplies/environmental/disposal fees, tax, tow or storage if needed, payment terms accepted, warranty, the person's name, and quote reference. The system computes an ALL-IN total and a comparison across shops.
+
+### 8.4 Negotiation playbook (honest, firm, friendly)
+1. Ask for a flat rate "out the door" for the whole job first. If none, take hourly rate + estimated hours + a not-to-exceed cap.
+2. Ask about every fee up front: "Is there a service call or diagnostic fee? Does it come off if you do the repair?" "Any travel, after-hours or shop supplies charges?"
+3. Anchor with history and facts: "We're a repeat fleet, we pay on time, and we have more trucks that run through here" (only if true). Mention that other quotes are being collected only when that is true.
+4. Concession ladder: ask to waive the service/diagnostic fee > ask for fleet or repeat-customer labor discount > ask for a lower travel charge > ask for a not-to-exceed cap > ask for a faster slot at the same price. Move one lever at a time and trade for something (payment speed, repeat business, a quick yes).
+5. Never invent a competing price, never claim authority it does not have, never accept above the auto-limit. If the final all-in price is above the limit: "Let me run it by my manager and call you right back" and create a Needs-you item with the comparison.
+6. Close: read back all-in price, slot, location, contact, authorization method; send the written quote request by text/email.
+Targets come from the company's own work-order history by service type, with a safe walk-away ceiling. The agent logs everything it offered and what was agreed.
+
+### 8.5 After the call
+Quote(s) saved to the work order; if within limits and a single best option exists, Autopilot books it and texts the driver ETA and shop address; otherwise a Needs-you item shows the 2-3 all-in comparisons with a recommendation. Driver is told what is happening by text at each step.
+
+## 9. SMS through Vapi
+Vapi is a voice platform. Texting is done by the app through Twilio (same number if it is a Twilio number imported into Vapi). A Vapi-provided number cannot send texts. Inbound texts from shops/drivers land in the Shared inbox and attach to the work order. Keep opt-in/opt-out records per recipient.
