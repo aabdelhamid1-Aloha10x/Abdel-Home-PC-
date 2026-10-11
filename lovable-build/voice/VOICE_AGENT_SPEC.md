@@ -156,3 +156,24 @@ New (driver report / DVIR / ELD fault) > Triage (gather facts, decide mobile vs 
 breakdown_cases(id, company_id, truck_id, driver_id, load_id, status, opened_at, closed_at, location_lat, location_lng, location_text, drivable, severity, summary, total_cost, downtime_minutes, owner_user_id/ai), case_events(case_id, at, kind, actor ai/driver/provider/staff, channel call/sms/chat/app, text, media, call_id), case_providers(case_id, shop_id, role mobile/shop/tow, status contacted/quoted/chosen/en_route/on_site/failed/cancelled, eta_from, eta_to, quote_id, failure_reason), case_timers(case_id, due_at, kind, retries, status), case_approvals(case_id, amount, requested_from, decision, decided_by, at, relayed_to_provider_at). Inbound texts/calls from providers and drivers attach to the case automatically (by phone number and recent case).
 ### 10.6 Metrics shown on the Autopilot dashboard
 Time to first provider contact, time to ETA agreed, time on site, total downtime, cost vs target, % cases closed with no human touch, number of re-sourcing loops, driver satisfaction reply, savings.
+
+## 10.7 REVISION (owner decision): what really needs a human
+A stopped truck is NOT an emergency. Brakes, steering, blown or road tires, engine, DEF and similar repairs on a stopped truck are handled by the AI end to end (approve within limit, negotiate, book, follow up). Rule kept: a truck with a failed safety system is marked out of service and is not released to drive until the repair is verified.
+Escalate to a human ("Needs you") ONLY for the UNUSUAL list:
+1. People or danger: accident, injury, fire, hazmat/cargo spill, law enforcement/DOT/roadside inspection involved, truck stopped in a live lane or unsafe spot with no shoulder, driver says he feels unsafe, theft or security issue.
+2. Money: estimate above the auto-limit, invoice above the quote or not-to-exceed, third visit for the same fault in 30 days, shop asks for payment up front by an odd method, new or changed payment details.
+3. Provider trouble: dispute about work or price, shop refuses and no alternative within the search radius, no provider found within 60 minutes, provider no-show twice.
+4. Driver trouble: angry or abusive, asks for something outside policy (leave the truck, pay himself, tow somewhere else), cannot communicate or contradicts earlier facts.
+5. Legal and insurance: claim, warranty, cargo damage, anything involving a third party's property or injury.
+6. Business impact: load will miss delivery by more than the company threshold, or detention exposure above a set amount (dispatch is told, not necessarily the owner).
+7. Low confidence: the AI is unsure what to do, or data conflicts (location, fault codes, what the driver says).
+Everything else: AI handles and reports in the daily summary.
+
+## 11. LLM and cost design
+Route by task, not one model for everything. Model choice is a config value per task, never hardcoded.
+- Voice turns, SMS replies, classification, routing, short summaries: fast/cheap tier (Claude Haiku 5.5).
+- Case decisions (estimate review, negotiation plan, triage, follow-up planning, quote comparison): mid tier (Claude Sonnet 5.5), effort medium.
+- Rare hard calls and anything escalated: top tier (Claude Opus 5.5).
+- Use the provider API directly (Anthropic API from edge functions, key in secrets) for prompt caching, batch (50% off for non-urgent reports/summaries), structured outputs and fallbacks. Vapi can call the model through its own Anthropic support or a custom-LLM endpoint.
+- Quality gate: build a 30-scenario eval from the voice test plan; a cheaper model or lower effort replaces a better one for a task ONLY if it passes the same eval. Never trade quality for price blindly.
+- Cost reality: voice minutes (telephony + speech-to-text + text-to-speech + Vapi) are the main cost, not the LLM. Track cost per case and charge via credits.
