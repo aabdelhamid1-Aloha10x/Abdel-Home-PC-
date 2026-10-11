@@ -1,6 +1,6 @@
 # Project knowledge (persistent rules for every prompt)
 
-PRODUCT: multi-tenant SaaS TMS for trucking (owner-operators to 25+ truck fleets). Placeholder brand name lives in ONE constant: src/config/brand.ts (BRAND.name, BRAND.tagline). Never hardcode the name elsewhere.
+PRODUCT: "Masar OS", multi-tenant SaaS TMS for trucking (owner-operators to 25+ truck fleets). The name lives in ONE constant: src/config/brand.ts (BRAND.name = "Masar OS", BRAND.tagline = "Your back office on autopilot"). Never hardcode the name elsewhere.
 
 STACK: React + Vite + TypeScript + Tailwind + shadcn/ui, Supabase (Postgres, Auth, Storage, Edge Functions, RLS). React Router. TanStack Query for data. One responsive codebase: desktop office app, mobile driver app, mobile solo app, all under one login. Must later be wrapped with Capacitor (iOS/Android): so no browser-only hacks, use relative routes, put device features (camera, push, geolocation, share) behind small wrappers in src/lib/native/ that fall back to the web API.
 
@@ -31,3 +31,5 @@ HOURS-OF-SERVICE AND PLANNING RULES (planner): planning speed 55 mph; 11 h drivi
 NEVER touch or reference any other Supabase project. Never store credentials of third-party load boards. Use OAuth or API keys entered by the customer, stored encrypted server-side (Supabase Vault or encrypted column via edge function), never returned to the browser.
 
 LANGUAGE: plain, short English. Spanish translation exists for driver-facing screens (i18n files en/es from day one, all strings through t()).
+
+DRIVER INCENTIVES: management designs bonus programs from building blocks (who, metric, rules, reward, period, approval). Calculation is server-side SQL/edge function, idempotent, unit-tested, explainable. Drivers see only ACTIVE programs they are eligible for. Cash awards become a Bonus line on the settlement (record only). Not the same as "Employment programs" (company/lease/owner-operator). Core: 1 simple program; Growth: unlimited with tiers, ranking, custom metrics.
