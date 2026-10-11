@@ -4,7 +4,7 @@
 
 Effective date: {{EFFECTIVE_DATE}}
 
-{{LEGAL_NAME}} ("Masar OS", "we") provides software for motor carriers. This policy explains what we collect, why, who we share it with, and your choices. It covers our website, apps and Service.
+{{LEGAL_NAME}}, a Delaware corporation ("Masar OS", "we"), provides software for motor carriers. This policy explains what we collect, why, who we share it with, and your choices. It covers our website, apps and Service.
 
 ## 1. Two roles
 - **For our own business** (visitors, leads, account owners and billing contacts) we decide how data is used. We are the "business" or "controller".
@@ -51,4 +51,4 @@ Our Service is operated in the United States. If you access it from elsewhere, y
 We may update this policy. We will post the new version and change the effective date; for material changes we will notify account owners by email.
 
 ## 12. Contact
-{{LEGAL_NAME}}, {{LEGAL_ADDRESS}}. Email: info@masar10x.io.
+{{LEGAL_NAME}}, {{LEGAL_ADDRESS}}. Email: info@masar10x.io. Registered agent: {{REGISTERED_AGENT}}.

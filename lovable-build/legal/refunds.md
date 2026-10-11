@@ -1,6 +1,6 @@
-# Refund and Cancellation Policy
+# Cancellation and Refund Policy
 
-**DRAFT FOR LEGAL REVIEW. The refund windows below are proposed business terms; the owner must confirm them. Not legal advice.**
+**DRAFT FOR LEGAL REVIEW. Not legal advice. Have a licensed attorney review before publishing.**
 
 Effective date: {{EFFECTIVE_DATE}}
 
@@ -9,36 +9,28 @@ This policy is part of our Terms of Service.
 ## 1. Free trial
 Every plan starts with a 14-day free trial. A card is required to start, and **you are not charged during the trial**. Your first charge is on day 15 unless you cancel first. We email you a reminder about 3 days before that charge. If you cancel before the trial ends, you pay nothing.
 
-## 2. How to cancel
-Sign in, go to Settings, then Plan and billing, then Cancel. You can also use the cancel link in any receipt email, or email info@masar10x.io and we will cancel for you within one business day. Cancelling stops future renewals. Your plan stays active until the end of the period you have already paid for, and you can export your data during that time and for 30 days after.
+## 2. Cancel any time
+You can cancel at any time. Sign in, go to Settings, then Plan and billing, then Cancel. You can also use the cancel link in any receipt email, or email info@masar10x.io and we will cancel for you within one business day.
 
-## 3. Monthly subscriptions
-- We do not refund partial months, or unused time, after the period has started.
-- **First-charge guarantee (proposed):** if you were charged at the end of your trial and do not want to continue, email info@masar10x.io within 7 days of that first charge and we will refund it in full and cancel the account.
+When you cancel:
+- **Your account stays open until the end of the billing period you have already paid for** (the end of the month for monthly plans, the end of the year for annual plans).
+- **We will not charge you again.** Cancelling stops all future renewals.
+- You can export your data while the account is open and for 30 days after it closes.
 
-## 4. Annual subscriptions
-- If you cancel within 14 days of an annual payment (including the first one), we will refund it in full.
-- After 14 days, annual payments are not refundable, and your plan stays active to the end of the paid year. We do not give partial-year refunds.
+## 3. No refunds
+All fees are non-refundable. This includes monthly and annual subscription payments, partial or unused time, downgrades, add-ons (such as Recruiting), and credits (included or purchased credit packs). We do not give prorated refunds when you cancel; you keep access until the end of the paid period instead.
 
-## 5. Plan changes
-Upgrades are effective immediately and prorated for the rest of the period. Downgrades take effect at the end of the current period; we do not refund the difference.
+## 4. Plan changes
+Upgrades take effect immediately and you pay the prorated difference for the rest of the period. Downgrades take effect at the end of the current period. No refund or credit is given for the difference.
 
-## 6. Credits and add-ons
-- Credits included in your plan renew monthly, expire at the end of the period and have no refund value.
-- Purchased credit packs do not expire. An unused pack can be refunded within 14 days of purchase. Credits already used are not refundable.
-- Add-ons (such as Recruiting) follow the rules for the subscription they belong to.
+## 5. Billing mistakes
+We will correct a billing mistake that is our error, such as a duplicate charge for the same period, or a renewal charged after you cancelled before the renewal date. Contact us within 60 days at info@masar10x.io. Please contact us before opening a dispute with your bank so we can fix it quickly. This section is not a refund of fees for service you received.
 
-## 7. Billing errors and duplicate charges
-If we charge you in error, charge twice, or you did not authorize a charge, contact us within 60 days and we will investigate and refund what was wrongly charged. Please contact us before opening a dispute with your bank so we can fix it quickly.
+## 6. Failed payments and suspension
+If a renewal payment fails we retry and email you. After 7 days the account becomes read-only, and unpaid accounts may be suspended. You can restore access by updating your payment method. Suspension does not cancel fees already due.
 
-## 8. How refunds are paid
-Approved refunds go back to the original payment method through Stripe. Banks usually post them within 5 to 10 business days. Taxes collected are refunded with the amount they relate to.
-
-## 9. Non-payment and suspension
-If a renewal fails we retry and email you. After 7 days the account becomes read-only, and unpaid accounts may be suspended. You can restore access by updating your payment method. Suspension does not cancel fees already due.
-
-## 10. Exceptions
-Where the law gives you a right to a refund, that right applies regardless of this policy. We may also offer a refund or credit at our discretion.
+## 7. Where the law requires
+Where applicable law gives you a right to a refund or to cancel, that right applies regardless of this policy.
 
 ## Contact
-Questions about charges, cancellations or refunds: info@masar10x.io. {{LEGAL_NAME}}, {{LEGAL_ADDRESS}}.
+Questions about charges or cancellation: info@masar10x.io. {{LEGAL_NAME}}, {{LEGAL_ADDRESS}}.

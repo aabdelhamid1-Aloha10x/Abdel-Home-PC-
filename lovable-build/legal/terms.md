@@ -4,7 +4,7 @@
 
 Effective date: {{EFFECTIVE_DATE}}
 
-These Terms of Service ("Terms") are an agreement between **{{LEGAL_NAME}}** ("Masar OS", "we", "us"), located at {{LEGAL_ADDRESS}}, and the business or person that creates an account ("you", "Customer"). By creating an account, starting a trial or using the Service you accept these Terms. If you accept for a company, you confirm you have authority to bind it.
+These Terms of Service ("Terms") are an agreement between **{{LEGAL_NAME}}**, a Delaware corporation ("Masar OS", "we", "us"), located at {{LEGAL_ADDRESS}}, and the business or person that creates an account ("you", "Customer"). By creating an account, starting a trial or using the Service you accept these Terms. If you accept for a company, you confirm you have authority to bind it.
 
 ## 1. The Service
 Masar OS is cloud software for motor carriers and related businesses. It includes dispatch and load planning, customer and fleet records, driver and team tools, chat, document storage, invoicing and driver-pay records, maintenance and compliance tracking, reports, optional helpers that suggest actions, integrations with other services, and mobile and web apps (together, the "Service"). Features depend on your plan.
@@ -20,10 +20,10 @@ The Service is for business use by adults. You must provide accurate account and
 - **Prices and taxes.** Current prices are shown at checkout and on our pricing page. Prices exclude taxes; we collect sales or use tax where required, calculated at checkout.
 - **Payment processing.** Payments are processed by Stripe. We do not store your full card number. You authorize us and Stripe to charge your payment method for fees due. If a payment fails we may retry, email you, limit your account to read-only after 7 days, and suspend it if it stays unpaid.
 - **Plan changes.** Upgrades take effect immediately and are prorated. Downgrades take effect at the end of the current period and are blocked while you exceed the new plan's limits (for example, number of trucks or user roles).
-- **Refunds.** See our Refund and Cancellation Policy, which is part of these Terms.
+- **No refunds.** Fees are non-refundable. You can cancel at any time; your account stays open until the end of the billing period you already paid for and you are not charged again. See our Cancellation and Refund Policy, which is part of these Terms.
 
 ## 4. Credits
-Some features use credits. Each plan includes a monthly amount of credits that renew each billing period and expire at its end; unused included credits do not roll over. You may buy credit packs, which do not expire. Credits have no cash value, cannot be transferred or redeemed for money, and are not refundable except as stated in the Refund and Cancellation Policy. When credits run out, your workflows keep running and helper features switch to suggestion-only or off until credits are added or renewed.
+Some features use credits. Each plan includes a monthly amount of credits that renew each billing period and expire at its end; unused included credits do not roll over. You may buy credit packs, which do not expire. Credits have no cash value, cannot be transferred or redeemed for money, and are not refundable. When credits run out, your workflows keep running and helper features switch to suggestion-only or off until credits are added or renewed.
 
 ## 4A. Records only: we do not move money
 Masar OS records invoices, payments received, driver pay, bonuses, settlements, advances and similar items. **It does not hold, transfer or pay out money**, is not a bank, payment processor, factoring company or payroll provider, and does not provide financial, tax, legal, insurance or accounting advice. You pay and get paid outside the Service. You are responsible for the accuracy of what you record and for your tax, payroll, worker-classification, wage and settlement obligations.
@@ -71,10 +71,11 @@ You will defend and indemnify us against claims arising from your Customer Data,
 These Terms last while you have an account. You may cancel at any time. We may suspend or end your access for material breach, non-payment, legal requirement or risk to the Service, with notice where practical. On termination your right to use the Service ends; Sections that by nature should survive (including 4A, 5, 14 to 17, 19 and 20) survive.
 
 ## 19. Governing law and disputes
-These Terms are governed by the laws of the State of {{GOVERNING_STATE}}, without regard to conflict-of-law rules. Before filing a claim, each party will try in good faith to resolve it informally for 30 days after written notice to the other. Any lawsuit must be brought in the state or federal courts located in {{GOVERNING_COUNTY}}, {{GOVERNING_STATE}}, and each party consents to their jurisdiction. [Attorney to decide whether to add arbitration and a class-action waiver.]
+These Terms are governed by the laws of the State of {{GOVERNING_STATE}}, without regard to conflict-of-law rules. Before filing a claim, each party will try in good faith to resolve it informally for 30 days after written notice to the other. Any lawsuit must be brought in the state or federal courts located in {{GOVERNING_COUNTY}}, {{GOVERNING_STATE}}, and each party consents to their jurisdiction. [Owner to confirm Delaware law and courts; attorney to decide whether to add arbitration and a class-action waiver.]
 
 ## 20. General
-These Terms, the Privacy Policy and the Refund and Cancellation Policy are the entire agreement. If a provision is unenforceable the rest stays in effect. You may not assign these Terms without our consent; we may assign them in a merger or sale. We may update these Terms; we will post the new version and, for material changes, notify you at least 30 days before they apply. Continued use after the effective date means you accept them. Notices to us: info@masar10x.io or {{LEGAL_ADDRESS}}.
+These Terms, the Privacy Policy and the Cancellation and Refund Policy are the entire agreement. If a provision is unenforceable the rest stays in effect. You may not assign these Terms without our consent; we may assign them in a merger or sale. We may update these Terms; we will post the new version and, for material changes, notify you at least 30 days before they apply. Continued use after the effective date means you accept them. Notices to us: info@masar10x.io or {{LEGAL_ADDRESS}}.
 
 ## Contact
-{{LEGAL_NAME}}, {{LEGAL_ADDRESS}}. Email: info@masar10x.io.
+{{LEGAL_NAME}}, a Delaware corporation, {{LEGAL_ADDRESS}}. Email: info@masar10x.io.
+Registered agent: {{REGISTERED_AGENT}}.
