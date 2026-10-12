@@ -18,3 +18,16 @@ Findings:
 4. Earlier a partial edit was lost and restored; confirm the other Masar home fixes were not affected.
 No fix message sent: gaps are test coverage, not rule violations, and Lovable is mid-queue.
 Open: ANTHROPIC_API_KEY and EIA_API_KEY missing; U1 and U2 not started.
+
+## 2026-10-12 22:40 UTC · S1 fixes, fuel, question drafts, credits report, U1 start · PASS WITH GAPS
+Last reviewed Lovable message ids: main:agent#00000000020150#don:UQ2VXQT3 (22:03) and main:agent#00000000020528#don:MO5P7ZGY (22:11). Round: S1 queue plus start of U1/U2.
+Reviewed diffs (26 + 18 files): VoiceComposer.tsx, motion.ts, styles.css, fuel.server.ts, migrations 0048-0050, supabase/tests/s1_money_goals.sql, credits-vs-cost.md, MasarHome edits.
+Good: rolled-back DB test covers delivered auto-invoice, void rules, payment guard, booked vs collected, digest recipient cap. masar_question_set is SECURITY DEFINER with is_member check, audit_log row, EXECUTE revoked from public/anon. Fuel uses EPD2DXL0 only, sanity-checks price, labels Estimated with week date, falls back when key missing. Motion tokens match the plan; only transform/opacity keyframes; reduce-motion class plus prefers-reduced-motion. VoiceComposer implements tap-to-lock, drag-up lock, hold-release send, cancel, live words where supported, final text from recording, plain-text send, "I caught" card with Send/Edit/Discard. No credit prices in customer UI, no secrets, no ANH/old Supabase references, no publish.
+Findings:
+1. VoiceComposer.tsx fixed container uses backdrop-blur; plan section 0 rule 6 forbids backdrop-filter.
+2. Live EIA lookup result not visible in the reply; product code and regions unconfirmed.
+3. U1 incomplete: statusbar, keyboard, share, network, splash wrappers missing (only haptics.ts, device.ts).
+4. Voice-note transcription cost not written to llm_usage (Lovable's own gap).
+5. VoiceComposer and goal/Void flows not browser-tested; DB tests only.
+6. regionForPoint uses rough lat/lng borders; acceptable for an Estimated label, revisit with real routes.
+Fix message sent (items 1 to 5).
