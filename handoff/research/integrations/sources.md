@@ -1,0 +1,97 @@
+# Sources and check dates
+
+Most via search-result excerpts; "fetched directly" marks full page fetches.
+
+- https://developers.samsara.com/docs/authentication - 2026-10-10 (fetched directly)
+- https://developers.samsara.com/changelog/new-endpoint-level-rate-limits-starting-october-23rd - 2026-10-10
+- https://kb.samsara.com/hc/en-us/articles/4413765918989-Integrate-with-Partner-Applications - 2026-10-10
+- https://developer.gomotive.com/ - 2026-10-10 (fetched directly)
+- https://developer.gomotive.com/reference/authentication-oauth-20 - 2026-10-10
+- https://developer-docs.gomotive.com/docs/oauth-20 - 2026-10-10
+- https://developers.geotab.com/myGeotab/guides/rateLimits - 2026-10-10
+- https://developers.geotab.com/myGeotab/apiReference/objects/DutyStatusLog/ - 2026-10-10
+- https://www.geotab.com/blog/result-and-rate-limits/ - 2026-10-10
+- https://apis.io/providers/omnitracs/ - 2026-10-10
+- https://www.sdcexec.com/software-technology/press-release/21134246/omnitracs-omnitracs-and-mcleod-software-extend-partnership-to-bring-more-functionality-and-flexibility-to-customers - 2026-10-10
+- https://partner-program-directory.partnerfleet.io/partners/platform-science-technology-partner-ecosystem - 2026-10-10
+- https://fim.us.fleetmatics.com/content/home/support/guides/DeveloperQuickStartGuide.htm - 2026-10-10
+- https://supergood.ai/api-report-card/verizon-connect - 2026-10-10
+- https://developer.garmin.com/fleet-management/overview/ - 2026-10-10
+- https://developer.garmin.com/fleet-management/download/ - 2026-10-10
+- https://help.eroad.com/us/depot/reports/fuel/fuel-transactions/us-fuelcard/ - 2026-10-10
+- https://azuga.com/partners/efs - 2026-10-10
+- https://fleet-azuga.helpscoutdocs.com/article/1266-comdata-fuel-card-integration - 2026-10-10
+- https://partner-help.netradyne.com/hc/en-us/categories/900001435463-API-Documents - 2026-10-10
+- https://www.netradyne.com/company/partner - 2026-10-10
+- https://partner-help.netradyne.com/hc/en-us/articles/4402142111001-Introduction - 2026-10-10
+- https://developer.lytx.com/docs/gettingstarted - 2026-10-10
+- https://providers.apievangelist.com/providers/lytx/ - 2026-10-10
+- https://docs.alvys.com/help/integrations/comdata-fuel-checks-integration - 2026-10-10
+- https://helpcenter.gomotive.com/hc/en-us/articles/18551164283933-How-to-enable-the-Comdata-Fuel-integration-Beta - 2026-10-10
+- https://help.fleetio.com/fuel/efs-fuel-card-integration - 2026-10-10
+- https://community.loadsmart.com/hc/en-us/articles/22802768789651 - 2026-10-10
+- https://helpcenter.gomotive.com/hc/en-us/articles/6189122317213 - 2026-10-10
+- https://help.alvys.com/en/articles/11668742-pilot-flying-j-fuel-integration - 2026-10-10
+- https://community.loadsmart.com/hc/en-us/articles/23879061783443 - 2026-10-10
+- https://vektortms.com/integrations/fuel-cards/pilot_fliying - 2026-10-10
+- https://www.truckmaster.com/integrations/fuelservices - 2026-10-10
+- https://www.relaypayments.com/partners-directory/smartboard - 2026-10-10
+- https://www.relaypayments.com/partners-directory/loadstop-tms-launches-native-integration-with-relay-payments-for-fuel-and-lumper-payments-using-relaycodes - 2026-10-10
+- https://www.relaypayments.com/partners-directory/relay-amoustms-enable-automatic-and-seamless-fuel-integration - 2026-10-10
+- https://www.oilpriceapi.com/eia-api - 2026-10-10
+- https://libraries.io/pypi/dieselprices - 2026-10-10
+- https://developer.intuit.com/app/developer/qbo/docs/learn/limits-and-throttles - 2026-10-10
+- https://developer.intuit.com/app/developer/qbo/docs/develop/authentication-and-authorization/oauth-2.0 - 2026-10-10
+- https://truto.one/blog/how-much-does-the-quickbooks-api-cost-2026-pricing-rate-limits/ - 2026-10-10
+- https://unified.to/blog/a_guide_to_integrating_with_the_quickbooks_desktop_api - 2026-10-10
+- https://docs.codat.io/integrations/accounting/quickbooksdesktop/software-and-hardware-requirements - 2026-10-10
+- https://apideck.com/blog/xero-api-pricing-and-the-app-partner-program - 2026-10-10
+- https://docs.codat.io/updates/260116-xero-pricing - 2026-10-10
+- https://getknit.dev/blog/payroll-api-integration-developer-guide-to-adp-gusto-rippling-paychex - 2026-10-10
+- https://support.gusto.com/article/106622056100000/API-integrations - 2026-10-10
+- https://truckpedia.io/guides/how-to-set-up-and-process-factoring - 2026-10-10
+- https://docs.alvys.com/help/integrations/triumph-business-capital-factoring-integration - 2026-10-10
+- https://legacysupport.tfin.com/support/solutions/articles/44002624021-how-do-i-register-as-a-factor-with-triumph-payments- - 2026-10-10
+- https://www.vektortms.com/integrations/apex-capital-factoring - 2026-10-10
+- https://www.ajot.com/news/axele-announces-partnership-with-apex-capital - 2026-10-10
+- https://vektortms.com/integrations/tru-funding - 2026-10-10
+- https://packets.vektortms.com/integrations/tolls/prepass - 2026-10-10
+- https://support.datatruck.io/hc/en-us/articles/40199182491539-Bestpass-Integration - 2026-10-10
+- https://vektortms.com/integrations/bestpass - 2026-10-10
+- https://www.fleetequipmentmag.com/drivewyze-debuts-on-the-geotab-marketplace/ - 2026-10-10
+- https://fleetowner.com/refrigerated-transporter/reefer-operations/article/21231794/platform-science-drivewyze-team-up - 2026-10-10
+- https://mobile.fmcsa.dot.gov/QCDevsite/docs/getStarted - 2026-10-10
+- https://mobile.fmcsa.dot.gov/QCDevsite/ - 2026-10-10
+- https://www.fmcsa.dot.gov/registration/fmcsa-data-dissemination-program - 2026-10-10
+- https://clearinghouse.fmcsa.dot.gov/Resource/Index/emp-CTPA-QandA_Dec2020 - 2026-10-10
+- https://clearinghouse.fmcsa.dot.gov/Resource/Index/industry-QandA - 2026-10-10
+- https://www.tenstreet.com/?p=31023 - 2026-10-10
+- https://supergood.ai/api-report-card/tenstreet-hiring - 2026-10-10
+- https://supergood.ai/docs/tenstreet-hiring-api - 2026-10-10
+- https://futurepicker.com/?p=2964 - 2026-10-10
+- https://hub.beeline.com/hireright-integration-334/hireright-integrations-overview-338 - 2026-10-10
+- https://hub.beeline.com/sterling-integration-336/sterling-integrations-overview-341 - 2026-10-10
+- https://helpcenter.gomotive.com/hc/en-us/articles/32337508972701-Integrated-Motor-Vehicle-Records - 2026-10-10
+- https://www.3cx.com/community/threads/dealing-with-10dlc-requirements-from-providers-for-sms-mms.131819/ - 2026-10-10
+- https://developers.telnyx.com/docs/development/cli/workflows/10dlc - 2026-10-10
+- https://support.telnyx.com/en/articles/3679260-frequently-asked-questions-about-10dlc - 2026-10-10
+- https://support.telnyx.com/en/articles/6325731-register-for-10dlc-messaging - 2026-10-10
+- https://www.leviathansecurity.com/programs/google-casa-cloud-application-security-assessment - 2026-10-10
+- https://singhamandeep.com/gmail-api-restricted-scope-verification/ - 2026-10-10
+- https://support.databuzz.com.au/article/520-docusign-integration-go-live-process - 2026-10-10
+- https://community.docusign.com/esignature-111/question-regarding-go-live-2732 - 2026-10-10
+- https://help.dropbox.com/plans/how-much-does-the-dropbox-sign-api-cost - 2026-10-10
+- https://verdocs.com/pandadoc-pricing/ - 2026-10-10
+- https://transportation.trimble.com/_default_upload_bucket/customer-terms/OneMap%20Supplemental%20Terms%20for%20PC%20Miler%20and%20Trimble%20Maps%20Platform%20v04.2026.pdf - 2026-10-10
+- https://www.trimble.com/en/developer/docs - 2026-10-10
+- https://www.here.com/pricing/supplemental-pricing - 2026-10-10
+- https://apiscout.dev/guides/google-maps-vs-here-api-2026 - 2026-10-10
+- https://developers.google.com/maps/documentation/routes/usage-and-billing - 2026-10-10
+- https://docs.mapbox.com/help/glossary/directions-api - 2026-10-10
+- https://cloud.google.com/document-ai/pricing - 2026-10-10
+- https://aws.amazon.com/textract/pricing/ - 2026-10-10
+- https://supergood.ai/api-report-card/mcleod-software - 2026-10-10
+- https://supergood.ai/api-report-card/rose-rocket - 2026-10-10
+- https://ai.fmcsa.dot.gov/SMS/Tools/Downloads.aspx (redirected) - 2026-10-10 (fetch failed or empty)
+- https://developers.geotab.com/myGeotab/apiReference (404) - 2026-10-10 (fetch failed or empty)
+- https://developer.intuit.com/app/developer/qbo/docs/develop/authentication-and-authorization/oauth-2.0 (fetch returned no content) - 2026-10-10 (fetch failed or empty)
