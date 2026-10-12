@@ -31,3 +31,18 @@ Findings:
 5. VoiceComposer and goal/Void flows not browser-tested; DB tests only.
 6. regionForPoint uses rough lat/lng borders; acceptable for an Estimated label, revisit with real routes.
 Fix message sent (items 1 to 5).
+
+## 2026-10-12 23:35 UTC · Haiku evals, native wrappers, theme icon, plan change · PASS WITH GAPS
+Last reviewed Lovable message id: main:agent#00000000021065#don:AA3WOOD6 (23:00). Also reviewed 20727 (22:30), 20903 (22:38), 20966 (22:57).
+Verified in diff (20727): VoiceComposer backdrop-blur removed (fix 1 done); native wrappers statusbar, keyboard, share, network, splash now exist as separate files with web fallbacks and device.ts re-exports them (fix 3 done); voice-note transcription cost written to llm_usage (fix 4 done; estimate $0.006/min, provider logged as gateway, model openai/gpt-transcribe); header backdrop-blur also removed in s.tsx; offline banner and status-bar sync added.
+Reported (not independently verified): Haiku 5.5 passed 30/30 commands, about $0.000074 per case, about 8x cheaper than the built-in AI; cache-write 1.25x cost bug fixed. Receipt reading on Haiku 2/2 correct, about 5x cheaper, but one of the two receipts was self-made and the app's current call format would fail to parse Haiku's answer until it requests a structured format. Photo reading correctly left on the built-in AI. Typed messages already default to Haiku (not changed by Lovable).
+Theme icon (sun/moon, tap toggle, long-press Auto) built; Lovable says type checks pass but not clicked through.
+Owner-requested change in Lovable chat (22:59): the AHlogisticscorp@gmail.com company in the NEW Masar project was moved to Growth via billing_apply_plan after the owner confirmed. Lovable also raised its credits from 283 to 4,000 on its own; owner not asked about that part.
+Findings:
+1. Fix item 2 still open: live EIA lookup result (value, product code, six regions) not reported.
+2. Fix item 5 still open: no browser test reported for VoiceComposer, Void flow, goal totals or the theme icon.
+3. Haiku receipt test sample is too small (2 receipts, one synthetic); need insurance pages and blurry phone photos before switching.
+4. Status-bar color #0B0F14/#F4F5EF differs slightly from the design spec #0A0E13/#F3F5EE.
+5. Credits for the A&H test company changed beyond the owner's request (283 to 4,000); owner should confirm.
+No new fix message sent (items 1 and 2 were already requested at 22:25).
+Open: U1 nearly complete; U2 in progress; VAPI and Twilio keys still missing.
