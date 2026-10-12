@@ -94,3 +94,6 @@ Finish what is already in your queue first (command eval, MCP hold/safety, S1 fi
 [ ] No credit prices in customer UI; no credits on the marketing site.
 [ ] Lighthouse and axe results, and a run with 4x CPU throttle.
 Reply format: what was built, files changed, tables and policies added, results of each checkbox, gaps.
+
+## Addendum (Oct 12): theme switch
+Replace the Light / Dark / Auto segmented control in the top bar with a single sun/moon icon button (one tap toggles Light and Dark; long press or the account menu offers Auto). It must take almost no top-bar space and work in the Solo and fleet shells. The public marketing website is dark only and has no theme switch.
