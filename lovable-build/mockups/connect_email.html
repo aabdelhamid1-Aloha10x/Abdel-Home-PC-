@@ -1,0 +1,199 @@
+<title>Masar Connect Email</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Sora:wght@600;700&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: sample-email picker and notes beside one phone that walks through the connect-email step of signup. Same tokens as the other mockups. */
+:root{--bg:#0A0E13;--nav:#0D1218;--s1:#121821;--s2:#18202B;--bd:#1E2733;--tx:#E8EDF2;--mu:#8A97A5;--ac:#C8F25C;--acfg:#0A0E13;--acsoft:rgba(200,242,92,.14);--coral:#FF6B6B;--amber:#F5B84B;--blue:#5AA9FF;--shadow:0 18px 50px rgba(0,0,0,.45);color-scheme:dark;--fd:'Sora',system-ui,sans-serif;--fb:'DM Sans',system-ui,sans-serif;--fm:'DM Mono',ui-monospace,monospace}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#F3F5EE;--nav:#FFFFFF;--s1:#FFFFFF;--s2:#ECEFE4;--bd:#DEE3D3;--tx:#10151B;--mu:#56616D;--ac:#3A7300;--acfg:#FFFFFF;--acsoft:rgba(58,115,0,.12);--coral:#D9423F;--amber:#B87800;--blue:#1F6FCC;--shadow:0 18px 40px rgba(30,40,20,.16);color-scheme:light}}
+:root[data-theme="light"]{--bg:#F3F5EE;--nav:#FFFFFF;--s1:#FFFFFF;--s2:#ECEFE4;--bd:#DEE3D3;--tx:#10151B;--mu:#56616D;--ac:#3A7300;--acfg:#FFFFFF;--acsoft:rgba(58,115,0,.12);--coral:#D9423F;--amber:#B87800;--blue:#1F6FCC;--shadow:0 18px 40px rgba(30,40,20,.16);color-scheme:light}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--tx);font-family:var(--fb);font-size:14px;line-height:1.45;padding-inline:16px;padding-block:0 56px}
+h1,h2,h3{font-family:var(--fd);margin:0;text-wrap:balance}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--bd);margin-inline:-16px;padding:12px 16px}
+.top-in{max-width:1100px;margin:0 auto;display:flex;gap:12px;align-items:center}
+.brand{font-family:var(--fd);font-weight:700;font-size:16px;flex:1;display:flex;gap:8px;align-items:center}
+.tg{display:flex;border:1px solid var(--bd);border-radius:11px;overflow:hidden}
+.tg button{background:none;border:0;color:var(--mu);padding:7px 12px;font:inherit;cursor:pointer}
+.tg button[aria-pressed="true"]{background:var(--ac);color:var(--acfg);font-weight:700}
+.wrap{max-width:1100px;margin:0 auto}
+.intro{padding-block:26px 14px;max-width:760px}.intro h1{font-size:27px;margin-bottom:8px}.intro p{color:var(--mu);margin:0 0 8px}
+.pill{display:inline-block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--bd);color:var(--mu);border-radius:99px;padding:3px 9px}
+.main{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}
+.side{flex:1 1 300px;min-width:0;max-width:460px;display:flex;flex-direction:column;gap:14px}
+.blk{background:var(--s1);border:1px solid var(--bd);border-radius:18px;padding:16px}
+.blk h3{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--mu);margin-bottom:8px;font-family:var(--fb)}
+.blk p{margin:0 0 6px}.blk ul{margin:0;padding-left:18px}.blk li{margin-bottom:5px}
+.try{display:flex;flex-direction:column;gap:8px}
+.try button{display:flex;justify-content:space-between;gap:10px;align-items:center;text-align:left;background:var(--s2);border:1px solid var(--bd);color:var(--tx);border-radius:11px;padding:10px 12px;font:inherit;cursor:pointer;min-height:44px}
+.try button:hover{border-color:var(--ac)}.try button:focus-visible{outline:2px solid var(--ac)}
+.try small{color:var(--mu);font-size:12px}
+.phone{width:360px;max-width:100%;height:740px;background:var(--bg);border:1px solid var(--bd);border-radius:40px;box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;flex:none}
+.sb{height:44px;flex:none;display:flex;justify-content:space-between;align-items:flex-end;padding:0 26px 6px;font-size:12px;font-weight:700;font-family:var(--fm)}
+.scr{flex:1;overflow-y:auto;padding:6px 16px 16px;display:flex;flex-direction:column;gap:12px;scrollbar-width:none}.scr::-webkit-scrollbar{display:none}
+.foot{flex:none;padding:10px 16px 22px;background:var(--nav);border-top:1px solid var(--bd);display:flex;flex-direction:column;gap:8px}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:18px;padding:14px}
+.lbl{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--mu);font-weight:700}
+.hi{font-family:var(--fd);font-size:19px;font-weight:700}.sm{font-size:12px;color:var(--mu)}.mono{font-family:var(--fm)}
+.hd{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.prog{height:6px;background:var(--s2);border-radius:99px;overflow:hidden}.prog>div{height:100%;background:var(--ac);border-radius:99px}
+.btn{border:0;border-radius:11px;padding:11px 14px;font:inherit;font-weight:700;cursor:pointer;min-height:46px;width:100%}
+.btn.p{background:var(--ac);color:var(--acfg)}.btn.g{background:var(--s2);color:var(--tx);border:1px solid var(--bd)}
+.btn.o{background:var(--s1);color:var(--tx);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;gap:10px}
+.btn:focus-visible,.inp:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.btn[disabled]{opacity:.45;cursor:default}
+.inp{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:11px;padding:12px;color:var(--tx);font:inherit;min-height:46px}
+.fl{display:flex;flex-direction:column;gap:4px}.fl label{font-size:11px;color:var(--mu);font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.badge{font-size:10.5px;font-weight:700;border-radius:99px;padding:2px 8px;border:1px solid currentColor;white-space:nowrap}
+.ok{color:var(--ac)}.warn{color:var(--amber)}.bad{color:var(--coral)}
+button,input{font-family:inherit}
+.perm{font-size:14px;line-height:1.4}
+.kv{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px dashed var(--bd);font-size:14px}.kv:last-child{border:0}
+.bubble{background:var(--s2);border:1px solid var(--bd);border-radius:16px 16px 16px 4px;padding:10px 12px}
+.steps{display:flex;flex-direction:column;gap:12px;padding:6px 0}
+.step{display:flex;gap:10px;align-items:center;color:var(--mu)}
+.step .si{width:22px;height:22px;border-radius:50%;border:2px solid var(--bd);display:grid;place-items:center;flex:none}
+.step.run{color:var(--tx)}.step.run .si{border-color:var(--ac);border-top-color:transparent;animation:sp .8s linear infinite}
+.step.ok2{color:var(--tx)}.step.ok2 .si{background:var(--ac);border-color:var(--ac);color:var(--acfg);font-size:12px;font-weight:700}
+.step.err{color:var(--coral)}.step.err .si{background:var(--coral);border-color:var(--coral);color:#fff;font-size:12px;font-weight:700}
+@keyframes sp{to{transform:rotate(360deg)}}
+.logo{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-weight:700;flex:none;color:#fff;font-family:var(--fd)}
+.sheet{border:1px solid var(--bd);border-radius:18px;background:var(--s1);overflow:hidden}
+.sheet .sh{background:var(--s2);padding:12px 14px;display:flex;gap:10px;align-items:center;border-bottom:1px solid var(--bd)}
+.sheet .sb2{padding:14px;display:flex;flex-direction:column;gap:10px}
+.perm{display:flex;gap:10px;align-items:flex-start}
+.perm i{font-style:normal;width:22px;height:22px;border-radius:50%;background:var(--acsoft);color:var(--ac);display:grid;place-items:center;flex:none;font-size:12px;font-weight:700}
+.perm.no i{background:var(--s2);color:var(--mu)}
+.guide{border:1px dashed var(--bd);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:6px}
+.guide ol{margin:0;padding-left:18px}.guide li{margin-bottom:4px}
+.check{width:72px;height:72px;border-radius:50%;background:var(--acsoft);display:grid;place-items:center;margin:8px auto}
+.check svg{width:38px;height:38px;stroke:var(--ac);stroke-width:4;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:50;stroke-dashoffset:50;animation:dr .5s .1s forwards}
+@keyframes dr{to{stroke-dashoffset:0}}
+.link{background:none;border:0;color:var(--mu);font:inherit;text-decoration:underline;cursor:pointer;padding:8px;min-height:40px}
+@media(prefers-reduced-motion:reduce){.step.run .si{animation-duration:2s}.check svg{animation-duration:.01s}}
+</style>
+
+<div class="top"><div class="top-in"><div class="brand"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19V6l8 9 8-9v13"/></svg>Masar OS · Connect email</div>
+<div class="tg" role="group" aria-label="Theme"><button id="tD" aria-pressed="true">Dark</button><button id="tL" aria-pressed="false">Light</button></div></div></div>
+
+<div class="wrap">
+<div class="intro"><span class="pill">Mockup · example data</span>
+<h1 style="margin-top:10px">Connecting email while signing up</h1>
+<p>Step 3 of 4 in Hire Masar. Omar types his email once and Masar picks the easiest path. Pick a sample email on the right and tap through the phone.</p></div>
+<div class="main">
+  <div id="host"></div>
+  <div class="side">
+    <div class="blk"><h3>Try a sample email</h3><div class="try" id="try"></div></div>
+    <div class="blk" id="notes"></div>
+  </div>
+</div>
+</div>
+
+<script>
+(function(){
+var $=function(s){return document.querySelector(s)};
+function setTheme(t){document.documentElement.setAttribute('data-theme',t);$('#tD').setAttribute('aria-pressed',t==='dark');$('#tL').setAttribute('aria-pressed',t==='light');try{localStorage.setItem('masarTheme',t)}catch(e){}}
+var sv=null;try{sv=localStorage.getItem('masarTheme')}catch(e){}
+setTheme(sv||(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'));
+$('#tD').onclick=function(){setTheme('dark')};$('#tL').onclick=function(){setTheme('light')};
+
+var SAMPLES=[
+ {e:'omar.hartwell@gmail.com',who:'Gmail',kind:'google',name:'Google'},
+ {e:'omar@hartwellhaul.com',who:'Business email on Microsoft 365',kind:'microsoft',name:'Microsoft 365'},
+ {e:'omar_hartwell@yahoo.com',who:'Yahoo',kind:'manual',name:'Yahoo Mail',imap:'imap.mail.yahoo.com',smtp:'smtp.mail.yahoo.com',app:true},
+ {e:'omar@hartwellhaul.net',who:'Hostinger business email',kind:'manual',name:'Hostinger',imap:'imap.hostinger.com',smtp:'smtp.hostinger.com'},
+ {e:'omar@smalltownmail.org',who:'Unknown provider',kind:'manual',name:'your email provider',imap:'mail.smalltownmail.org',smtp:'mail.smalltownmail.org',unknown:true}
+];
+var st={screen:'entry',s:SAMPLES[0],pw:'',bad:false,timers:[]};
+function T(f,ms){var t=setTimeout(f,ms);st.timers.push(t)}
+function clear(){st.timers.forEach(clearTimeout);st.timers=[]}
+function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function phone(body,foot){return '<div class="phone"><div class="sb"><span>7:58</span><span>5G ▮▮▮</span></div><div class="scr">'+body+'</div>'+(foot?'<div class="foot">'+foot+'</div>':'')+'</div>'}
+function head(){return '<div class="hd"><div class="hi">Connect your email</div><span class="sm">Step 3 of 4</span></div><div class="prog"><div style="width:75%"></div></div>'}
+function stepsHtml(arr){return '<div class="steps">'+arr.map(function(a){var c=a[1]==='ok'?'ok2':a[1]==='run'?'run':a[1]==='err'?'err':'';return '<div class="step '+c+'"><span class="si">'+(a[1]==='ok'?'✓':a[1]==='err'?'!':'')+'</span><span>'+a[0]+'</span></div>'}).join('')+'</div>'}
+
+var NOTES={
+ entry:['What happens','<ul><li>Omar types the email he uses with brokers.</li><li>Nothing is connected yet. Masar only looks up which provider hosts it.</li><li>He can skip and still use the app. Masar then prepares emails for him to send from his own mail app.</li></ul>'],
+ detect:['Behind the scenes','<ul><li>Masar checks where the domain\'s mail is hosted.</li><li>Gmail and Google Workspace go to the Google button. Outlook and Microsoft 365 go to the Microsoft button.</li><li>Everything else goes to guided setup.</li></ul>'],
+ google:['One-tap path','<ul><li>Best case: no password ever reaches Masar.</li><li>He signs in on the provider\'s own screen and can revoke access there at any time.</li><li>Masar asks only for what it needs: read mail, send mail he approves.</li></ul>'],
+ consent:['Permission screen','<ul><li>This sheet is drawn by the provider, not by Masar. This mockup shows a stand-in.</li><li>Masar looks only at mail from brokers and load boards. The permission itself covers the mailbox, so we say that plainly.</li></ul>'],
+ manual:['Guided setup','<ul><li>Masar fills in the server settings for the provider.</li><li>Omar enters one password. Yahoo and iCloud need an app password, so a short guide appears.</li><li>The password is stored encrypted and never shown again. He can disconnect any time.</li></ul>'],
+ testing:['Connection test','<ul><li>Masar checks it can reach the server, sign in, and send a test message to Omar himself.</li><li>Each check shows its own result so a failure says exactly what to fix.</li></ul>'],
+ error:['When it fails','<ul><li>Plain words: what failed and the next thing to try.</li><li>Yahoo and iCloud almost always fail on the first try with a normal password, so the app-password guide opens automatically.</li></ul>'],
+ done:['Connected','<ul><li>Masar will now read broker offers and rate confirmations, and send replies from this address after Omar approves each one.</li><li>If the connection ever breaks, Masar says so and asks him to reconnect. It never quietly switches to another sender.</li></ul>'],
+ skip:['Skip for now','<ul><li>Always available, never hidden.</li><li>Masar writes each email and Omar taps Open in my email app to send it. Broker replies are read only if he forwards them to his Masar address.</li><li>A gentle reminder to connect appears in More, not as a nag.</li></ul>']
+};
+function notes(k){var n=NOTES[k];$('#notes').innerHTML='<h3>'+n[0]+'</h3>'+n[1]}
+
+function render(){
+ clear();var s=st.s,h='';
+ if(st.screen==='entry'){notes('entry');
+  h=phone(head()+'<div class="bubble">Which email do you use with brokers? I will read their offers and help you reply from this address.</div>'+
+   '<div class="fl"><label for="em">Your email</label><input class="inp" id="em" type="email" value="'+esc(s.e)+'" autocomplete="off"></div>'+
+   '<div class="card"><div class="lbl">Masar will</div><div style="display:flex;flex-direction:column;gap:8px;margin-top:8px"><div class="perm"><i>✓</i><span>Find load offers and rate confirmations</span></div><div class="perm"><i>✓</i><span>Draft replies. You approve before anything is sent</span></div><div class="perm no"><i>×</i><span>Never send, delete or change anything on its own</span></div></div></div>',
+   '<button class="btn p" id="go">Continue</button><button class="link" id="skip">Skip for now</button>');
+  $('#host').innerHTML=h;
+  $('#go').onclick=function(){st.s=pick($('#em').value);st.screen='detect';render()};
+  $('#skip').onclick=function(){st.screen='skip';render()};
+ }
+ else if(st.screen==='detect'){notes('detect');
+  $('#host').innerHTML=phone(head()+'<div class="card"><div class="mono sm">'+esc(s.e)+'</div>'+stepsHtml([['Checking your email provider','run']])+'</div>');
+  T(function(){st.screen=(s.kind==='google'||s.kind==='microsoft')?'oauth':'manual';render()},1000)}
+ else if(st.screen==='oauth'){notes('google');
+  var g=s.kind==='google';
+  $('#host').innerHTML=phone(head()+'<div class="card"><div class="hd"><div style="display:flex;gap:10px;align-items:center"><div class="logo" style="background:'+(g?'#4C8BF5':'#2E7BD6')+'">'+(g?'G':'M')+'</div><div><b>'+(g?'Google':'Microsoft 365')+' found</b><div class="sm mono">'+esc(s.e)+'</div></div></div><span class="badge ok">Easiest</span></div></div>'+
+   '<div class="bubble">You sign in on '+(g?'Google':'Microsoft')+'\'s own page. Masar never sees your password.</div>',
+   '<button class="btn o" id="oa"><span class="logo" style="width:24px;height:24px;border-radius:6px;font-size:12px;background:'+(g?'#4C8BF5':'#2E7BD6')+'">'+(g?'G':'M')+'</span>Continue with '+(g?'Google':'Microsoft')+'</button><button class="link" id="oth">Use a password instead</button>');
+  $('#oa').onclick=function(){st.screen='consent';render()};$('#oth').onclick=function(){st.screen='manual';render()}}
+ else if(st.screen==='consent'){notes('consent');
+  var g2=s.kind==='google';
+  $('#host').innerHTML=phone('<div class="sheet"><div class="sh"><div class="logo" style="background:'+(g2?'#4C8BF5':'#2E7BD6')+'">'+(g2?'G':'M')+'</div><div><b>'+(g2?'Google':'Microsoft')+' sign-in</b><div class="sm">Shown by '+(g2?'Google':'Microsoft')+', not by Masar</div></div></div><div class="sb2">'+
+   '<div class="mono sm">'+esc(s.e)+'</div><b>Masar OS wants to access your mailbox</b>'+
+   '<div class="perm"><i>✓</i><span>Read your email<br><span class="sm">Masar only looks at mail from brokers and load boards</span></span></div>'+
+   '<div class="perm"><i>✓</i><span>Send email as you<br><span class="sm">Only after you approve each message</span></span></div>'+
+   '<div class="perm no"><i>×</i><span>Delete or change your mail<br><span class="sm">Not requested</span></span></div>'+
+   '<div class="sm">You can remove this access any time in your '+(g2?'Google':'Microsoft')+' account.</div></div></div>',
+   '<button class="btn p" id="allow">Allow</button><button class="btn g" id="deny">Cancel</button>');
+  $('#allow').onclick=function(){st.screen='testing';st.test='oauth';render()};$('#deny').onclick=function(){st.screen='entry';render()}}
+ else if(st.screen==='manual'){notes('manual');
+  var guide=s.app?'<div class="guide"><b>Yahoo needs an app password</b><ol><li>Open Yahoo Account security</li><li>Choose Generate app password</li><li>Name it Masar and copy the code</li><li>Paste it below</li></ol></div>':'';
+  $('#host').innerHTML=phone(head()+'<div class="card"><div class="hd"><div><b>'+(s.unknown?'We could not tell your provider':esc(s.name)+' found')+'</b><div class="sm mono">'+esc(s.e)+'</div></div><span class="badge warn">Quick setup</span></div></div>'+
+   (s.unknown?'<div class="bubble">Check these settings with your email provider. Most are right already.</div>':'<div class="bubble">I filled in the server settings for you. Add your password and I will test it.</div>')+
+   guide+
+   '<div class="fl"><label for="pw">'+(s.app?'App password':'Email password')+'</label><input class="inp" id="pw" type="password" value="'+esc(st.pw)+'" placeholder="'+(s.app?'Paste the app password':'Your email password')+'" autocomplete="off"></div>'+
+   '<div class="card"><div class="lbl">Server settings</div>'+'<div class="kv"><span>Incoming</span><span class="mono">'+esc(s.imap)+' · 993</span></div><div class="kv"><span>Outgoing</span><span class="mono">'+esc(s.smtp)+' · 465</span></div></div>'+
+   '<div class="sm">Stored encrypted and never shown again. Only mail from brokers and load boards is read. Disconnect any time.</div>',
+   '<button class="btn p" id="cn">Test and connect</button><button class="link" id="wrong">Show me a wrong password</button>');
+  $('#cn').onclick=function(){st.pw=$('#pw').value;st.bad=false;st.screen='testing';st.test='manual';render()};
+  $('#wrong').onclick=function(){st.pw=$('#pw').value;st.bad=true;st.screen='testing';st.test='manual';render()}}
+ else if(st.screen==='testing'){notes('testing');
+  var base=st.test==='oauth'?['Signing in with '+(s.kind==='google'?'Google':'Microsoft'),'Checking permissions','Sending a test message to yourself']:['Reaching '+s.imap,'Signing in','Sending a test message to yourself'];
+  var i=0;function draw(){var a=base.map(function(t,k){var state=k<i?'ok':k===i?'run':'';if(st.bad&&st.test==='manual'&&i>=2){state=k===0?'ok':k===1?'err':''}return [t,state]});
+   $('#host').innerHTML=phone(head()+'<div class="card"><div class="mono sm">'+esc(s.e)+'</div>'+stepsHtml(a)+'</div>')}
+  draw();
+  function adv(){if(st.bad&&st.test==='manual'&&i===1){i=2;draw();T(function(){st.screen='error';render()},800);return}
+   i++;if(i>base.length){st.screen='done';render();return}draw();T(adv,800)}
+  T(adv,800)}
+ else if(st.screen==='error'){notes('error');
+  $('#host').innerHTML=phone(head()+'<div class="card" style="border-color:var(--coral)"><div class="hd"><b>That password did not work</b><span class="badge bad">Not connected</span></div><div class="sm" style="margin-top:6px">'+(s.app?'Yahoo does not accept your normal password here. Use an app password.':'Check the password and try again. If you recently changed it, use the new one.')+'</div></div>'+
+   (s.app?'<div class="guide"><b>Create an app password</b><ol><li>Open Yahoo Account security</li><li>Choose Generate app password</li><li>Name it Masar and copy the code</li><li>Paste it on the last screen</li></ol></div>':'')+
+   '<div class="bubble">Your email is untouched. Nothing was sent or changed.</div>',
+   '<button class="btn p" id="again">Try again</button><button class="link" id="skip2">Skip for now</button>');
+  $('#again').onclick=function(){st.bad=false;st.screen='manual';render()};$('#skip2').onclick=function(){st.screen='skip';render()}}
+ else if(st.screen==='done'){notes('done');
+  $('#host').innerHTML=phone(head()+'<div class="check"><svg viewBox="0 0 38 38"><path d="M8 20l8 8 14-16"/></svg></div><div style="text-align:center"><div class="hi">Email connected</div><div class="sm mono">'+esc(s.e)+'</div></div>'+
+   '<div class="card"><div class="lbl">Masar can now</div><div style="display:flex;flex-direction:column;gap:8px;margin-top:8px"><div class="perm"><i>✓</i><span>Read broker offers</span></div><div class="perm"><i>✓</i><span>Read rate confirmations</span></div><div class="perm"><i>✓</i><span>Send replies you approve</span></div></div></div>'+
+   '<div class="sm">Disconnect any time in More, then Connections.</div>','<button class="btn p" id="nx">Continue to costs</button>');
+  $('#nx').onclick=function(){st.screen='entry';render()}}
+ else if(st.screen==='skip'){notes('skip');
+  $('#host').innerHTML=phone(head()+'<div class="bubble"><b>No problem.</b> I will write each email, and you tap Open in my email app to send it from your own mail.</div>'+
+   '<div class="card"><div class="lbl">Example</div><div class="kv"><span>To</span><span class="mono">dana@halefreight.com</span></div><div class="kv"><span>Subject</span><span>Dallas to Atlanta, $2,500</span></div><div class="sm" style="margin-top:6px">Hi Dana, we can take this load at $2,500 all in. Truck is ready 8 AM. Omar, Hartwell Haul, MC-918274</div></div>'+
+   '<div class="sm">To read broker replies, forward them to omar@loads.masar10x.io, or connect your email later in More.</div>','<button class="btn p" id="nx2">Continue to costs</button><button class="link" id="back">Connect now instead</button>');
+  $('#nx2').onclick=function(){st.screen='entry';render()};$('#back').onclick=function(){st.screen='entry';render()}}
+}
+function pick(v){v=(v||'').toLowerCase().trim();for(var i=0;i<SAMPLES.length;i++)if(SAMPLES[i].e===v)return SAMPLES[i];
+ var d=v.split('@')[1]||'';var m={ 'gmail.com':0,'googlemail.com':0,'outlook.com':1,'hotmail.com':1,'yahoo.com':2};
+ if(d in m){var b=SAMPLES[m[d]];return {e:v,who:b.who,kind:b.kind,name:b.name,imap:b.imap,smtp:b.smtp,app:b.app}}
+ return {e:v,who:'Unknown',kind:'manual',name:'your email provider',imap:'mail.'+(d||'example.com'),smtp:'mail.'+(d||'example.com'),unknown:true}}
+var t=$('#try');SAMPLES.forEach(function(x){var b=document.createElement('button');b.innerHTML='<span><b>'+x.who+'</b><br><small class="mono">'+x.e+'</small></span><span class="sm">'+(x.kind==='manual'?'Guided':'One tap')+'</span>';b.onclick=function(){st.s=x;st.pw='';st.bad=false;st.screen='entry';render()};t.appendChild(b)});
+render();
+})();
+</script>

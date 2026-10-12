@@ -1,0 +1,347 @@
+<title>Masar Solo Journey</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Sora:wght@600;700&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: phase rail on the left, one phone in the middle, story + autonomy notes on the right. Same tokens as the redesign preview. */
+:root{--bg:#0A0E13;--nav:#0D1218;--s1:#121821;--s2:#18202B;--bd:#1E2733;--tx:#E8EDF2;--mu:#8A97A5;--ac:#C8F25C;--acfg:#0A0E13;--acsoft:rgba(200,242,92,.14);--coral:#FF6B6B;--amber:#F5B84B;--blue:#5AA9FF;--violet:#A78BFA;--teal:#2DD4BF;--shadow:0 18px 50px rgba(0,0,0,.45);color-scheme:dark;--fd:'Sora',system-ui,sans-serif;--fb:'DM Sans',system-ui,sans-serif;--fm:'DM Mono',ui-monospace,monospace}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#F3F5EE;--nav:#FFFFFF;--s1:#FFFFFF;--s2:#ECEFE4;--bd:#DEE3D3;--tx:#10151B;--mu:#56616D;--ac:#3A7300;--acfg:#FFFFFF;--acsoft:rgba(58,115,0,.12);--coral:#D9423F;--amber:#B87800;--blue:#1F6FCC;--violet:#6D4FD0;--teal:#0E8F80;--shadow:0 18px 40px rgba(30,40,20,.16);color-scheme:light}}
+:root[data-theme="light"]{--bg:#F3F5EE;--nav:#FFFFFF;--s1:#FFFFFF;--s2:#ECEFE4;--bd:#DEE3D3;--tx:#10151B;--mu:#56616D;--ac:#3A7300;--acfg:#FFFFFF;--acsoft:rgba(58,115,0,.12);--coral:#D9423F;--amber:#B87800;--blue:#1F6FCC;--violet:#6D4FD0;--teal:#0E8F80;--shadow:0 18px 40px rgba(30,40,20,.16);color-scheme:light}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--tx);font-family:var(--fb);font-size:14px;line-height:1.45;padding-inline:16px;padding-block:0 56px}
+h1,h2,h3{font-family:var(--fd);margin:0;text-wrap:balance}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--bd);margin-inline:-16px;padding:12px 16px}
+.top-in{max-width:1240px;margin:0 auto;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.brand{font-family:var(--fd);font-weight:700;font-size:16px;display:flex;align-items:center;gap:8px;flex:1}
+.tg{display:flex;border:1px solid var(--bd);border-radius:11px;overflow:hidden}
+.tg button{background:none;border:0;color:var(--mu);padding:7px 12px;font:inherit;cursor:pointer}
+.tg button[aria-pressed="true"]{background:var(--ac);color:var(--acfg);font-weight:700}
+.wrap{max-width:1240px;margin:0 auto}
+.intro{padding-block:26px 14px;max-width:780px}.intro h1{font-size:28px;margin-bottom:8px}.intro p{color:var(--mu);margin:0 0 8px}
+.pill{display:inline-block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--bd);color:var(--mu);border-radius:99px;padding:3px 9px}
+.main{display:grid;grid-template-columns:250px 372px minmax(0,1fr);gap:26px;align-items:start}
+@media(max-width:1020px){.main{grid-template-columns:372px minmax(0,1fr)}.rail{grid-column:1/-1;order:-1}}
+@media(max-width:780px){.main{grid-template-columns:minmax(0,1fr)}}
+.rail{position:sticky;top:78px;display:flex;flex-direction:column;gap:4px;max-height:calc(100vh - 100px);overflow-y:auto}
+@media(max-width:1020px){.rail{position:static;max-height:none;flex-direction:row;flex-wrap:wrap}}
+.ph{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mu);font-weight:700;margin:10px 0 2px;padding-left:10px;width:100%}
+.st{display:flex;gap:10px;align-items:center;text-align:left;background:none;border:1px solid transparent;border-radius:11px;padding:8px 10px;color:var(--mu);font:inherit;cursor:pointer;width:100%}
+@media(max-width:1020px){.st{width:auto}}
+.st i{font-style:normal;font-family:var(--fm);font-size:11px;border:1px solid var(--bd);border-radius:50%;width:24px;height:24px;display:grid;place-items:center;flex:none}
+.st:hover{color:var(--tx)}.st:focus-visible{outline:2px solid var(--ac)}
+.st[aria-current="true"]{background:var(--s1);border-color:var(--bd);color:var(--tx);font-weight:700}
+.st[aria-current="true"] i{background:var(--ac);color:var(--acfg);border-color:var(--ac)}
+.st.seen i{border-color:var(--ac);color:var(--ac)}
+.phone{width:360px;max-width:100%;height:740px;background:var(--bg);border:1px solid var(--bd);border-radius:40px;box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;margin:0 auto}
+.sb{height:44px;flex:none;display:flex;justify-content:space-between;align-items:flex-end;padding:0 26px 6px;font-size:12px;font-weight:700;font-family:var(--fm)}
+.scr{flex:1;overflow-y:auto;padding:6px 16px 16px;display:flex;flex-direction:column;gap:12px;scrollbar-width:none}.scr::-webkit-scrollbar{display:none}
+.tabs{flex:none;background:var(--nav);border-top:1px solid var(--bd);display:grid;grid-template-columns:repeat(5,1fr);padding:8px 6px 18px}
+.tabs div{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;color:var(--mu);font-weight:500}.tabs div.on{color:var(--ac)}
+.tabs svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:18px;padding:14px}
+.lbl{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--mu);font-weight:700}
+.num{font-family:var(--fd);font-weight:700;font-variant-numeric:tabular-nums}.mono{font-family:var(--fm);font-variant-numeric:tabular-nums}
+.hd{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.hi{font-family:var(--fd);font-size:19px;font-weight:700;letter-spacing:-.01em}
+.sm{font-size:12px;color:var(--mu)}
+.btn{border:0;border-radius:11px;padding:10px 14px;font:inherit;font-weight:700;cursor:pointer;min-height:44px}
+.btn.p{background:var(--ac);color:var(--acfg)}.btn.g{background:var(--s2);color:var(--tx);border:1px solid var(--bd)}
+.btn:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.acts{display:flex;gap:8px}.acts .btn{flex:1}
+.badge{font-size:10.5px;font-weight:700;border-radius:99px;padding:2px 8px;border:1px solid currentColor;white-space:nowrap}
+.b-est{color:var(--amber)}.b-learn{color:var(--blue)}.b-data{color:var(--ac)}.b-bad{color:var(--coral)}
+.chip{display:inline-flex;gap:6px;align-items:center;font-size:12px;border:1px solid var(--bd);background:var(--s2);border-radius:99px;padding:5px 10px}
+.dot{width:8px;height:8px;border-radius:50%;flex:none;display:inline-block}
+.kv{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px dashed var(--bd);font-size:13px}.kv:last-child{border:0}
+.bubble{background:var(--s2);border:1px solid var(--bd);border-radius:16px 16px 16px 4px;padding:10px 12px;max-width:92%}
+.bubble.me{align-self:flex-end;background:var(--acsoft);border-color:transparent;border-radius:16px 16px 4px 16px}
+.comp{flex:none;background:var(--nav);border-top:1px solid var(--bd);padding:10px 14px;display:flex;gap:8px;align-items:center}
+.comp .in{flex:1;background:var(--s2);border:1px solid var(--bd);border-radius:99px;padding:11px 14px;color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.mic{width:46px;height:46px;border-radius:50%;background:var(--ac);color:var(--acfg);display:grid;place-items:center;flex:none}
+.mic svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+.fld{background:var(--s2);border:1px solid var(--bd);border-radius:11px;padding:11px 12px;display:flex;justify-content:space-between;gap:8px}
+.fld small{color:var(--mu);display:block;font-size:11px}
+.seg{display:flex;gap:4px;background:var(--s2);border-radius:11px;padding:3px}.seg div{flex:1;text-align:center;padding:6px;border-radius:9px;font-size:12px;color:var(--mu)}.seg div.on{background:var(--s1);color:var(--tx);font-weight:700;border:1px solid var(--bd)}
+.tick{width:22px;height:22px;border-radius:50%;background:var(--acsoft);color:var(--ac);display:grid;place-items:center;flex:none;font-size:12px;font-weight:700}
+.row2{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--bd)}.row2:last-child{border:0}
+.prog{height:6px;background:var(--s2);border-radius:99px;overflow:hidden}.prog>div{height:100%;background:var(--ac);border-radius:99px}
+.photo{aspect-ratio:4/3;border-radius:12px;background:repeating-linear-gradient(45deg,var(--s2),var(--s2) 8px,var(--s1) 8px,var(--s1) 16px);display:grid;place-items:center;color:var(--mu);font-size:11px;border:1px solid var(--bd)}
+.story{display:flex;flex-direction:column;gap:14px;min-width:0}
+.story h2{font-size:24px}
+.when{font-family:var(--fm);color:var(--ac);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+.blk{background:var(--s1);border:1px solid var(--bd);border-radius:18px;padding:16px}
+.blk h3{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--mu);margin-bottom:8px;font-family:var(--fb)}
+.blk p{margin:0}.blk ul{margin:0;padding-left:18px}.blk li{margin-bottom:5px}
+.cls{display:inline-flex;align-items:center;gap:8px;border-radius:99px;padding:4px 12px;font-weight:700;font-size:12px;border:1px solid currentColor}
+.cA{color:var(--ac)}.cB{color:var(--blue)}.cC{color:var(--amber)}.cD{color:var(--coral)}
+.nav2{display:flex;gap:8px;flex-wrap:wrap}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.metrics .blk{padding:12px}.metrics .num{font-size:20px}
+.phone{position:relative}
+.live{flex:none;background:var(--nav);border-top:1px solid var(--bd);padding:12px 16px 4px}
+.live .lt{min-height:44px;font-size:15px;line-height:1.4;margin-top:6px}
+.live .lt:after{content:"";display:inline-block;width:2px;height:1em;background:var(--ac);margin-left:2px;vertical-align:-2px;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+.comp .idle{display:flex;gap:8px;align-items:center;flex:1;min-width:0}
+.comp .recbar{display:none;flex:1;align-items:center;gap:10px;min-width:0}
+.comp.recing .idle{display:none}.comp.recing .recbar{display:flex}
+.rb{width:40px;height:40px;border-radius:50%;background:var(--s2);border:1px solid var(--bd);color:var(--mu);display:grid;place-items:center;cursor:pointer;flex:none}
+.comp:not(.locked) .rb{visibility:hidden}
+.wv{flex:1;height:36px;display:flex;align-items:center;gap:3px;min-width:0}
+.wv i{flex:1;background:var(--coral);border-radius:3px;height:8px;animation:wv2 .7s ease-in-out infinite alternate}
+@keyframes wv2{from{transform:scaleY(.3)}to{transform:scaleY(2.6)}}
+.micwrap{position:relative;flex:none}
+.comp .mic{border:0;cursor:pointer;touch-action:none;transition:transform .14s,background .14s}
+.mic .m2{display:none}
+.comp.recing .mic{transform:scale(1.1);background:var(--coral);color:#fff}
+.comp.holding .mic{transform:scale(1.25) translateY(-14px)}
+.comp.locked .mic{background:var(--ac);color:var(--acfg);transform:scale(1.05)}
+.comp.locked .mic .m1{display:none}.comp.locked .mic .m2{display:block}
+.lockhint{position:absolute;right:0;bottom:62px;white-space:nowrap;font-size:11px;font-weight:700;background:var(--s2);border:1px solid var(--bd);border-radius:99px;padding:5px 10px;color:var(--mu);opacity:0;transform:translateY(6px);transition:opacity .2s,transform .2s;pointer-events:none}
+.comp.holding .lockhint,.lockhint.show{opacity:1;transform:none}
+.lockhint.show:before{content:"Locked · tap to send";}
+.lockhint.show{font-size:0}.lockhint.show:before{font-size:11px}
+.finger{position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.55);border:2px solid var(--ac);opacity:0;z-index:5;pointer-events:none;transition:transform .6s cubic-bezier(.3,.7,.2,1),opacity .3s}
+.finger.tap{animation:tp .4s}@keyframes tp{50%{box-shadow:0 0 0 14px rgba(200,242,92,.3)}}
+@media(prefers-reduced-motion:no-preference){.phone .scr>*{animation:rise .28s both}@keyframes rise{from{opacity:0;transform:translateY(8px)}}}
+</style>
+
+<div class="top"><div class="top-in">
+  <div class="brand"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19V6l8 9 8-9v13"/></svg>Masar OS · Solo journey</div>
+  <div class="tg" role="group" aria-label="Theme"><button id="tD" aria-pressed="true">Dark</button><button id="tL" aria-pressed="false">Light</button></div>
+</div></div>
+
+<div class="wrap">
+<div class="intro">
+  <span class="pill">Mockup · example data</span>
+  <h1 style="margin-top:10px">One owner-operator, from sign-up to month end</h1>
+  <p>Meet Omar. One truck, a dry van, $3,000 net profit goal for October. Click through his 15 moments, or use the arrow keys. On the right you see what Omar does, what Masar does for him, and who is allowed to decide.</p>
+</div>
+<div class="main">
+  <nav class="rail" id="rail" aria-label="Journey steps"></nav>
+  <div id="phoneHost"></div>
+  <div class="story" id="story" aria-live="polite"></div>
+</div>
+</div>
+
+<script>
+(function(){
+var $=function(s){return document.querySelector(s)};
+function setTheme(t){document.documentElement.setAttribute('data-theme',t);$('#tD').setAttribute('aria-pressed',t==='dark');$('#tL').setAttribute('aria-pressed',t==='light');try{localStorage.setItem('masarTheme',t)}catch(e){}}
+var sv=null;try{sv=localStorage.getItem('masarTheme')}catch(e){}
+setTheme(sv||(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'));
+$('#tD').onclick=function(){setTheme('dark')};$('#tL').onclick=function(){setTheme('light')};
+
+var IC={
+ masar:'<path d="M4 5h16v11H9l-5 4z"/>',
+ loads:'<path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="17" r="1.6"/><circle cx="17" cy="17" r="1.6"/>',
+ money:'<path d="M4 18V9m6 9V5m6 13v-7m4 7H3"/>',
+ truck:'<path d="M14.5 6a4 4 0 00-5 5L4 16.5 7.5 20 13 14.5a4 4 0 005-5l-2.5 2.5-2.5-.5-.5-2.5z"/>',
+ more:'<circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/>'};
+function tabs(on){return '<div class="tabs">'+['masar:Masar','loads:Loads','money:Money','truck:Truck','more:More'].map(function(x){var p=x.split(':');return '<div class="'+(p[0]===on?'on':'')+'"><svg viewBox="0 0 24 24">'+IC[p[0]]+'</svg>'+p[1]+'</div>'}).join('')+'</div>'}
+var MIC='<div class="mic"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg></div>';
+function comp(t){return '<div class="comp"><div class="in">'+(t||'Tell Masar anything…')+'</div>'+MIC+'</div>'}
+function phone(time,body,foot){return '<div class="phone"><div class="sb"><span>'+time+'</span><span>5G ▮▮▮</span></div><div class="scr">'+body+'</div>'+foot+'</div>'}
+function me(t){return '<div class="bubble me">'+t+'</div>'}
+function bot(t){return '<div class="bubble">'+t+'</div>'}
+function done(t,s){return '<div class="row2"><span class="tick">✓</span><div style="min-width:0"><b>'+t+'</b> <span class="sm">'+s+'</span></div></div>'}
+function kv(a,b){return '<div class="kv"><span>'+a+'</span><span class="mono">'+b+'</span></div>'}
+function fld(l,v,b){return '<div class="fld"><div><small>'+l+'</small><b>'+v+'</b></div>'+(b?'<span class="badge '+b[0]+'">'+b[1]+'</span>':'')+'</div>'}
+
+var S=[
+{ph:'Getting started',t:'Start the trial',when:'Day 0 · 7:40 PM',
+ scr:function(){return phone('7:40','<div style="text-align:center;padding-top:20px"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V6l8 9 8-9v13"/></svg><div class="hi" style="margin-top:10px">Your back office on autopilot</div><p class="sm">Dispatch help, paperwork, invoices and truck care, handled for you.</p></div>'+
+ '<div class="card"><div class="lbl">Solo</div><div class="num" style="font-size:26px;margin:4px 0">$39<span class="sm" style="font-weight:400">/month</span></div><div class="sm">1 truck · phone app · 14-day free trial</div></div>'+
+ '<div class="fld"><div><small>Email</small><b>omar@hartwellhaul.com</b></div></div><div class="fld"><div><small>Card (charged on day 15)</small><b>•••• 4242</b></div></div>'+
+ '<button class="btn p">Start 14-day trial</button><div class="sm" style="text-align:center">Cancel anytime. Your account stays open to the end of the billing period.</div>','')},
+ does:'Sees an ad or hears from another driver, signs up with email or Google, adds a card.',
+ masar:'Creates the company, sends a verification code to email and phone, starts the 14-day clock.',
+ cls:['A','Setup','Nothing outward-facing happens yet.'],why:'Card up front keeps the trial to serious owners. Price is shown once, plainly.',
+ m:[['14 days','Free trial'],['Day 15','First charge']]},
+{ph:'Getting started',t:'Hire Masar: who you are',when:'Day 0 · 7:46 PM',
+ scr:function(){return phone('7:46','<div class="hd"><div class="hi">Hire Masar</div><span class="sm">Step 1 of 4</span></div><div class="prog"><div style="width:25%"></div></div>'+
+ bot('Type your DOT number and I will fill in the rest.')+me('DOT 3318842')+
+ '<div class="card"><div class="hd"><b>Hartwell Haul LLC</b><span class="badge b-data">Active</span></div><div class="sm">Fort Worth, TX · 1 power unit</div>'+kv('Authority','Common · Active')+kv('MC number','MC-918274')+kv('Insurance on file','Yes · 41 days left')+'</div>'+
+ '<div class="acts"><button class="btn g">Not me</button><button class="btn p">Yes, that is me</button></div>',comp('DOT or MC number'))},
+ does:'Types a DOT number. Confirms the company that comes back.',
+ masar:'Looks up the carrier in the federal safety database. Fills name, address, authority and insurance, shows only authority types that are active.',
+ cls:['A','Read-only lookup','Public data, nothing changes.'],why:'No forms. Omar answers four questions in about five minutes.',
+ m:[['4 steps','To a working account'],['~5 min','Setup time']]},
+{ph:'Getting started',t:'Hire Masar: your costs and goal',when:'Day 0 · 7:52 PM',
+ scr:function(){return phone('7:52','<div class="hd"><div class="hi">Your real costs</div><span class="sm">Step 3 of 4</span></div><div class="prog"><div style="width:75%"></div></div>'+
+ bot('Rough numbers are fine. I will learn the real ones from your receipts.')+
+ fld('Truck','Owned · $1,420/mo note',['b-est','Estimated'])+fld('Trailer','Rented · $520/mo')+fld('Insurance','$1,150/mo · paid monthly')+fld('Permits and fees','$210/mo')+fld('Fuel','Regional diesel until you fill up',['b-est','Estimated'])+
+ '<div class="card" style="background:var(--acsoft);border-color:transparent"><div class="lbl">Your October goal</div><div class="hd"><span class="num" style="font-size:26px">$3,000</span><span class="sm">net profit</span></div><div class="sm">I will tell you which loads get you there.</div></div>',
+ '<div class="comp"><button class="btn p" style="flex:1">Looks right</button></div>')},
+ does:'Enters truck, trailer, insurance and the goal. Skips anything unknown.',
+ masar:'Builds Omar\'s cost per mile and per day. Labels every number Estimated until real receipts arrive, then relabels it Learning and later Based on your data.',
+ cls:['A','Setup','Stays private to the company.'],why:'This is the engine behind "You keep $1,470". Without it the app cannot tell a good load from a bad one.',
+ m:[['6','Cost lines captured'],['1','Goal set']]},
+{ph:'Getting started',t:'Connect what you already use',when:'Day 0 · 8:01 PM',
+ scr:function(){return phone('8:01','<div class="hd"><div class="hi">Connections</div></div><div class="sm">Turn on only what you use. Masar never asks for load-board passwords.</div>'+
+ '<div class="card"><div class="row2"><span class="tick">✓</span><div style="flex:1"><b>Email</b><div class="sm">Reads broker offers and rate confirmations you forward or receive</div></div></div>'+
+ '<div class="row2"><span class="tick" style="background:var(--s2);color:var(--mu)">+</span><div style="flex:1"><b>ELD</b><div class="sm">Samsara · Motive · Geotab · Optima marketplace</div></div><button class="btn g" style="min-height:36px;padding:6px 12px">Connect</button></div>'+
+ '<div class="row2"><span class="tick" style="background:var(--s2);color:var(--mu)">+</span><div style="flex:1"><b>Phone number for texts</b><div class="sm">Brokers and shops can text you here</div></div><button class="btn g" style="min-height:36px;padding:6px 12px">Add</button></div></div>'+
+ '<div class="card"><div class="lbl">Load boards</div><p class="sm" style="margin:4px 0 0">DAT, Truckstop, 123Loadboard: forward alert emails to <b class="mono" style="color:var(--tx)">omar@loads.masar10x.io</b>. No password needed.</p></div>',tabs('more'))},
+ does:'Connects email. Optionally connects an ELD. Forwards load-board alerts to a Masar address.',
+ masar:'Starts reading offers and documents. Keeps a clear list of what it can and cannot see.',
+ cls:['B','Outward access','Each connection is opt-in and can be revoked.'],why:'Trust first: no passwords, nothing connected by surprise.',
+ m:[['0','Passwords stored'],['3','Optional connections']]},
+
+{ph:'A normal day',t:'Morning brief',when:'Day 3 · 6:30 AM',
+ scr:function(){return phone('6:30','<div class="hd"><div><div class="sm">Thursday, Oct 14</div><div class="hi">Good morning, Omar</div></div><span class="chip"><span class="dot" style="background:var(--ac)"></span>Autopilot on</div></div>'+
+ '<div class="card"><div class="lbl">Today</div>'+kv('Pickup','Dallas, 8:00 AM')+kv('Drop','Atlanta, tomorrow 12:00')+kv('Hours left this week','41:20')+'</div>'+
+ '<div class="card"><div class="lbl">Overnight, done for you</div>'+done('Insurance card refreshed','41 days left')+done('Fuel receipts filed','4 receipts')+done('Reminded broker for POD','Reply in 11 min')+'</div>'+
+ '<div class="card" style="border-color:var(--amber)"><b>1 thing needs you</b><div class="sm">Pre-trip inspection before you roll.</div></div>',comp()+tabs('masar'))},
+ does:'Opens the phone with coffee. Reads three lines.',
+ masar:'Sends a push at the time Omar chose. Summarizes the day, what already got done overnight, and the single thing that needs him.',
+ cls:['A','Autopilot','Filing, reminders and refreshes happen without asking.'],why:'This is the daily habit. The app should feel like a good assistant who already worked a shift.',
+ m:[['3','Things done overnight'],['1','Decision for Omar']]},
+{ph:'A normal day',t:'Pre-trip inspection',when:'Day 3 · 7:15 AM',
+ scr:function(){return phone('7:15','<div class="hd"><b style="color:var(--mu);font-size:13px">‹ Truck</b><span class="sm">Pre-trip · 9 of 12</span></div><div class="prog"><div style="width:75%"></div></div>'+
+ '<div class="hi">Tires and wheels</div><div class="sm">Check all tires, lug nuts, rims.</div><div class="photo">Photo: front axle</div>'+
+ '<div class="acts"><button class="btn g">Found a problem</button><button class="btn p">All good</button></div>'+
+ '<div class="card"><div class="lbl">Done</div><div class="sm">Lights ✓ · Brakes ✓ · Steering ✓ · Fluids ✓ · Mirrors ✓ · Coupling ✓ · Horn ✓ · Wipers ✓ · Cargo ✓</div></div>',tabs('truck'))},
+ does:'Walks around the truck, taps through 12 items, takes a photo of each key point.',
+ masar:'Stores the signed inspection with photos. If Omar flags a defect, it opens a repair case and marks the truck out of service if the defect requires it.',
+ cls:['A','Autopilot','Records only. A real defect escalates to Omar.'],why:'Compliance paperwork becomes a 3-minute habit that also protects him in an audit.',
+ m:[['12','Checks'],['Signed','Saved to the truck file']]},
+{ph:'A normal day',t:'A load offer arrives',when:'Day 3 · 9:20 AM',
+ scr:function(){return phone('9:20','<div class="hd"><b style="color:var(--mu);font-size:13px">‹ Loads</b><span class="badge b-est">Estimated</span></div><div><div class="hi">Dallas → Atlanta</div><div class="sm">781 mi · Hale Freight · found in your email</div></div>'+
+ '<div class="card"><div class="hd"><span class="lbl">Offer</span><span class="num" style="font-size:22px">$2,340</span></div>'+kv('Fuel · 120 gal','−$435')+kv('Truck and trailer','−$148')+kv('Insurance share','−$62')+kv('Dispatch and tolls','−$225')+'<div style="background:var(--acsoft);border-radius:14px;padding:12px;display:flex;justify-content:space-between;align-items:center;margin-top:8px"><b>You keep</b><span class="num" style="font-size:24px;color:var(--ac)">$1,470</span></div></div>'+
+ '<div class="card"><div class="hd"><span class="lbl">Vs your floor</span><span class="chip"><span class="dot" style="background:var(--ac)"></span>Good load · $1.88/mi</span></div></div>'+
+ '<div class="acts"><button class="btn g">Counter $2,500</button><button class="btn p">Book it</button></div>',tabs('loads'))},
+ does:'Gets the offer in email. Looks at one number: what he keeps.',
+ masar:'Pulls the offer out of the email, runs it through Omar\'s costs, and compares it with his per-mile floor and his goal.',
+ cls:['A','Autopilot','The math is automatic. Replying to the broker is not.'],why:'Dispatchers charge 8 to 10 percent to tell him this. Masar tells him instantly, using his own costs.',
+ m:[['$1,470','You keep'],['$1.88','Net per mile']]},
+{ph:'A normal day',t:'Negotiate and book',when:'Day 3 · 9:34 AM',
+ scr:function(){return phone('9:34','<div class="hd"><div class="hi">Masar thread</div></div>'+
+ me('Ask Hale for $2,500.')+bot('<b>Drafted a reply to Hale.</b> I ask for $2,500 and will not go under $2,340 without you.<div class="card" style="margin-top:8px"><div class="sm">Reply preview</div>"Hi Dana, we can take Dallas to Atlanta at $2,500 all-in. Truck is ready 8 AM."</div><div class="acts" style="margin-top:8px"><button class="btn g">Edit</button><button class="btn p">Send</button></div>')+
+ bot('<b>Hale accepted $2,420.</b> Rate confirmation is in. I checked pickup, delivery, detention and payment terms.<div class="acts" style="margin-top:8px"><button class="btn g">Review</button><button class="btn p">Sign and book</button></div>'),comp()+tabs('masar'))},
+ does:'Says "ask for more". Approves the reply. Signs the rate confirmation.',
+ masar:'Writes the counter, sends it once Omar approves, reads the rate confirmation and flags anything unusual (detention, lumper, net 45).',
+ cls:['C','Ask first','Outward commitment. Omar always approves before anything is sent or signed.'],why:'Masar negotiates, never commits. Trust grows, and later Omar can let simple replies run on Autopilot.',
+ m:[['+$80','Won by countering'],['1 tap','To sign']]},
+{ph:'A normal day',t:'On the road: a voice note',when:'Day 3 · 1:48 PM',
+ scr:function(){return phone('1:48','<div class="hd"><div class="hi">Masar thread</div><button class="chip" id="replayV" style="cursor:pointer;color:var(--tx);font:inherit;font-size:12px">Watch demo</button></div><div id="thr" style="display:flex;flex-direction:column;gap:12px">'+
+ bot('Pilot Amarillo is 14 miles ahead. Diesel is $3.14 there.')+'</div>',
+ '<div class="live" id="live" hidden><div class="lbl" style="display:flex;justify-content:space-between"><span>Listening</span><span class="mono" id="vtime">0:00</span></div><div class="lt" id="liveTxt"></div></div>'+
+ '<div class="comp" id="cmp"><div class="idle"><div class="ib" style="width:40px;height:40px;border-radius:50%;background:var(--s2);border:1px solid var(--bd);display:grid;place-items:center;color:var(--mu);flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></div><div class="in">Tell Masar anything…</div></div>'+
+ '<div class="recbar"><button class="rb" id="vcancel" aria-label="Cancel recording"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/></svg></button><div class="wv" id="vwave"></div></div>'+
+ '<div class="micwrap"><div class="lockhint" id="lockhint">↑ Slide up to lock</div><button class="mic" id="vmic" aria-label="Tap to record, slide up to lock"><svg class="m1" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg><svg class="m2" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button></div></div>'+tabs('masar'))},
+ after:function(){
+  var host=document.querySelector('#phoneHost'),ph=host.querySelector('.phone'),thr=host.querySelector('#thr'),scr=host.querySelector('.scr'),cmp=host.querySelector('#cmp'),live=host.querySelector('#live'),txt=host.querySelector('#liveTxt'),mic=host.querySelector('#vmic'),tm=host.querySelector('#vtime'),wave=host.querySelector('#vwave'),hint=host.querySelector('#lockhint');
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var WORDS='Fueled at Pilot Amarillo, two eighty-six, ninety-one gallons.'.split(' ');
+  var timers=[],iv=[],state='idle',wi=0,sec=0,dead=false;
+  for(var i=0;i<26;i++){var b=document.createElement('i');b.style.animationDelay=((i*53)%700)/1000+'s';b.style.animationDuration=(.45+((i*37)%40)/100)+'s';wave.appendChild(b)}
+  var finger=document.createElement('div');finger.className='finger';ph.appendChild(finger);
+  function T(f,ms){var t=setTimeout(f,reduce?Math.min(ms,60):ms);timers.push(t);return t}
+  function clr(){timers.forEach(clearTimeout);iv.forEach(clearInterval);timers=[];iv=[]}
+  function moveTo(el,cb){var a=ph.getBoundingClientRect(),r=el.getBoundingClientRect();finger.style.opacity='1';finger.style.transform='translate('+(r.left-a.left+r.width/2-14)+'px,'+(r.top-a.top+r.height/2-14)+'px)';if(cb)T(cb,reduce?0:650)}
+  function tap(){finger.classList.remove('tap');void finger.offsetWidth;finger.classList.add('tap')}
+  function say(cls,html){var d=document.createElement('div');d.className='bubble'+(cls?' '+cls:'');if(cls==='me')d.textContent=html;else d.innerHTML=html;thr.appendChild(d);scr.scrollTop=scr.scrollHeight;return d}
+  function start(){if(state!=='idle')return;state='rec';cmp.classList.add('recing');live.hidden=false;txt.textContent='';wi=0;sec=0;tm.textContent='0:00';
+   iv.push(setInterval(function(){if(wi<WORDS.length){txt.textContent+=(wi?' ':'')+WORDS[wi++]}},reduce?60:360));
+   iv.push(setInterval(function(){sec++;tm.textContent='0:'+(sec<10?'0':'')+sec},1000))}
+  function lock(){if(state!=='rec')return;state='locked';cmp.classList.remove('holding');cmp.classList.add('locked')}
+  function reset(){clr();state='idle';cmp.classList.remove('recing','locked','holding');live.hidden=true}
+  function send(){if(state==='idle')return;var t=txt.textContent.trim();clr();reset();if(!t)return;
+   say('me',t);T(function(){var w=say('','<span class="sm">Logging it…</span>');T(function(){w.innerHTML='<b>Logged.</b> 91 gal at $3.14. Receipt filed under Fuel.<div class="card" style="margin-top:8px">'+kv('Fill-up','$286')+kv('MPG this tank','6.7')+kv('Trip fuel vs estimate','−$12')+'</div>';scr.scrollTop=scr.scrollHeight},reduce?0:1000)},400)}
+  var y0=0,t0=0,down=false;
+  mic.addEventListener('pointerdown',function(e){if(state==='locked'){send();return}e.preventDefault();down=true;y0=e.clientY;t0=Date.now();try{mic.setPointerCapture(e.pointerId)}catch(x){}start();cmp.classList.add('holding')});
+  mic.addEventListener('pointermove',function(e){if(down&&state==='rec'&&y0-e.clientY>40)lock()});
+  mic.addEventListener('pointerup',function(){if(!down)return;down=false;if(state==='locked')return;if(state==='rec'){if(Date.now()-t0<350)lock();else send()}});
+  mic.addEventListener('pointercancel',function(){down=false});
+  mic.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();if(state==='idle'){start();lock()}else send()}});
+  host.querySelector('#vcancel').onclick=reset;
+  function demo(){clr();reset();thr.innerHTML='';say('','Pilot Amarillo is 14 miles ahead. Diesel is $3.14 there.');
+   T(function(){moveTo(mic,function(){tap();start();T(function(){lock();hint.classList.add('show')},500)})},700);
+   T(function(){moveTo(mic,function(){hint.classList.remove('show');tap();send();T(function(){finger.style.opacity='0'},700)})},700+650+500+(reduce?60:360)*WORDS.length+900)}
+  host.querySelector('#replayV').onclick=demo;
+  demo();
+  return function(){dead=true;clr()};
+ },
+ does:'Taps the mic once and talks, with no holding. Watches the words appear as he speaks. Slides up to lock if he prefers, then taps send. Or snaps a receipt.',
+ masar:'Turns speech or a photo into a clean expense, updates MPG, and quietly improves every future "You keep" number.',
+ cls:['A','Autopilot','Bookkeeping entries are reversible and local.'],why:'The data entry that kills owner-operators becomes a sentence.',
+ m:[['9 sec','To log a fill-up'],['6.7','MPG learned']]},
+{ph:'A normal day',t:'Delivery, POD, invoice',when:'Day 4 · 11:52 AM',
+ scr:function(){return phone('11:52','<div class="hd"><div class="hi">Masar thread</div></div>'+
+ bot('<b>Delivered.</b> I see the POD photo. Atlanta dock signed at 11:48.')+
+ '<div class="card"><div class="hd"><b>Invoice #1042 · Hale Freight</b><span class="badge b-learn">Draft</span></div>'+kv('Line haul','$2,420')+kv('Terms','Net 30')+kv('POD','Attached')+'<div class="acts" style="margin-top:10px"><button class="btn g">Edit</button><button class="btn p">Send invoice</button></div></div>'+
+ '<div class="card"><div class="hd"><b>Invoice sent</b><span class="sm mono">Undo in 0:08</span></div><div class="sm">You can pull it back for 10 seconds.</div></div>',comp()+tabs('masar'))},
+ does:'Photographs the signed BOL. Taps Send.',
+ masar:'Builds the invoice from the rate confirmation and POD, shows it, sends it after approval, then tracks the due date and chases overdue invoices.',
+ cls:['B','Ask first, can earn Autopilot','Sending an invoice is outward but reversible for a few seconds. After many clean sends Omar can let it run itself.'],why:'Cash moves faster. Omar stops losing a week between delivery and invoice.',
+ m:[['2 min','Delivery to invoice'],['Net 30','Reminder set']]},
+{ph:'A normal day',t:'A breakdown',when:'Day 9 · 3:10 PM',
+ scr:function(){return phone('3:10','<div class="hd"><div class="hi">Masar thread</div><span class="badge b-bad">Breakdown</span></div>'+
+ me('Truck died on I-40 near Amarillo, won\'t start.')+bot('<b>I\'ve got this.</b> I pinned your location and I am calling shops now. Are you safe, off the road?')+me('Yes, on the shoulder.')+
+ '<div class="card"><div class="lbl">Live case</div>'+done('Location pinned','I-40 mile 74')+done('Called 3 shops','Quotes in')+done('Ray\'s Diesel','Tow + diagnostic $380, ETA 45 min')+'</div>'+
+ '<div class="card" style="border-color:var(--amber)"><b>Approve Ray\'s Diesel?</b><div class="sm">Lowest of 3. Pay the shop yourself and I will mark it paid.</div><div class="acts" style="margin-top:8px"><button class="btn g">See quotes</button><button class="btn p">Approve</button></div></div>',comp()+tabs('masar'))},
+ does:'Says one sentence by voice. Answers a safety question. Approves a quote.',
+ masar:'Takes ownership of the case: finds the location, calls shops, compares quotes, books the tow, tracks the ETA, and re-sources if a shop goes quiet. The app never moves money. Omar pays the shop and Masar records it.',
+ cls:['C','Ask first (D if unsafe)','Spending needs Omar. A person in danger goes straight to a human and emergency services.'],why:'This is the moment Masar earns the subscription. A stressful hour becomes a few taps.',
+ m:[['3 shops','Called for him'],['45 min','Tow ETA']]},
+{ph:'A normal day',t:'End of day summary',when:'Day 3 · 9:00 PM',
+ scr:function(){return phone('9:00','<div class="hd"><div class="hi">Today</div><span class="chip"><span class="dot" style="background:var(--ac)"></span>On pace</span></div>'+
+ '<div class="card"><div class="hd"><span class="lbl">Net so far in October</span></div><div class="num" style="font-size:26px;margin:2px 0">$1,840 <span class="sm" style="font-weight:400">of $3,000</span></div><div class="prog"><div style="width:61%"></div></div><div class="sm" style="margin-top:6px">Day 18 of 31 · you need $64 a day from here.</div></div>'+
+ '<div class="card"><div class="lbl">Done for you today</div>'+done('Invoice sent','$2,420')+done('Fuel logged','$286')+done('POD filed','Atlanta')+'</div>'+
+ '<div class="card"><div class="lbl">Tomorrow</div><div class="sm">Pickup Houston 7:00 AM · oil change due in 1,240 mi</div></div>',comp()+tabs('masar'))},
+ does:'Reads the summary on the couch. Optionally gets the same email at 9 PM.',
+ masar:'Closes the day: what got done, progress to goal, what is next. Sends the email to Omar and, if he chooses, to his spouse or accountant.',
+ cls:['A','Autopilot','Summary only.'],why:'Omar goes to bed knowing the business is handled. That is the product.',
+ m:[['61%','Of goal'],['3','Jobs closed']]},
+
+{ph:'The month',t:'Friday money review',when:'Day 11 · 4:00 PM',
+ scr:function(){return phone('4:00','<div class="hi">Money</div><div class="seg"><div>Week</div><div class="on">Month</div><div>Year</div></div>'+
+ '<div class="card"><div class="lbl">Owed to you</div><div class="num" style="font-size:24px;margin:2px 0 10px">$6,420</div><div style="display:flex;height:12px;border-radius:99px;overflow:hidden;gap:2px"><div style="flex:46;background:var(--ac)"></div><div style="flex:31;background:var(--amber)"></div><div style="flex:23;background:var(--coral)"></div></div></div>'+
+ '<div class="card"><div class="lbl">Chasing for you</div>'+done('Reminded Apex Logistics','$1,480 · 18 days late')+done('Called Bolt Freight','Promised Friday')+'</div>'+
+ '<div class="card" style="border-color:var(--amber)"><b>Quick pay offer</b><div class="sm">Apex asks 3% to pay in 2 days. You keep $1,436 instead of waiting.</div><div class="acts" style="margin-top:8px"><button class="btn g">No thanks</button><button class="btn p">Accept</button></div></div>',tabs('money'))},
+ does:'Looks at who owes him. Decides on a quick-pay offer.',
+ masar:'Chases late invoices in a polite sequence, logs each promise, flags a customer who keeps paying late.',
+ cls:['B','Ask first','Reminders can run themselves. Anything that changes terms asks first.'],why:'Late pay is the biggest silent cost. Masar makes it visible and handled.',
+ m:[['$6,420','Owed to Omar'],['2','Chased for him']]},
+{ph:'The month',t:'Goal reached',when:'Day 27 · 6:40 PM',
+ scr:function(){return phone('6:40','<div style="text-align:center;padding-top:20px"><svg width="104" height="104" viewBox="0 0 104 104"><circle cx="52" cy="52" r="42" fill="none" stroke="var(--s2)" stroke-width="10"/><circle cx="52" cy="52" r="42" fill="none" stroke="var(--ac)" stroke-width="10" stroke-linecap="round" stroke-dasharray="263.9" stroke-dashoffset="0" transform="rotate(-90 52 52)"/><text x="52" y="60" text-anchor="middle" font-family="Sora" font-weight="700" font-size="24" fill="var(--tx)">100%</text></svg><div class="hi" style="margin-top:10px">October goal reached</div><div class="sm">$3,104 net profit · 4 days early</div></div>'+
+ '<div class="card"><div class="lbl">What worked</div>'+kv('Best lane','DFW → ATL · $1.88/mi')+kv('Net per day','$115')+kv('Late invoices','2, both collected')+'</div>'+
+ '<div class="card"><div class="lbl">Set aside for taxes</div><div class="num" style="font-size:22px;margin:2px 0">$932</div><div class="sm">Estimated at 30%. Q4 payment due Jan 15.</div></div>'+
+ '<div class="card"><b>Next goal?</b><div class="sm">Try $3,400 net in November. I will pick loads that get you there.</div><button class="btn p" style="width:100%;margin-top:8px">Set November goal</button></div>',tabs('masar'))},
+ does:'Gets a quiet celebration, a recap, and chooses the next goal.',
+ masar:'Closes the month, reports what worked, sets aside an estimated tax figure, and proposes a stretch goal using real history.',
+ cls:['A','Autopilot','Reports and suggestions only.'],why:'Owner-operators rarely know their real profit. Seeing it, month after month, is what keeps them subscribed.',
+ m:[['$3,104','Net profit'],['4 days','Early']]},
+{ph:'The month',t:'Growing: truck number two',when:'Month 4 · Monday',
+ scr:function(){return phone('8:05','<div class="hd"><div class="hi">Plans</div></div>'+
+ bot('You added a second truck. Solo covers 1 truck. Core covers up to 3 and adds more help.')+
+ '<div class="card" style="border-color:var(--ac)"><div class="hd"><b>Core</b><span class="badge b-data">Recommended</span></div><div class="num" style="font-size:24px;margin:4px 0">$97<span class="sm" style="font-weight:400">/month</span></div><div class="sm">Up to 3 trucks · driver app · more Masar help · your data carries over</div></div>'+
+ '<div class="card"><div class="lbl">Masar help this month</div><div class="hd" style="margin:6px 0"><b>Included help used</b><span class="mono">62%</span></div><div class="prog"><div style="width:62%;background:var(--blue)"></div></div><div class="sm" style="margin-top:6px">Running low? Add more help any time. Added help never expires.</div></div>'+
+ '<button class="btn p">Switch to Core</button><button class="btn g">Add more Masar help</button>',tabs('more'))},
+ does:'Adds a second truck and a driver. Sees the next plan, with no pressure.',
+ masar:'Detects the second truck, shows the plan that fits, carries over costs, goals and history. When included help runs low, Masar falls back to asking first instead of stopping.',
+ cls:['A','Autopilot','Account change needs Omar\'s tap.'],why:'Growth is a plan change, not a migration. Solo becomes a small fleet without starting over.',
+ m:[['$39 → $97','Solo to Core'],['0','Data re-entered']]}
+];
+
+var cur=0,seen={},cleanup=null;
+function rail(){var h='',last='';S.forEach(function(s,i){if(s.ph!==last){h+='<div class="ph">'+s.ph+'</div>';last=s.ph}
+ h+='<button class="st'+(seen[i]?' seen':'')+'" data-i="'+i+'" '+(i===cur?'aria-current="true"':'')+'><i>'+(i+1)+'</i><span>'+s.t+'</span></button>'});$('#rail').innerHTML=h;
+ [].forEach.call(document.querySelectorAll('.st'),function(b){b.onclick=function(){go(+b.dataset.i)}})}
+function render(){var s=S[cur];seen[cur]=1;
+ if(cleanup){cleanup();cleanup=null}
+ $('#phoneHost').innerHTML=s.scr();
+ if(s.after)cleanup=s.after()||null;
+ var c=s.cls;
+ $('#story').innerHTML='<div class="when">'+s.when+'</div><h2>'+s.t+'</h2>'+
+ '<div class="blk"><h3>Omar does</h3><p>'+s.does+'</p></div>'+
+ '<div class="blk"><h3>Masar does</h3><p>'+s.masar+'</p></div>'+
+ '<div class="blk"><h3>Who decides</h3><p><span class="cls c'+c[0]+'">Class '+c[0]+' · '+c[1]+'</span></p><p style="margin-top:8px" class="sm">'+c[2]+'</p></div>'+
+ '<div class="blk"><h3>Why it matters</h3><p>'+s.why+'</p></div>'+
+ '<div class="metrics">'+s.m.map(function(m){return '<div class="blk"><div class="num">'+m[0]+'</div><div class="sm">'+m[1]+'</div></div>'}).join('')+'</div>'+
+ '<div class="nav2"><button class="btn g" id="pv"'+(cur===0?' disabled style="opacity:.4"':'')+'>← Back</button><button class="btn p" id="nx"'+(cur===S.length-1?' disabled style="opacity:.4"':'')+'>Next moment →</button><span class="sm" style="align-self:center">'+(cur+1)+' of '+S.length+'</span></div>';
+ $('#pv').onclick=function(){go(cur-1)};$('#nx').onclick=function(){go(cur+1)};rail()}
+function go(i){if(i<0||i>=S.length)return;cur=i;render()}
+document.addEventListener('keydown',function(e){if(e.key==='ArrowRight')go(cur+1);if(e.key==='ArrowLeft')go(cur-1)});
+render();
+})();
+</script>
