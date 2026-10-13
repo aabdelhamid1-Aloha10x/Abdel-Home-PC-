@@ -130,3 +130,14 @@ Findings:
 5. "Pays 30d" filter shown disabled (needs broker pay data). Broker credit grade waits on provider research (batch 2 item 3 result not yet seen in this review).
 6. Code-level review still pending for the mailbox connection, send gating, RLS and audit on new tables.
 No rule violations seen in the report (no per-action credit prices reported; pickup green/drop-off red; money record-only).
+
+## 2026-10-13 23:35 UTC · HERE map, counter rebuild, rings · PASS WITH GAPS
+Last reviewed Lovable message ids: main:agent#00000000029023#don:JVJESNS2 (23:22), main:agent#00000000028511#don:UILZAN6M (23:12), main:agent#00000000028393#don:TEL33JTU (23:07). Reviewed from Lovable's reports; code not read this cycle. Nothing published. Owner is also working with Lovable directly on the map.
+Reported: HERE map works (new drawing engine, night map in dark mode, green route, green pickup, red drop-off, pan and zoom); preview shows blank street tiles because the HERE map key is limited to certain domains and the preview runs on *.lovableproject.com, so Lovable added loading and error states plus a Try again button (Spanish too). Counter no longer goes through chat: bottom sheet with editable ask (+/- $50), suggested amount with reason, live "You would keep $X (Y%)", Review email (To, Subject, Body, Edit, Send), Send only on tap from the connected mailbox with quotes@ BCC only (or via Masar / open in my email app), post-send status "Countered $X, waiting for Apex", broker reply updates pay and notifies, Counter again, Other sheet with voice. Duplicate Needs you question removed. Rings: arc always lime/amber/red, default thresholds 50 / 35 when no floor, Est. beside the amount, 0% goal shows track only, credits ring equals percent left (amber low, red near zero). End-of-day line only when useful. 157 tests pass (11 new: no question when miles known, amount edit updates keep, send blocked without approval or without broker email, BCC-only quotes@).
+Findings:
+1. Not verified live: a real send and real broker reply; goal ring at 0% and nearly empty credits ring.
+2. Owner action: add *.lovableproject.com (and keep app.masar10x.io) to the HERE map key's allowed web addresses to see street tiles in the preview.
+3. Lovable workspace banner "Payment issue detected, moves to Free plan when retries end": owner must update the payment method.
+4. A&H test company still shows 4,000 credits on a 300-credit plan until reset (expected per owner decision).
+5. Pending: chat redesign (Chat and Activity tabs) awaits owner approval; broker credit research table still not reviewed; code-level review of mailbox connection and send gating still pending; HERE terms for carrier use unconfirmed.
+No rule violations seen in the reports.
