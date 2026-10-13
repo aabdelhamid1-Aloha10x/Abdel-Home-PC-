@@ -7,6 +7,8 @@ const { money } = require('./util');
 // license display, deposit caps, cancellation rights, lien notices) and the rules differ by state.
 function contractText({ quote, lead, result, rescissionNote }) {
   const t = result.totals;
+  const hours = cfg.marketplace.autoApproveHours;
+  const schedule = require('./milestones').planSchedule({ total: t.total, deposit: t.deposit }).map((m) => `  ${m.seq}. ${m.name}: ${money(m.customer_amount)}`).join('\n');
   const lines = result.lines.map((l) => `  - ${l.description}${l.qty ? ` (${l.qty} ${l.unit || ''})` : ''}`).join('\n');
   return `HOME IMPROVEMENT CONTRACT
 
@@ -22,8 +24,16 @@ Work not listed above is excluded. Changes require a written change order signed
 2. PRICE AND PAYMENT
 Contract price: ${money(t.total)}${t.tax ? ` (includes sales tax ${money(t.tax)})` : ''}${t.permit ? ` and permit fees ${money(t.permit)}` : ''}.
 Deposit due at signing: ${money(t.deposit)}.
-Balance: ${money(t.balance)}, due on substantial completion unless a milestone schedule is attached.
-Contractor may designate a licensed, insured subcontractor to perform the work and to receive the balance on Contractor's behalf. Payment of the balance to that designee satisfies Customer's payment obligation, and Contractor remains fully responsible to Customer for the work. [Attorney: confirm this assignment/direction-to-pay language for NY and NJ.]
+Payment schedule (each amount is due when Contractor requests it, BEFORE that phase of work begins):
+${schedule}
+
+2A. PAYMENT RULES
+a) All payments must be made to Contractor, and only through the payment links Contractor sends you or shows on your project page.
+b) Contractor's crew, supervisors and subcontractors are NOT authorized to accept cash, checks, transfers or any other payment. A payment made to anyone else does not count toward the price, is not covered by the warranty, and does not release your obligation to pay Contractor.
+c) Contractor may suspend work, without liability, while any payment is overdue. Dates move day for day.
+d) When a phase is reported complete you will be notified and may approve it or report a defect in writing through the project page. If you do neither within ${hours} hours, the phase is treated as approved. A reported defect pauses payment of that phase's amount only until it is corrected or resolved.
+e) The final payment (retainage) is due after the final walkthrough and punch list.
+f) Contractor will pay its subcontractors and suppliers from the payments received and will provide lien waivers with each payment. [Attorney: confirm trust-fund and lien-waiver wording for NY and NJ.]
 
 3. RIGHT TO CANCEL
 ${rescissionNote}

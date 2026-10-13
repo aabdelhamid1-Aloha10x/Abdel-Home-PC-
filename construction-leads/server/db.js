@@ -100,6 +100,21 @@ CREATE TABLE IF NOT EXISTS ledger (
 );
 `);
 
+addCol('job_posts', 'fee_pct', 'REAL NOT NULL DEFAULT 5');
+addCol('subcontractors', 'stripe_account_id', 'TEXT');
+db.exec(`
+CREATE TABLE IF NOT EXISTS milestones (
+  id INTEGER PRIMARY KEY, job_id INTEGER NOT NULL REFERENCES jobs(id), seq INTEGER NOT NULL, name TEXT NOT NULL,
+  customer_amount REAL NOT NULL,
+  sub_gross REAL NOT NULL DEFAULT 0, fee_amount REAL NOT NULL DEFAULT 0, sub_net REAL NOT NULL DEFAULT 0,
+  status TEXT NOT NULL DEFAULT 'scheduled',  -- scheduled|invoiced|funded|in_progress|submitted|approved|released|disputed
+  invoiced_at TEXT, funded_at TEXT, funded_via TEXT, stripe_session TEXT,
+  started_at TEXT, start_geo TEXT, submitted_at TEXT, evidence_notes TEXT, evidence_photos TEXT NOT NULL DEFAULT '[]', waiver_signed_at TEXT,
+  approved_at TEXT, approved_by TEXT, dispute_reason TEXT, disputed_from TEXT, released_at TEXT,
+  UNIQUE (job_id, seq)
+);
+`);
+
 const j = (v) => JSON.stringify(v ?? null);
 function event(leadId, type, data) {
   db.prepare('INSERT INTO events (lead_id, type, data) VALUES (?,?,?)').run(leadId ?? null, type, j(data));

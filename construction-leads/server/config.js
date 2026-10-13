@@ -43,8 +43,8 @@ module.exports = {
   anthropic: { apiKey: e.ANTHROPIC_API_KEY || '', model: e.ANTHROPIC_MODEL || 'claude-sonnet-5-5' },
   marketplace: {
     monthlyPrice: Number(e.SUB_MONTHLY_PRICE || 55),       // subscription, $/month
-    flatFee: Number(e.SUB_FLAT_FEE || 150),                // flat fee per awarded job (PLACEHOLDER: set yours)
-    paymentMode: e.SUB_PAYMENT_MODE === 'platform_collects' ? 'platform_collects' : 'direct_balance',
+    feePct: Number(e.SUB_FEE_PCT || 5),                    // % of the sub's award price, withheld from each payout; adjustable per job
+    autoApproveHours: Number(e.AUTO_APPROVE_HOURS || 72),  // customer silence after a submitted phase = approval
     autoPublish: e.AUTO_PUBLISH_JOBS !== '0',              // post to the board as soon as the deposit clears
   },
   stripe: { secretKey: e.STRIPE_SECRET_KEY || '', webhookSecret: e.STRIPE_WEBHOOK_SECRET || '' },

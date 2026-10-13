@@ -16,8 +16,15 @@ function render(q) {
   if (q.contract) {
     const c = q.contract;
     h += `<div class="card"><h3>Signed ✓</h3><p>Signed by ${E(c.signer_name)} on ${E(new Date(c.signed_at).toLocaleString())}.</p>
-    <p>Deposit: <b class="${c.deposit_status === 'paid' ? 'ok' : 'warn'}">${E(c.deposit_status)}</b>. You may cancel without penalty until ${E(new Date(c.rescission_ends).toLocaleString())}.</p></div><div class="card"><h3>Contract</h3><pre id="ct"></pre></div>`;
-    app.innerHTML = h; document.getElementById('ct').textContent = c.text; return;
+    <p>Deposit: <b class="${c.deposit_status === 'paid' ? 'ok' : 'warn'}">${E(c.deposit_status)}</b>. You may cancel without penalty until ${E(new Date(c.rescission_ends).toLocaleString())}.</p></div>
+    <div class="card"><h3>Project payments</h3><p class="mute">Pay <b>only</b> through the buttons on this page. Never pay crew members directly: payments made outside this page are not protected by your warranty and do not count toward your balance.</p><table>${q.milestones.map(m => `<tr><td>${m.seq}. ${E(m.name)}<br><span class="mute">${E(m.status.replace('_', ' '))}${m.notes ? ' · ' + E(m.notes) : ''}${m.dispute_reason ? ' · you reported: ' + E(m.dispute_reason) : ''}</span>${m.photos ? '<div>' + Array.from({ length: m.photos }, (_, i) => `<a href="/api/quote/${encodeURIComponent(t)}/milestones/${m.id}/photo/${i}" target="_blank">photo ${i + 1}</a>`).join(' · ') + '</div>' : ''}</td><td style="text-align:right">${M(m.amount)}<br>${m.funded ? '<span class="ok">paid ✓</span>' : m.status === 'invoiced' ? `<button data-pay="${m.id}">Pay</button>` : '<span class="mute">upcoming</span>'}${m.status === 'submitted' ? `<br><button data-ap="${m.id}">Approve work</button> <button class="ghost" data-dp="${m.id}">Report a problem</button><br><span class="mute">Auto-approved ${m.auto_approve_hours}h after submission</span>` : ''}</td></tr>`).join('')}</table></div>
+    <div class="card"><h3>Contract</h3><pre id="ct"></pre></div>`;
+    app.innerHTML = h; document.getElementById('ct').textContent = c.text;
+    const post = (path, body) => fetch('/api/quote/' + encodeURIComponent(t) + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}) }).then(async r => { const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || r.status); return j; });
+    app.querySelectorAll('[data-pay]').forEach(b => b.onclick = () => post(`/milestones/${b.dataset.pay}/pay`).then(j => location.href = j.checkoutUrl).catch(e => alert(e.message)));
+    app.querySelectorAll('[data-ap]').forEach(b => b.onclick = () => confirm('Approve this completed work? The crew will be paid for this phase.') && post(`/milestones/${b.dataset.ap}/approve`).then(() => location.reload()).catch(e => alert(e.message)));
+    app.querySelectorAll('[data-dp]').forEach(b => b.onclick = () => { const r = prompt('What is the problem?'); if (r) post(`/milestones/${b.dataset.dp}/dispute`, { reason: r }).then(() => location.reload()).catch(e => alert(e.message)); });
+    return;
   }
   h += `<div class="card"><h3>Approve and sign</h3><details><summary>Read the contract</summary><pre id="ct" style="margin-top:10px"></pre></details>
   <label>Type your full legal name</label><input id="nm" autocomplete="name"><label>Draw your signature</label><canvas id="cv" width="600" height="150"></canvas>

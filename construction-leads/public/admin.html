@@ -21,7 +21,7 @@ async function route() {
   const [name, arg] = location.hash.slice(1).split('/');
   document.querySelectorAll('#nav a').forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#' + (name || 'pipeline')));
   v.innerHTML = 'Loading…';
-  try { await ({ '': pipeline, pipeline, lead, quote, jobs, catalog, market, team, outbox }[name] || pipeline)(arg); } catch (e) { v.innerHTML = '<p class="err">' + E(e.message) + '</p>'; }
+  try { await ({ '': pipeline, pipeline, lead, quote, job, jobs, catalog, market, team, outbox }[name] || pipeline)(arg); } catch (e) { v.innerHTML = '<p class="err">' + E(e.message) + '</p>'; }
 }
 addEventListener('hashchange', route);
 
@@ -116,7 +116,7 @@ async function jobs() {
   <td><select data-j="${j.id}" data-k="status">${['awaiting_deposit', 'rescission_period', 'ready', 'scheduled', 'in_progress', 'punch_list', 'complete'].map(s => `<option ${s === j.status ? 'selected' : ''}>${s}</option>`).join('')}</select></td>
   <td><select data-j="${j.id}" data-k="assign"><option value="in_house" ${j.assigned_type === 'in_house' ? 'selected' : ''}>In-house</option>${subs.map(s => `<option value="${s.id}" ${j.subcontractor_id === s.id ? 'selected' : ''}>Sub: ${E(s.name)} (${E(s.trade)})</option>`).join('')}<option value="" ${j.assigned_type === 'unassigned' ? 'selected' : ''}>Unassigned</option></select>${j.assigned_type === 'subcontractor' ? `<br><input data-j="${j.id}" data-k="sub_cost" type="number" placeholder="sub bid $" value="${j.sub_cost ?? ''}" style="margin-top:4px">` : ''}</td>
   <td><input type="date" data-j="${j.id}" data-k="start_date" value="${E(j.start_date || '')}"></td>
-  <td>${j.post_id ? `<span class="pill">${E(j.post_status)}</span><br><span class="mute">${M(j.post_payout)} − ${M(j.post_fee)} fee</span>` : j.deposit_status === 'paid' ? `<button class="ghost" data-post="${j.id}">Post to subs</button>` : '<span class="mute">after deposit</span>'}</td></tr>`).join('');
+  <td><a href="#job/${j.id}">Payments</a><br>${j.post_id ? `<span class="pill">${E(j.post_status)}</span><br><span class="mute">${M(j.post_payout)} − ${M(j.post_fee)} fee</span>` : j.deposit_status === 'paid' ? `<button class="ghost" data-post="${j.id}">Post to subs</button>` : '<span class="mute">after deposit</span>'}</td></tr>`).join('');
   document.querySelectorAll('[data-post]').forEach(b => b.onclick = guard(async () => { await api('POST', `/api/admin/jobs/${b.dataset.post}/post`, {}); route(); }));
   document.querySelectorAll('[data-j]').forEach(el => el.onchange = guard(async () => {
     const k = el.dataset.k, b = {};
@@ -124,6 +124,16 @@ async function jobs() {
     else b[k] = k === 'sub_cost' ? +el.value : el.value;
     try { await api('PATCH', '/api/admin/jobs/' + el.dataset.j, b); } finally { route(); }
   }));
+}
+
+async function job(id) {
+  const ms = await api('GET', `/api/admin/jobs/${id}/milestones`);
+  v.innerHTML = `<p><a href="#jobs">← Jobs</a></p><div class="card"><h2>Job #${E(id)}: payments</h2><p class="mute">A sub is paid for a phase only after the customer funded it, proof and a lien waiver are in, and the customer approves (or the auto-approve window passes). Disputes freeze the payout.</p><table id="mt"></table></div>`;
+  document.getElementById('mt').innerHTML = '<tr><th>#</th><th>Milestone</th><th>Customer pays</th><th>Sub gross / fee / net</th><th>Status</th><th>Funded</th><th></th></tr>' + ms.map(m => `<tr><td>${m.seq}</td><td>${E(m.name)}${m.dispute_reason ? `<br><span class="warn">dispute: ${E(m.dispute_reason)}</span>` : ''}${m.evidence_notes ? `<br><span class="mute">${E(m.evidence_notes)}</span>` : ''}</td><td>${M2(m.customer_amount)}</td><td>${M2(m.sub_gross)} / ${M2(m.fee_amount)} / ${M2(m.sub_net)}</td><td><span class="pill">${E(m.status)}</span></td><td>${m.funded_at ? E(m.funded_at) + '<br><span class="mute">' + E(m.funded_via) + '</span>' : '<span class="warn">no</span>'}</td>
+    <td>${!m.funded_at ? `<button class="ghost" data-f="${m.id}">Mark funded (bank/check)</button>` : ''} ${m.status === 'scheduled' ? `<button class="ghost" data-iv="${m.id}">Invoice now</button>` : ''} ${m.status === 'disputed' ? `<button data-r="${m.id}" data-a="release">Release payout</button> <button class="ghost" data-r="${m.id}" data-a="rework">Send back for rework</button>` : ''}</td></tr>`).join('');
+  document.querySelectorAll('[data-f]').forEach(b => b.onclick = guard(async () => { if (confirm('Confirm the money has cleared in the bank?')) { await api('POST', `/api/admin/milestones/${b.dataset.f}/mark-funded`); route(); } }));
+  document.querySelectorAll('[data-iv]').forEach(b => b.onclick = guard(async () => { await api('POST', `/api/admin/milestones/${b.dataset.iv}/invoice`); route(); }));
+  document.querySelectorAll('[data-r]').forEach(b => b.onclick = guard(async () => { await api('POST', `/api/admin/milestones/${b.dataset.r}/resolve`, { action: b.dataset.a }); route(); }));
 }
 
 async function catalog() {
@@ -141,18 +151,17 @@ async function market() {
   v.innerHTML = `<div class="stats card"><div class="stat"><b>${pending}</b><span>Awaiting approval</span></div><div class="stat"><b>${active}</b><span>Paying subs</span></div><div class="stat"><b>${M(active * (subs[0]?.monthly_price || 55))}</b><span>Monthly recurring</span></div><div class="stat"><b>${posts.filter(p => p.status === 'open').length}</b><span>Open jobs</span></div></div>
   <div class="card"><h2>Subcontractors</h2><p class="mute">Check license and insurance before approving. "Activate" is for subs you bill outside Stripe.</p><table id="st"></table></div>
   <div class="card"><h2>Job board</h2><table id="pt"></table></div>
-  <div class="card"><h2>Ledger</h2><p class="mute">job_fee = flat fee the sub owes us · sub_remittance_due = sub collected the customer's balance and owes us our share · sub_payout_due = we owe the sub.</p><table id="lt"></table></div>`;
+  <div class="card"><h2>Ledger</h2><p class="mute">sub_payout = net owed to the sub for an approved phase (fee already withheld; 'due' until sent via Stripe or marked settled) · platform_fee = the % fee withheld from that payout.</p><table id="lt"></table></div>`;
   document.getElementById('st').innerHTML = '<tr><th>Company</th><th>Trades / area</th><th>License · insurance</th><th>Status</th><th>Subscription</th><th></th></tr>' + subs.map(x => `<tr><td>${E(x.company || x.name)}<br><span class="mute">${E(x.contact_name)} ${E(x.email)} ${E(x.phone)}</span></td><td>${E(x.trades.join(', '))}<br><span class="mute">${E(x.states.join('/'))} ${E(x.zip_prefixes.join(','))}</span></td><td>${E(x.license)} ${E(x.license_state)}<br><span class="${new Date(x.insurance_expires) < new Date() ? 'err' : 'mute'}">ins. ${E(x.insurance_expires)}</span> ${x.has_coi ? `<a href="#" data-coi="${x.id}">view COI</a>` : '<span class="warn">no COI</span>'}</td><td><span class="pill ${x.status === 'approved' ? 'won' : x.status === 'pending' ? 'new' : 'dnc'}">${E(x.status)}</span></td><td>${E(x.subscription_status)}</td>
     <td>${x.status !== 'approved' ? `<button data-s="${x.id}" data-v="approved">Approve</button>` : `<button class="ghost" data-s="${x.id}" data-v="suspended">Suspend</button>`} ${x.subscription_status !== 'active' ? `<button class="ghost" data-sub="${x.id}">Activate</button>` : ''}</td></tr>`).join('');
   document.querySelectorAll('[data-s]').forEach(b => b.onclick = guard(async () => { await api('PATCH', '/api/admin/subs/' + b.dataset.s, { status: b.dataset.v }); route(); }));
   document.querySelectorAll('[data-sub]').forEach(b => b.onclick = guard(async () => { await api('PATCH', '/api/admin/subs/' + b.dataset.sub, { subscription_status: 'active' }); route(); }));
   document.querySelectorAll('[data-coi]').forEach(a => a.onclick = async e => { e.preventDefault(); window.open(await blobUrl('/api/admin/subs/' + a.dataset.coi + '/coi')); });
-  document.getElementById('pt').innerHTML = '<tr><th>Job</th><th>Status</th><th>Payout (sub earns)</th><th>Flat fee</th><th>Pay mode</th><th>Your profit</th><th></th></tr>' + posts.map(p => { const e = p.economics, open = p.status !== 'awarded'; return `<tr><td>${E(p.title)}<br><span class="mute">job #${p.job_id}${p.sub_name ? ' → ' + E(p.sub_name) : ''}</span></td><td><span class="pill">${E(p.status)}</span></td>
-    <td><input data-p="${p.id}" data-k="payout" type="number" value="${p.payout}" ${open ? '' : 'disabled'}></td><td><input data-p="${p.id}" data-k="flat_fee" type="number" value="${p.flat_fee}" ${open ? '' : 'disabled'}></td>
-    <td><select data-p="${p.id}" data-k="payment_mode" ${open ? '' : 'disabled'}><option value="direct_balance" ${p.payment_mode === 'direct_balance' ? 'selected' : ''}>Customer pays sub the balance</option><option value="platform_collects" ${p.payment_mode === 'platform_collects' ? 'selected' : ''}>We collect all, pay sub</option></select></td>
-    <td>${e ? `<b class="${e.platform_profit < 0 ? 'err' : 'ok'}">${M2(e.platform_profit)}</b>${e.sub_owes_platform ? `<br><span class="warn">sub must remit ${M2(e.sub_owes_platform)}</span>` : ''}` : ''}</td>
+  document.getElementById('pt').innerHTML = '<tr><th>Job</th><th>Status</th><th>Payout (sub earns)</th><th>Fee %</th><th>Fee $</th><th>Platform revenue</th><th></th></tr>' + posts.map(p => { const e = p.economics, open = p.status !== 'awarded'; return `<tr><td>${E(p.title)}<br><span class="mute">job #${p.job_id}${p.sub_name ? ' → ' + E(p.sub_name) : ''}</span></td><td><span class="pill">${E(p.status)}</span></td>
+    <td><input data-p="${p.id}" data-k="payout" type="number" value="${p.payout}" ${open ? '' : 'disabled'}></td><td><input data-p="${p.id}" data-k="fee_pct" type="number" step="0.1" min="0" max="30" value="${p.fee_pct}" ${open ? '' : 'disabled'}></td><td>${M2(p.flat_fee)}</td>
+    <td>${e ? `<b class="${e.platform_revenue < 0 ? 'err' : 'ok'}">${M2(e.platform_revenue)}</b><br><span class="mute">margin ${M2(e.platform_margin)} + fee ${M2(e.fee)}</span>${e.warnings.map(w => `<br><span class="warn">${E(w)}</span>`).join('')}` : ''}</td>
     <td>${p.status === 'open' ? `<button class="ghost" data-close="${p.id}">Keep in-house</button>` : p.status === 'closed' ? `<button class="ghost" data-open="${p.id}">Re-open</button>` : ''}</td></tr>`; }).join('');
-  document.querySelectorAll('#pt [data-p]').forEach(i => i.onchange = guard(async () => { try { await api('PATCH', '/api/admin/posts/' + i.dataset.p, { [i.dataset.k]: i.dataset.k === 'payment_mode' ? i.value : +i.value }); } finally { route(); } }));
+  document.querySelectorAll('#pt [data-p]').forEach(i => i.onchange = guard(async () => { try { await api('PATCH', '/api/admin/posts/' + i.dataset.p, { [i.dataset.k]: +i.value }); } finally { route(); } }));
   document.querySelectorAll('[data-close]').forEach(b => b.onclick = guard(async () => { await api('PATCH', '/api/admin/posts/' + b.dataset.close, { status: 'closed' }); route(); }));
   document.querySelectorAll('[data-open]').forEach(b => b.onclick = guard(async () => { await api('PATCH', '/api/admin/posts/' + b.dataset.open, { status: 'open' }); route(); }));
   document.getElementById('lt').innerHTML = '<tr><th>When</th><th>Sub</th><th>Type</th><th>Amount</th><th>Status</th><th></th></tr>' + ledger.map(l => `<tr><td class="mute">${E(l.ts)}</td><td>${E(l.sub_name)}</td><td>${E(l.type)}<br><span class="mute">job #${l.job_id}</span></td><td>${M2(l.amount)}</td><td>${E(l.status)}</td><td>${l.status === 'settled' ? '' : `<button class="ghost" data-l="${l.id}">Mark settled</button>`}</td></tr>`).join('');

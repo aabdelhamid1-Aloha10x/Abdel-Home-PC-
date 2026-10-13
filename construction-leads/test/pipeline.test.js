@@ -209,7 +209,9 @@ test('the board never leaks customer identity, address or contract price', async
   assert.ok(!/Jane|Smith|jane@x|12 Main|5550134|415|"total"|deposit|margin|gross/i.test(raw), raw.slice(0, 300));
   assert.match(raw, /"area":"100xx"/);
   const post = (await api('GET', '/api/sub/jobs', null, H)).body[0];
-  assert.ok(post.payout > 0 && post.flat_fee === 150 && post.net_to_you === post.payout - 150);
+  assert.ok(post.payout > 0 && post.fee_pct === 5);
+  assert.equal(post.fee, Math.round(post.payout * 5) / 100);
+  assert.equal(post.net_to_you, Math.round((post.payout - post.fee) * 100) / 100);
   assert.deepEqual(post.trades, ['kitchen']);
 });
 
@@ -234,6 +236,12 @@ test('two eligible subs race for one job: exactly one wins, details unlock only 
   await activate('bee@k.com');
   const HA = await subLogin('al@ace.com'), HB = await subLogin('bee@k.com');
   const postId = (await api('GET', '/api/sub/jobs', null, HA)).body[0].id;
+  // FUNDED BEFORE COMMITTED: if the deposit has not cleared, nobody can take the job.
+  const dbm = require('../server/db');
+  dbm.run('UPDATE milestones SET funded_at=NULL WHERE seq=1');
+  const early = await api('POST', `/api/sub/jobs/${postId}/claim`, {}, HA);
+  assert.equal(early.status, 409); assert.match(early.body.error, /funds are not secured/);
+  dbm.run("UPDATE milestones SET funded_at=datetime('now') WHERE seq=1");
   const [ra, rb] = await Promise.all([api('POST', `/api/sub/jobs/${postId}/claim`, {}, HA), api('POST', `/api/sub/jobs/${postId}/claim`, {}, HB)]);
   const codes = [ra.status, rb.status].sort();
   assert.deepEqual(codes, [200, 409]);
@@ -241,8 +249,12 @@ test('two eligible subs race for one job: exactly one wins, details unlock only 
   assert.equal(win.r.body.customer.name, 'Jane Smith');
   assert.equal(win.r.body.customer.address, '12 Main St');
   assert.equal(get('SELECT assigned_type FROM jobs WHERE id=?', win.r.body.job_id).assigned_type, 'subcontractor');
-  assert.equal(get("SELECT COUNT(*) c FROM ledger WHERE type='job_fee'").c, 1, 'one flat fee, charged to the winner only');
-  assert.equal(get("SELECT amount FROM ledger WHERE type='job_fee'").amount, 150);
+  const ms = all('SELECT * FROM milestones ORDER BY seq');
+  const p0 = get('SELECT * FROM job_posts LIMIT 1');
+  assert.equal(ms[0].sub_gross, 0);
+  assert.ok(Math.abs(ms.reduce((a, m) => a + m.sub_gross, 0) - p0.payout) < 0.005, 'sub phases add up to the award');
+  assert.ok(Math.abs(ms.reduce((a, m) => a + m.fee_amount, 0) - p0.flat_fee) < 0.011, 'fees add up to fee_pct of the award');
+  assert.equal(get("SELECT COUNT(*) c FROM ledger").c, 0, 'nothing is charged or paid at award time: the fee is withheld from payouts later');
   assert.equal((await api('GET', '/api/sub/jobs', null, win.H)).body.length, 0, 'awarded job leaves the open board');
   assert.equal((await api('GET', '/api/sub/my-jobs', null, win.H)).body.length, 1);
   const loser = win.H === HA ? HB : HA;
@@ -252,22 +264,90 @@ test('two eligible subs race for one job: exactly one wins, details unlock only 
   assert.equal((await api('PATCH', `/api/admin/posts/${postId}`, { payout: 1 }, A)).status, 409);
 });
 
-test('money flow (direct_balance): customer pays sub the balance, sub remits our share on completion', async () => {
+test('money flow: no-pay-no-work, proof + waiver, approval, fee withheld from each payout', async () => {
+  const dbm = require('../server/db'), I = require('../server/integrations');
+  const post = get('SELECT * FROM job_posts LIMIT 1'), job = get('SELECT * FROM jobs WHERE id=?', post.job_id);
+  const HS = await subLogin(get('SELECT email FROM subcontractors WHERE id=?', post.awarded_to).email);
+  const phases = () => all('SELECT * FROM milestones ORDER BY seq');
+  const q = get('SELECT token FROM quotes LIMIT 1').token;
+  // phase 2 is not invoiced during the customer's cancellation window, and the sub cannot start
+  assert.equal(phases()[1].status, 'scheduled');
+  assert.equal((await api('POST', `/api/sub/milestones/${phases()[1].id}/start`, {}, HS)).status, 409);
+  // window closes -> tick invoices the next payment
+  dbm.run("UPDATE contracts SET rescission_ends=datetime('now','-1 day') WHERE quote_id=?", job.quote_id);
+  I.releaseRescissionTick();
+  assert.equal(phases()[1].status, 'invoiced');
+  // NO PAY, NO WORK: invoiced but unpaid
+  let r = await api('POST', `/api/sub/milestones/${phases()[1].id}/start`, {}, HS);
+  assert.equal(r.status, 409); assert.match(r.body.error, /not funded/);
+  // customer pays (admin marks funded in the absence of Stripe)
+  await api('POST', `/api/admin/milestones/${phases()[1].id}/mark-funded`, {}, A);
+  assert.equal((await api('POST', `/api/sub/milestones/${phases()[2].id}/start`, {}, HS)).status, 409, 'cannot skip ahead to a later, unfunded phase');
+  assert.equal((await api('POST', `/api/sub/milestones/${phases()[1].id}/start`, { lat: 40.7, lng: -74 }, HS)).status, 200);
+  // cannot submit without a photo or without the lien waiver
+  assert.equal((await api('POST', `/api/sub/milestones/${phases()[1].id}/submit`, { waiver: true }, HS)).status, 400);
+  const jpg = Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.alloc(64)]);
+  assert.equal((await api('PUT', `/api/sub/milestones/${phases()[1].id}/photo`, null, { ...HS, 'Content-Type': 'image/jpeg' }, jpg)).status, 200);
+  assert.equal((await api('PUT', `/api/sub/milestones/${phases()[1].id}/photo`, null, { ...HS, 'Content-Type': 'image/jpeg' }, Buffer.from('not an image'))).status, 400);
+  assert.equal((await api('POST', `/api/sub/milestones/${phases()[1].id}/submit`, { waiver: false }, HS)).status, 400);
+  assert.equal((await api('POST', `/api/sub/milestones/${phases()[1].id}/submit`, { waiver: true, notes: 'Demo done' }, HS)).status, 200);
+  assert.equal(phases()[2].status, 'invoiced', 'submitting a phase invoices the next payment');
+  assert.equal(all('SELECT * FROM ledger').length, 0, 'nothing is paid before the customer approves');
+  // customer sees the evidence, then approves -> payout created with the % fee withheld
+  const pub = (await api('GET', `/api/quote/${q}`)).body;
+  assert.equal(pub.milestones.find((m) => m.seq === 2).photos, 1);
+  assert.equal((await api('GET', `/api/quote/${q}/milestones/${phases()[1].id}/photo/0`)).status, 200);
+  assert.equal((await api('POST', `/api/quote/${q}/milestones/${phases()[1].id}/approve`, {})).status, 200);
+  const m2 = phases()[1];
+  assert.equal(m2.status, 'released');
+  const payout2 = get("SELECT * FROM ledger WHERE type='sub_payout'"), fee2 = get("SELECT * FROM ledger WHERE type='platform_fee'");
+  assert.equal(payout2.amount, m2.sub_net); assert.equal(fee2.amount, m2.fee_amount);
+  assert.ok(Math.abs(m2.sub_net + m2.fee_amount - m2.sub_gross) < 0.005);
+  assert.equal(payout2.status, 'due', 'no Stripe Connect account yet: payout waits, but is recorded');
+  assert.equal((await api('POST', `/api/quote/${q}/milestones/${phases()[1].id}/approve`, {})).status, 409, 'cannot approve (or pay out) twice');
+});
+
+test('disputes freeze the payout; auto-approval after silence; job completes after the final release', async () => {
+  const dbm = require('../server/db'), MS = require('../server/milestones');
   const post = get('SELECT * FROM job_posts LIMIT 1');
-  const e = require('../server/marketplace').economics(post);
-  assert.equal(post.payment_mode, 'direct_balance');
-  const q = get('SELECT result FROM quotes LIMIT 1'); const t = JSON.parse(q.result).totals;
-  assert.equal(e.customer_pays_platform, t.deposit);
-  assert.equal(e.customer_pays_sub, Math.round((t.total - t.deposit) * 100) / 100);
-  assert.ok(e.sub_owes_platform > 0 && e.platform_owes_sub === 0);
-  const job = get('SELECT * FROM jobs WHERE id=?', post.job_id);
-  assert.equal((await api('PATCH', `/api/admin/jobs/${job.id}`, { status: 'complete' }, A)).status, 409, 'cannot complete during the cancellation period');
-  require('../server/db').run("UPDATE contracts SET rescission_ends=datetime('now','-1 day') WHERE quote_id=?", job.quote_id);
-  assert.equal((await api('PATCH', `/api/admin/jobs/${job.id}`, { status: 'complete' }, A)).status, 200);
-  const row = get("SELECT * FROM ledger WHERE type='sub_remittance_due'");
-  assert.equal(row.amount, e.sub_owes_platform); assert.equal(row.sub_id, post.awarded_to);
-  await api('PATCH', `/api/admin/jobs/${job.id}`, { status: 'complete' }, A);
-  assert.equal(get("SELECT COUNT(*) c FROM ledger WHERE type='sub_remittance_due'").c, 1, 'idempotent');
+  const HS = await subLogin(get('SELECT email FROM subcontractors WHERE id=?', post.awarded_to).email);
+  const q = get('SELECT token FROM quotes LIMIT 1').token;
+  const phases = () => all('SELECT * FROM milestones ORDER BY seq');
+  const jpg = Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.alloc(64)]);
+  const doPhase = async (seq) => {
+    const id = phases()[seq - 1].id;
+    await api('POST', `/api/admin/milestones/${id}/mark-funded`, {}, A);
+    assert.equal((await api('POST', `/api/sub/milestones/${id}/start`, {}, HS)).status, 200);
+    await api('PUT', `/api/sub/milestones/${id}/photo`, null, { ...HS, 'Content-Type': 'image/jpeg' }, jpg);
+    assert.equal((await api('POST', `/api/sub/milestones/${id}/submit`, { waiver: true }, HS)).status, 200);
+    return id;
+  };
+  // phase 3: customer disputes -> nothing is paid, and auto-approval does not override a dispute
+  const id3 = await doPhase(3);
+  assert.equal((await api('POST', `/api/quote/${q}/milestones/${id3}/dispute`, { reason: 'x' })).status, 400);
+  assert.equal((await api('POST', `/api/quote/${q}/milestones/${id3}/dispute`, { reason: 'Tile is cracked in two places' })).status, 200);
+  dbm.run("UPDATE milestones SET submitted_at=datetime('now','-10 days') WHERE id=?", id3);
+  MS.autoApproveTick();
+  assert.equal(phases()[2].status, 'disputed');
+  assert.equal(all("SELECT * FROM ledger WHERE type='sub_payout'").length, 1);
+  await api('POST', `/api/admin/milestones/${id3}/resolve`, { action: 'rework' }, A);
+  assert.equal(phases()[2].status, 'in_progress');
+  await api('PUT', `/api/sub/milestones/${id3}/photo`, null, { ...HS, 'Content-Type': 'image/jpeg' }, jpg);
+  assert.equal((await api('POST', `/api/sub/milestones/${id3}/submit`, { waiver: true }, HS)).status, 200);
+  // customer stays silent -> auto-approved after AUTO_APPROVE_HOURS
+  dbm.run("UPDATE milestones SET submitted_at=datetime('now','-4 days') WHERE id=?", id3);
+  MS.autoApproveTick();
+  assert.equal(phases()[2].status, 'released'); assert.equal(phases()[2].approved_by, 'auto');
+  // phases 4 and 5 (final retainage) -> job completes
+  for (const seq of [4, 5]) { const id = await doPhase(seq); await api('POST', `/api/quote/${q}/milestones/${id}/approve`, {}); }
+  assert.equal(get('SELECT status FROM jobs LIMIT 1').status, 'complete');
+  const net = all("SELECT amount FROM ledger WHERE type='sub_payout'").reduce((a, r) => a + r.amount, 0);
+  const fee = all("SELECT amount FROM ledger WHERE type='platform_fee'").reduce((a, r) => a + r.amount, 0);
+  assert.ok(Math.abs(net + fee - post.payout) < 0.02, 'sub net + fee withheld = the full award, to the cent');
+  assert.ok(Math.abs(fee - post.flat_fee) < 0.02, `fee withheld ${fee} = ${post.fee_pct}% of award`);
+  const total = JSON.parse(get('SELECT result FROM quotes LIMIT 1').result).totals.total;
+  assert.ok(all('SELECT * FROM milestones').every((m) => m.funded_at), 'every phase was funded before it was paid out');
+  assert.ok(Math.abs(all('SELECT customer_amount c FROM milestones').reduce((a, m) => a + m.c, 0) - total) < 0.005, 'customer milestones sum to the contract price');
 });
 
 test('service area: out-of-area leads are kept but not booked or called; NJ zip is accepted', async () => {

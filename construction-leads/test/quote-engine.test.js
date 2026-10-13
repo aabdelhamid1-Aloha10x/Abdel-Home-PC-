@@ -78,33 +78,39 @@ test('rejects nonsense margins and empty quotes are zero', () => {
   assert.equal(priceQuote([], base, { state: 'TX' }).totals.total, 0);
 });
 
-test('settlement: direct_balance makes the sub remit our margin; platform_collects pays the sub', () => {
-  const { settle } = require('../server/settlement');
-  // $20,000 job, $2,000 deposit, sub award $14,000, flat fee $150
-  const d = settle({ total: 20000, deposit: 2000, payout: 14000, fee: 150, mode: 'direct_balance' });
-  assert.equal(d.customer_pays_sub, 18000);
-  assert.equal(d.sub_net, 13850);
-  assert.equal(d.sub_owes_platform, 4150);       // 18000 - 13850
-  assert.equal(d.platform_owes_sub, 0);
-  assert.equal(d.platform_profit, 6150);         // 20000 - 14000 + 150
-  // cash check: platform keeps deposit + remittance = 6150 profit + 0 pass-through
-  assert.equal(d.customer_pays_platform + d.sub_owes_platform, 6150);
-  assert.ok(d.warnings.some((w) => /credit exposure/.test(w)));
-  const p = settle({ total: 20000, deposit: 2000, payout: 14000, fee: 150, mode: 'platform_collects' });
-  assert.equal(p.platform_owes_sub, 13850); assert.equal(p.sub_owes_platform, 0);
-  assert.equal(p.platform_profit, d.platform_profit, 'profit is identical in both modes');
+test('platform split: fee is a percentage of the payout, margin is separate, tax is pass-through', () => {
+  const { splitJob } = require('../server/settlement');
+  const s = splitJob({ total: 21000, tax: 500, permit: 500, payout: 14000, fee_pct: 5 });
+  assert.equal(s.fee, 700);
+  assert.equal(s.sub_net, 13300);
+  assert.equal(s.pass_through, 1000);
+  assert.equal(s.platform_margin, 6000);          // 21000 - 1000 - 14000
+  assert.equal(s.platform_revenue, 6700);         // margin + fee
+  assert.equal(splitJob({ total: 10000, payout: 10000, fee_pct: 5 }).fee, 500, '5% of a $10,000 award is $500');
+  assert.ok(splitJob({ total: 10000, payout: 11000, fee_pct: 5 }).warnings.some((w) => /loses money/.test(w)));
+  assert.ok(splitJob({ total: 20000, payout: 10000, fee_pct: 12 }).warnings.some((w) => /BuildZoom/.test(w)));
+  assert.throws(() => splitJob({ total: 100, payout: 50, fee_pct: 31 }), RangeError);
+  assert.throws(() => splitJob({ total: 100, payout: -1, fee_pct: 5 }), RangeError);
 });
 
-test('settlement: tax and permit are pass-through, a large deposit can flip who owes whom', () => {
-  const { settle } = require('../server/settlement');
-  const s = settle({ total: 10875, tax: 875, permit: 0, deposit: 1000, payout: 9500, fee: 100, mode: 'direct_balance' });
-  assert.equal(s.platform_profit, 600);          // 10875 - 875 tax - 9500 payout + 100 fee
-  assert.equal(s.pass_through, 875);
-  assert.equal(s.sub_owes_platform, 475);        // sub collects 9875, earns 9400
-  assert.equal(s.platform_owes_sub, 0);
-  const flip = settle({ total: 10000, deposit: 9000, payout: 8000, fee: 100, mode: 'direct_balance' });
-  assert.equal(flip.platform_owes_sub, 6900);    // sub only collected 1000 of the 7900 it earns
-  assert.equal(flip.sub_owes_platform, 0);
-  assert.throws(() => settle({ total: 100, deposit: 200, payout: 50, fee: 5, mode: 'direct_balance' }), RangeError);
-  assert.throws(() => settle({ total: 100, deposit: 10, payout: 50, fee: 5, mode: 'cash' }), RangeError);
+test('milestones: customer schedule sums exactly; sub payouts and fee conserve to the cent', () => {
+  const { planSchedule, allocatePayout, cashSafe } = require('../server/milestones');
+  for (const [total, deposit, payout, pct] of [[20000, 1000, 14000, 5], [33333.33, 1666.67, 22222.22, 7.5], [9999.99, 999.99, 7000.01, 5], [100, 0, 70, 5]]) {
+    const sched = planSchedule({ total, deposit });
+    const sum = sched.reduce((a, m) => a + m.customer_amount, 0);
+    assert.ok(Math.abs(sum - total) < 0.005, `customer sum ${sum} vs ${total}`);
+    const alloc = allocatePayout(sched, payout, pct);
+    const gross = alloc.reduce((a, m) => a + m.sub_gross, 0), fee = alloc.reduce((a, m) => a + m.fee_amount, 0), net = alloc.reduce((a, m) => a + m.sub_net, 0);
+    assert.ok(Math.abs(gross - payout) < 0.005, `gross ${gross} vs ${payout}`);
+    assert.ok(Math.abs(fee - Math.round(payout * pct) / 100) < 0.011, `fee ${fee}`);
+    assert.ok(Math.abs(net + fee - payout) < 0.011);
+    assert.equal(cashSafe(alloc), true);
+    assert.equal(alloc[0].sub_gross, 0, 'the deposit never pays the sub');
+  }
+});
+
+test('milestones: cash safety detects a schedule that would pay out money not yet collected', () => {
+  const { cashSafe } = require('../server/milestones');
+  assert.equal(cashSafe([{ customer_amount: 100, sub_gross: 0 }, { customer_amount: 100, sub_gross: 250 }]), false);
+  assert.equal(cashSafe([{ customer_amount: 100, sub_gross: 0 }, { customer_amount: 100, sub_gross: 150 }]), true);
 });

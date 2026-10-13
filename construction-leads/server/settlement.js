@@ -1,43 +1,24 @@
 'use strict';
-// Who owes whom on a subcontracted job. Pure math, no I/O.
+// Platform-collects economics for a subcontracted job. Pure math, no I/O.
 //
-//   total    contract price the customer owes (incl. tax and permit)
-//   deposit  collected by the platform at signing
-//   payout   the award price: what the subcontractor earns for the work
-//   fee      flat platform fee charged to the subcontractor for taking the job
+//   total     contract price the customer pays the platform (incl. tax and permit)
+//   payout    the award price: what the subcontractor earns for the work (gross)
+//   fee_pct   platform fee as a % of the payout, withheld from each payout (never invoiced, so no collection risk)
 //
-// Mode 'platform_collects':  customer pays everything to the platform; platform pays sub (payout - fee).
-// Mode 'direct_balance':     customer pays the deposit to the platform and the balance straight to the sub.
-//                            The sub therefore holds our margin and must remit it. That is CREDIT RISK on the platform.
+// The platform keeps: (total - tax - permit - payout)  [its margin on the customer price]  +  fee.
 const r2 = (n) => Math.round((n + Number.EPSILON) * 100) / 100;
 
-function settle({ total, tax = 0, permit = 0, deposit, payout, fee, mode }) {
-  if (![total, deposit, payout, fee].every(Number.isFinite) || total < 0 || deposit < 0 || payout < 0 || fee < 0) throw new RangeError('invalid amounts');
-  if (deposit > total) throw new RangeError('deposit exceeds total');
-  if (fee > payout) throw new RangeError('fee exceeds payout');
-  if (!['platform_collects', 'direct_balance'].includes(mode)) throw new RangeError('unknown payment mode');
-
-  const subNet = payout - fee;                       // what the sub keeps after our fee
-  const passThrough = tax + permit;                  // held for the state / permit office, not profit
-  const platformProfit = total - passThrough - payout + fee; // before our overhead already baked into the quote
-  const out = { mode, sub_net: subNet, platform_profit: platformProfit, pass_through: passThrough, warnings: [] };
-
-  if (mode === 'platform_collects') {
-    Object.assign(out, { customer_pays_platform: total, customer_pays_sub: 0, platform_owes_sub: subNet, sub_owes_platform: 0 });
-  } else {
-    const collectedBySub = total - deposit;
-    const diff = collectedBySub - subNet;
-    Object.assign(out, {
-      customer_pays_platform: deposit, customer_pays_sub: collectedBySub,
-      platform_owes_sub: diff < 0 ? -diff : 0, sub_owes_platform: diff > 0 ? diff : 0,
-    });
-    if (diff > 0) out.warnings.push(`The sub collects ${r2(collectedBySub)} from the customer but only earns ${r2(subNet)}, so it must remit ${r2(diff)} to the platform. That is unsecured credit exposure.`);
-    out.warnings.push('The sub will see the full contract price when they collect the balance, so your margin is visible to them.');
-  }
-  if (platformProfit < 0) out.warnings.push('Platform profit is negative at this payout and fee.');
-  if (fee > payout * 0.25) out.warnings.push('Fee is over 25% of the payout; subs will balk.');
-  for (const k of ['sub_net', 'platform_profit', 'pass_through', 'customer_pays_platform', 'customer_pays_sub', 'platform_owes_sub', 'sub_owes_platform']) out[k] = r2(out[k]);
+function splitJob({ total, tax = 0, permit = 0, payout, fee_pct }) {
+  if (![total, payout, fee_pct].every(Number.isFinite) || total < 0 || payout < 0 || fee_pct < 0) throw new RangeError('invalid amounts');
+  if (fee_pct > 30) throw new RangeError('fee_pct above 30% is not allowed');
+  const fee = r2(payout * fee_pct / 100);
+  const passThrough = tax + permit;
+  const margin = total - passThrough - payout;
+  const out = { fee, sub_net: r2(payout - fee), pass_through: r2(passThrough), platform_margin: r2(margin), platform_revenue: r2(margin + fee), warnings: [] };
+  if (margin < 0) out.warnings.push('The award price is above what the customer pays (after tax/permit). The job loses money before the fee.');
+  if (out.platform_revenue < 0) out.warnings.push('Platform revenue on this job is negative.');
+  if (fee_pct > 10) out.warnings.push('Fee is above 10%; BuildZoom, the closest model, charges 2.5-4.5% on jobs under $50K.');
   return out;
 }
 
-module.exports = { settle };
+module.exports = { splitJob, r2 };

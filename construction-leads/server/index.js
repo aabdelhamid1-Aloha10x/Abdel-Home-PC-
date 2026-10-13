@@ -13,6 +13,7 @@ const { contractText, rescission } = require('./contract');
 const notify = require('./notify');
 const { seed } = require('./seed');
 const M = require('./marketplace');
+const MS = require('./milestones');
 
 const ROOT = path.join(__dirname, '..');
 const MIME = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml', '.png': 'image/png', '.json': 'application/json' };
@@ -353,7 +354,6 @@ route('PATCH', '/api/admin/jobs/:id', 'admin', (req, res, { body, params }) => {
   for (const k of ['assigned_type', 'subcontractor_id', 'sub_cost', 'status', 'start_date', 'notes']) if (k in body) run(`UPDATE jobs SET ${k}=? WHERE id=?`, body[k], job.id);
   if (['in_house', 'subcontractor'].includes(body.assigned_type) && post0?.status === 'open') run("UPDATE job_posts SET status='closed' WHERE id=?", post0.id);
   event(job.lead_id, 'job_updated', body);
-  if (body.status === 'complete') M.onJobComplete(job.id);
   send(res, 200, get('SELECT * FROM jobs WHERE id=?', job.id));
 });
 
@@ -386,6 +386,7 @@ const publicQuote = (q) => {
     contract: c ? { text: c.text, signed_at: c.signed_at, signer_name: c.signer_name, deposit_status: c.deposit_status, rescission_ends: c.rescission_ends } : null,
     contract_preview: c ? null : contractText({ quote: q, lead: { ...lead, service: q.title }, result: r, rescissionNote: rescission(new Date()).note }),
     stripe_enabled: !!cfg.stripe.secretKey,
+    milestones: c ? MS.forJob(get('SELECT id FROM jobs WHERE quote_id=?', q.id).id).map((m) => ({ id: m.id, seq: m.seq, name: m.name, amount: m.customer_amount, status: m.status, funded: !!m.funded_at, notes: m.evidence_notes, photos: m.evidence_photos.length, submitted_at: m.submitted_at, auto_approve_hours: cfg.marketplace.autoApproveHours, dispute_reason: m.dispute_reason })) : [],
   };
 };
 
@@ -414,6 +415,7 @@ route('POST', '/api/quote/:token/sign', 'public', async (req, res, { params, bod
     VALUES (?,?,?,?,?,?,?,?,?)`, q.id, text, sha256(text), name, body.signature, now.toISOString(), ip, result.totals.deposit, resc.ends.toISOString()).lastInsertRowid);
   run("UPDATE quotes SET status='approved', approved_at=datetime('now') WHERE id=?", q.id);
   run("INSERT INTO jobs (quote_id, lead_id) VALUES (?,?)", q.id, q.lead_id);
+  MS.createForContract(cid);
   event(q.lead_id, 'contract_signed', { quote: q.id, contract: cid, ip });
   const contract = get('SELECT * FROM contracts WHERE id=?', cid);
   let checkoutUrl = null;
@@ -432,9 +434,12 @@ route('POST', '/webhooks/stripe', 'public', (req, res, { raw }) => {
   if (ev.type === 'checkout.session.completed' && o.mode === 'subscription') {
     const sid = Number(o.metadata?.sub_id || o.client_reference_id);
     if (sid) { run("UPDATE subcontractors SET subscription_status='active', stripe_customer_id=?, stripe_subscription_id=? WHERE id=?", o.customer, o.subscription, sid); event(null, 'sub_subscribed', { sub: sid }); }
-  } else if (ev.type === 'checkout.session.completed' && o.payment_status === 'paid') {
-    const cid = Number(o.metadata?.contract_id || o.client_reference_id);
-    if (cid) I.markDepositPaid(cid, 'stripe');
+  } else if ((ev.type === 'checkout.session.completed' && o.payment_status === 'paid') || ev.type === 'checkout.session.async_payment_succeeded') {
+    // Card: paid immediately. ACH: only counts once the bank debit has actually settled (async_payment_succeeded).
+    if (o.metadata?.milestone_id) { const id = Number(o.metadata.milestone_id); MS.markFunded(id, 'stripe'); }
+    else { const cid = Number(o.metadata?.contract_id || o.client_reference_id); if (cid) I.markDepositPaid(cid, 'stripe'); }
+  } else if (ev.type === 'checkout.session.async_payment_failed') {
+    event(null, 'payment_failed', { session: o.id, milestone: o.metadata?.milestone_id || null, contract: o.metadata?.contract_id || null });
   } else if (ev.type === 'invoice.payment_failed') {
     run("UPDATE subcontractors SET subscription_status='past_due' WHERE stripe_customer_id=?", o.customer);
   } else if (ev.type === 'invoice.paid') {
@@ -496,12 +501,73 @@ route('POST', '/api/sub/jobs/:id/claim', 'sub', async (req, res, { sub, params, 
   if (limited(ip + 'claim', 30)) return send(res, 429, { error: 'Slow down.' });
   const post = M.claim(sub.id, Number(params.id));
   send(res, 200, M.awardedView(post));
-  // Flat fee goes onto the sub's next Stripe invoice. Failure is logged, and the ledger row stays 'due'.
-  const row = get("SELECT * FROM ledger WHERE job_id=? AND type='job_fee' ORDER BY id DESC", post.job_id);
-  I.billJobFee(sub, row.id, row.amount, row.note).catch((e) => event(null, 'fee_billing_error', { ledger: row.id, message: e.message }));
 });
 route('GET', '/api/sub/my-jobs', 'sub', (req, res, { sub }) => send(res, 200, all("SELECT * FROM job_posts WHERE awarded_to=? ORDER BY awarded_at DESC", sub.id).map(M.awardedView)));
 route('GET', '/api/sub/ledger', 'sub', (req, res, { sub }) => send(res, 200, all('SELECT * FROM ledger WHERE sub_id=? ORDER BY id DESC', sub.id)));
+
+
+// ---- subcontractor: phases (start / evidence / submit) and payouts
+route('POST', '/api/sub/milestones/:id/start', 'sub', (req, res, { sub, params, body }) => {
+  const geo = body.lat != null && body.lng != null ? { lat: Number(body.lat), lng: Number(body.lng), at: new Date().toISOString() } : null;
+  MS.startPhase(sub.id, Number(params.id), geo); send(res, 200, { ok: true });
+});
+route('PUT', '/api/sub/milestones/:id/photo', 'sub', async (req, res, { sub, params }) => {
+  const id = Number(params.id);
+  const buf = await readBody(req, 15_000_000, true);
+  if (!(buf[0] === 0xff && buf[1] === 0xd8) && buf.slice(1, 4).toString() !== 'PNG') return send(res, 400, { error: 'Upload a JPG or PNG photo.' });
+  const n = MS.addPhoto(sub.id, id, (name) => fs.writeFileSync(path.join(cfg.dataDir, 'photos', name), buf));
+  send(res, 200, { ok: true, photos: n });
+});
+route('POST', '/api/sub/milestones/:id/submit', 'sub', (req, res, { sub, params, body }) => { MS.submitPhase(sub.id, Number(params.id), { notes: body.notes, waiver: body.waiver === true }); send(res, 200, { ok: true }); });
+route('POST', '/api/sub/payouts/setup', 'sub', async (req, res, { sub }) => {
+  const url = await I.connectOnboardingLink(sub);
+  if (!url) return send(res, 503, { error: 'Payouts are not set up on the platform yet. Contact us.' });
+  send(res, 200, { url });
+});
+
+// ---- customer: pay a milestone, approve or dispute completed work (authorized by the private quote link)
+const quoteMilestone = (token, id) => {
+  const q = customerQuote(token); if (!q) return {};
+  const job = get('SELECT * FROM jobs WHERE quote_id=?', q.id);
+  const m = job && get('SELECT * FROM milestones WHERE id=? AND job_id=?', Number(id), job.id);
+  return { q, job, m };
+};
+route('POST', '/api/quote/:token/milestones/:id/pay', 'public', async (req, res, { params }) => {
+  const { q, m } = quoteMilestone(params.token, params.id);
+  if (!m) return send(res, 404, { error: 'not found' });
+  if (m.funded_at) return send(res, 409, { error: 'Already paid.' });
+  if (!['invoiced', 'funded'].includes(m.status) && m.seq > 1) return send(res, 409, { error: 'This payment is not due yet.' });
+  const url = await I.createMilestoneCheckout(q, m, get('SELECT * FROM leads WHERE id=?', q.lead_id));
+  if (!url) return send(res, 503, { error: 'Online payment is not configured. Please call us to pay by bank transfer.' });
+  send(res, 200, { checkoutUrl: url });
+});
+route('POST', '/api/quote/:token/milestones/:id/approve', 'public', (req, res, { params }) => {
+  const { m } = quoteMilestone(params.token, params.id); if (!m) return send(res, 404, { error: 'not found' });
+  MS.approve(m.id, 'customer'); send(res, 200, { ok: true });
+});
+route('POST', '/api/quote/:token/milestones/:id/dispute', 'public', (req, res, { params, body }) => {
+  const { m } = quoteMilestone(params.token, params.id); if (!m) return send(res, 404, { error: 'not found' });
+  if (String(body.reason || '').trim().length < 5) return send(res, 400, { error: 'Please describe the problem.' });
+  MS.dispute(m.id, body.reason); send(res, 200, { ok: true });
+});
+route('GET', '/api/quote/:token/milestones/:id/photo/:n', 'public', (req, res, { params }) => {
+  const { m } = quoteMilestone(params.token, params.id); if (!m) return send(res, 404, { error: 'not found' });
+  const name = JSON.parse(m.evidence_photos || '[]')[Number(params.n)];
+  const f = name && path.join(cfg.dataDir, 'photos', path.basename(name));
+  if (!f || !fs.existsSync(f)) return send(res, 404, { error: 'not found' });
+  res.writeHead(200, { 'Content-Type': 'image/jpeg', 'X-Content-Type-Options': 'nosniff' }); fs.createReadStream(f).pipe(res);
+});
+
+// ---- admin: milestones
+route('GET', '/api/admin/jobs/:id/milestones', 'admin', (req, res, { params }) => send(res, 200, MS.forJob(Number(params.id))));
+route('POST', '/api/admin/milestones/:id/mark-funded', 'admin', (req, res, { params }) => {
+  const m = MS.mget(Number(params.id)); if (!m) return send(res, 404, { error: 'not found' });
+  if (m.seq === 1) { const c = get('SELECT c.id FROM contracts c JOIN jobs j ON j.quote_id=c.quote_id WHERE j.id=?', m.job_id); I.markDepositPaid(c.id, 'manual'); }
+  else MS.markFunded(m.id, 'manual');
+  send(res, 200, MS.mget(m.id));
+});
+route('POST', '/api/admin/milestones/:id/resolve', 'admin', (req, res, { params, body }) => { MS.resolveDispute(Number(params.id), body.action); send(res, 200, { ok: true }); });
+route('POST', '/api/admin/milestones/:id/invoice', 'admin', (req, res, { params }) => { const m = MS.mget(Number(params.id)); if (!m) return send(res, 404, { error: 'not found' }); MS.invoice(m); send(res, 200, MS.mget(m.id)); });
 
 // ---- admin side of the marketplace
 route('GET', '/api/admin/subs', 'admin', (req, res) => send(res, 200, all('SELECT * FROM subcontractors WHERE active=1 ORDER BY (status=\'pending\') DESC, id DESC').map((s) => ({ ...M.publicSub(s), password_hash: undefined }))));
@@ -526,17 +592,15 @@ route('POST', '/api/admin/jobs/:id/post', 'admin', (req, res, { params, body }) 
   const job = get('SELECT j.*, c.deposit_status FROM jobs j JOIN contracts c ON c.quote_id=j.quote_id WHERE j.id=?', Number(params.id));
   if (!job) return send(res, 404, { error: 'job not found' });
   if (job.deposit_status !== 'paid') return send(res, 409, { error: 'Only jobs with a paid deposit can be posted.' });
-  send(res, 201, M.createPost(job.id, { payout: body.payout, flat_fee: body.flat_fee, payment_mode: body.payment_mode }));
+  send(res, 201, M.createPost(job.id, { payout: body.payout, fee_pct: body.fee_pct }));
 });
 route('PATCH', '/api/admin/posts/:id', 'admin', (req, res, { params, body }) => {
   const p = get('SELECT * FROM job_posts WHERE id=?', Number(params.id)); if (!p) return send(res, 404, { error: 'not found' });
   if (p.status === 'awarded') return send(res, 409, { error: 'Already awarded: terms are locked.' });
-  const payout = body.payout != null ? Number(body.payout) : p.payout, fee = body.flat_fee != null ? Number(body.flat_fee) : p.flat_fee;
-  if (!(payout >= 0) || !(fee >= 0) || fee > payout) return send(res, 400, { error: 'invalid payout or fee' });
-  const mode = body.payment_mode || p.payment_mode;
-  if (!['platform_collects', 'direct_balance'].includes(mode)) return send(res, 400, { error: 'bad payment mode' });
+  const payout = body.payout != null ? Number(body.payout) : p.payout, pct = body.fee_pct != null ? Number(body.fee_pct) : p.fee_pct;
+  if (!(payout >= 0) || !(pct >= 0 && pct <= 30)) return send(res, 400, { error: 'payout must be >= 0 and fee_pct between 0 and 30' });
   const status = ['open', 'closed'].includes(body.status) ? body.status : p.status;
-  run('UPDATE job_posts SET payout=?, flat_fee=?, payment_mode=?, status=? WHERE id=?', payout, fee, mode, status, p.id);
+  run('UPDATE job_posts SET payout=?, fee_pct=?, flat_fee=?, status=? WHERE id=?', payout, pct, Math.round(payout * pct) / 100, status, p.id);
   send(res, 200, get('SELECT * FROM job_posts WHERE id=?', p.id));
 });
 route('GET', '/api/admin/ledger', 'admin', (req, res) => send(res, 200, all('SELECT l.*, s.name sub_name FROM ledger l LEFT JOIN subcontractors s ON s.id=l.sub_id ORDER BY l.id DESC LIMIT 300')));
@@ -558,7 +622,7 @@ async function handle(req, res) {
       if (r.auth === 'voice' && !voiceAuth(req)) return send(res, 401, { error: 'unauthorized' });
       if (r.auth === 'sub') { ctx.sub = M.subFromToken(req.headers['x-sub-token']); if (!ctx.sub) return send(res, 401, { error: 'Please sign in.' }); }
       const rawRoute = url.pathname.startsWith('/webhooks/meta') || url.pathname === '/webhooks/stripe';
-      const binary = (req.method === 'PUT' && (url.pathname.endsWith('/audio') || url.pathname === '/api/sub/coi')) || url.pathname.endsWith('/photo');
+      const binary = (req.method === 'PUT' && (url.pathname.endsWith('/audio') || url.pathname === '/api/sub/coi' || /^\/api\/sub\/milestones\/\d+\/photo$/.test(url.pathname))) || (req.method === 'POST' && url.pathname.endsWith('/photo'));
       if (!binary) {
         if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
           if (rawRoute) ctx.raw = await readBody(req, 1_000_000, true); else ctx.body = await readBody(req);
@@ -597,7 +661,7 @@ function start(port = cfg.port) {
   server.listen(port);
   const timers = [
     setInterval(() => I.followUpTick().catch((e) => console.error('followUp', e.message)), 60_000),
-    setInterval(() => { try { I.releaseRescissionTick(); } catch (e) { console.error(e.message); } }, 5 * 60_000),
+    setInterval(() => { try { I.releaseRescissionTick(); MS.autoApproveTick(); } catch (e) { console.error(e.message); } I.payDueTransfers().catch(() => {}); }, 5 * 60_000),
   ];
   server.on('close', () => timers.forEach(clearInterval));
   return server;

@@ -7,7 +7,7 @@ Zero dependencies. Needs Node 22.5+ (uses the built-in SQLite).
 
 ```
 npm start          # http://localhost:3000   (seeds a starter price book + 2 estimators)
-npm test           # 28 tests: quote math, settlement math, the whole funnel, and the marketplace
+npm test           # 30 tests: quote math, payout/milestone math, the whole funnel, the marketplace and the payment gates
 ```
 
 ## The pipeline
@@ -99,8 +99,7 @@ Service area is **New York and New Jersey** (ZIP-routed; out-of-area leads are s
 an eligible sub **claims** it (first come, atomic: two subs racing gives exactly one winner) →
 customer name, phone and address unlock for that sub only.
 
-**Revenue model:** monthly subscription + a **flat fee per claimed job** (no percentage). Set `SUB_MONTHLY_PRICE` and `SUB_FLAT_FEE`;
-you can override the fee and award price per job in Admin → Marketplace before it's claimed. The fee is added to the sub's next Stripe invoice (and always logged in the ledger).
+**Revenue model:** monthly subscription + a **percentage of the award price, withheld from payouts** (default 5%, `SUB_FEE_PCT`, adjustable 0-30% per job in Admin → Marketplace before it's claimed).
 
 **What subs see before claiming:** trade, ZIP3 area ("105xx"), scope lines and quantities, room measurements, customer wishes, award price, fee, net.
 **Never:** customer name/phone/address, the contract price, your margin (tested). The award price defaults to your direct cost + contingency; edit it per job.
@@ -108,22 +107,18 @@ you can override the fee and award price per job in Admin → Marketplace before
 **Who can claim** (enforced server-side): account approved · subscription active · liability insurance not expired · covers the state and ZIP prefixes · trade matches
 (or the sub has "general"). A sub can't be assigned or start work until the deposit is paid **and** the customer's cancellation window has closed.
 
-### Money flow: the two modes (`SUB_PAYMENT_MODE`, switchable per job)
+### Money flow: platform collects, fee withheld, sub paid per phase
+The customer pays **the platform** in milestones (deposit, then four phases, last 10% as retainage), only through platform payment links
+(ACH preferred: $5 vs ~$290 by card on $10K). The sub is paid by the platform after each **approved** phase, with the fee withheld:
 
-Example: $20,000 job, $2,000 deposit, sub award price $14,000, flat fee $150. Your profit is **$6,150 in both modes** (price − award + fee, before tax pass-through).
+1. Customer signs; deposit clears (card, or ACH after the bank debit settles) → job is posted. **A sub cannot claim until the deposit has cleared.**
+2. Cancellation window closes → phase 1 is invoiced. Customer funds it → **only now may the sub start** (no pay, no work).
+3. Sub uploads photos + signs a lien waiver → submits. The next phase is invoiced; the customer approves or reports a problem (silence = approved after 72h).
+4. Approval → payout = phase gross minus **fee % (default 5% of the award, adjustable per job)**, via Stripe Connect transfer or recorded as due in the ledger.
+Example: $20,000 job, $1,000 deposit, $14,000 sub award, 5% → sub nets $13,300, platform keeps the $700 fee plus the $6,000 margin. Payouts never exceed what the customer has already paid.
 
-| | `direct_balance` (your plan) | `platform_collects` |
-|---|---|---|
-| Customer pays the platform | $2,000 deposit | $20,000 |
-| Customer pays the sub | $18,000 balance | nothing |
-| Sub is entitled to | $13,850 (award − fee) | $13,850 |
-| Settlement | **Sub remits $4,150 to you** | You pay the sub $13,850 |
-
-**Read this before choosing `direct_balance`.** The balance the customer pays the sub includes *your margin*. So:
-1. **Credit risk is yours.** If the sub keeps the money, you chase them for $4,150. You hold only the deposit, and a legal 10-15% deposit often can't cover your share.
-2. **The sub sees the full contract price** when they invoice the customer, so your margin isn't hidden.
-3. **The contract and lien law get complicated.** The customer contracts with *you*; paying the sub directly needs a clear direction-to-pay clause (a draft is in the contract template for your attorney).
-My recommendation: use `platform_collects` with milestone payments (the sub is paid after you collect), or at minimum require a signed remittance agreement and withhold fees from the sub's next payouts. The ledger records `sub_remittance_due` / `sub_payout_due` when a job completes, and the admin screen shows the sub's remittance exposure per job.
+See **[docs/payment-enforcement.md](docs/payment-enforcement.md)** (how this is enforced on customer and sub, where the money sits in NY, abuse cases) and
+**[docs/feasibility-study.md](docs/feasibility-study.md)** (competitors, exact structures, unit economics, risks, sources). `node docs/unit-economics.js` reproduces the numbers.
 
 ### NY / NJ: confirm with an attorney before launch
 Not legal advice. These are the issues to put in front of a NY/NJ construction lawyer:
@@ -134,8 +129,8 @@ Not legal advice. These are the issues to put in front of a NY/NJ construction l
 - **Worker classification.** NY is strict about independent contractor vs employee. Terms, control and exclusivity matter.
 - **Fees to subs** for access to work, and whether the platform is a referral service, a staffing arrangement, or a general contractor, can change your licensing and tax treatment.
 
-Config keys: `SUB_MONTHLY_PRICE`, `SUB_FLAT_FEE`, `SUB_PAYMENT_MODE`, `AUTO_PUBLISH_JOBS`.
-Stripe additionally needs webhook events `customer.subscription.deleted`, `invoice.payment_failed`, `invoice.paid`.
+Config keys: `SUB_MONTHLY_PRICE`, `SUB_FEE_PCT`, `AUTO_APPROVE_HOURS`, `AUTO_PUBLISH_JOBS`.
+Stripe additionally needs webhook events `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed`, `customer.subscription.deleted`, `invoice.payment_failed`, `invoice.paid`. Enable Stripe Connect (Express) so subs can receive payouts.
 
 ## Compliance and legal: read before going live
 

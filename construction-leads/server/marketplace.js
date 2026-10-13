@@ -3,7 +3,8 @@ const crypto = require('node:crypto');
 const cfg = require('./config');
 const { db, get, all, run, event, j } = require('./db');
 const { token, sha256, safeEq, normPhone, zipState } = require('./util');
-const { settle } = require('./settlement');
+const { splitJob, r2 } = require('./settlement');
+const MS = require('./milestones');
 const { httpErr } = require('./leads');
 const notify = require('./notify');
 
@@ -110,11 +111,13 @@ function createPost(jobId, opts = {}) {
   };
   // Default award price = our direct cost + contingency (before our overhead and margin). Admin can edit.
   const payout = opts.payout ?? Math.round((result.totals.direct + result.totals.contingency) * 100) / 100;
-  const fee = opts.flat_fee ?? cfg.marketplace.flatFee;
-  const id = Number(run(`INSERT INTO job_posts (job_id, trades, state, zip, title, scope, payout, flat_fee, payment_mode, start_after)
-    VALUES (?,?,?,?,?,?,?,?,?,?)`, jobId, j(trades), state, lead.zip, `${trades.join(' / ')} · ${state || '??'} ${String(lead.zip || '').slice(0, 3)}xx`, j(scope),
-  payout, fee, opts.payment_mode || cfg.marketplace.paymentMode, contract?.rescission_ends || null).lastInsertRowid);
-  event(job.lead_id, 'job_posted', { post: id, payout, fee });
+  const feePct = opts.fee_pct ?? cfg.marketplace.feePct;
+  if (!(feePct >= 0 && feePct <= 30)) throw httpErr(400, 'fee_pct must be between 0 and 30');
+  const fee = r2(payout * feePct / 100);
+  const id = Number(run(`INSERT INTO job_posts (job_id, trades, state, zip, title, scope, payout, flat_fee, fee_pct, payment_mode, start_after)
+    VALUES (?,?,?,?,?,?,?,?,?,'platform_collects',?)`, jobId, j(trades), state, lead.zip, `${trades.join(' / ')} · ${state || '??'} ${String(lead.zip || '').slice(0, 3)}xx`, j(scope),
+  payout, fee, feePct, contract?.rescission_ends || null).lastInsertRowid);
+  event(job.lead_id, 'job_posted', { post: id, payout, fee_pct: feePct });
   return get('SELECT * FROM job_posts WHERE id=?', id);
 }
 
@@ -126,7 +129,7 @@ function autoPost(jobId) {
 function economics(post) {
   const job = get('SELECT * FROM jobs WHERE id=?', post.job_id);
   const q = get('SELECT result FROM quotes WHERE id=?', job.quote_id), t = parse(q.result).totals;
-  return settle({ total: t.total, tax: t.tax, permit: t.permit, deposit: t.deposit, payout: post.payout, fee: post.flat_fee, mode: post.payment_mode });
+  return splitJob({ total: t.total, tax: t.tax, permit: t.permit, payout: post.payout, fee_pct: post.fee_pct });
 }
 
 // What a subcontractor is allowed to see on the board.
@@ -134,8 +137,7 @@ function boardView(post, sub) {
   const why = sub ? eligibility(sub, post) : [];
   return {
     id: post.id, title: post.title, trades: parse(post.trades, []), state: post.state, area: `${String(post.zip || '').slice(0, 3)}xx`, status: post.status,
-    scope: parse(post.scope), payout: post.payout, flat_fee: post.flat_fee, net_to_you: Math.round((post.payout - post.flat_fee) * 100) / 100,
-    payment_mode: post.payment_mode, earliest_start: post.start_after, posted_at: post.posted_at, eligible: why.length === 0, reasons: why,
+    scope: parse(post.scope), payout: post.payout, fee_pct: post.fee_pct, fee: post.flat_fee, net_to_you: r2(post.payout - post.flat_fee), earliest_start: post.start_after, posted_at: post.posted_at, eligible: why.length === 0, reasons: why,
   };
 }
 
@@ -148,14 +150,18 @@ function claim(subId, postId) {
     if (!post) throw httpErr(404, 'Job not found.');
     const why = eligibility(sub, post);
     if (why.length) throw httpErr(post.status !== 'open' ? 409 : 403, why[0]);
+    // FUNDED BEFORE COMMITTED: the platform only commits to a subcontractor once the customer's deposit has cleared.
+    if (!get('SELECT funded_at FROM milestones WHERE job_id=? AND seq=1', post.job_id)?.funded_at) throw httpErr(409, 'Customer funds are not secured yet.');
     const r = run("UPDATE job_posts SET status='awarded', awarded_to=?, awarded_at=datetime('now') WHERE id=? AND status='open'", subId, postId);
     if (Number(r.changes) !== 1) throw httpErr(409, 'Another subcontractor just took this job.');
     run("UPDATE jobs SET assigned_type='subcontractor', subcontractor_id=?, sub_cost=? WHERE id=?", subId, post.payout, post.job_id);
-    run("INSERT INTO ledger (sub_id, job_id, type, amount, note) VALUES (?,?, 'job_fee', ?, ?)", subId, post.job_id, post.flat_fee, `Flat fee, job #${post.job_id}`);
+    MS.allocateForJob(post.job_id, post.payout, post.fee_pct);
     db.exec('COMMIT');
   } catch (e) { db.exec('ROLLBACK'); throw e; }
   const post = get('SELECT * FROM job_posts WHERE id=?', postId), job = get('SELECT * FROM jobs WHERE id=?', post.job_id);
   event(job.lead_id, 'job_awarded', { post: postId, sub: subId });
+  const c0 = get('SELECT rescission_ends FROM contracts WHERE quote_id=?', job.quote_id);
+  if (c0 && new Date(c0.rescission_ends) <= new Date()) { const m2 = get('SELECT * FROM milestones WHERE job_id=? AND seq=2', post.job_id); if (m2) MS.invoice(m2); }
   return post;
 }
 
@@ -169,17 +175,9 @@ function awardedView(post) {
     ...boardView(post, null), job_id: job.id, job_status: job.status, start_date: job.start_date,
     customer: lead, rescission_ends: contract?.rescission_ends, deposit_status: contract?.deposit_status,
     can_start: contract?.deposit_status === 'paid' && new Date(contract.rescission_ends) <= new Date(),
-    money: { customer_pays_you: eco.customer_pays_sub, you_remit_to_platform: eco.sub_owes_platform, platform_pays_you: eco.platform_owes_sub, your_net: eco.sub_net },
+    milestones: MS.forJob(job.id).filter((m) => m.seq > 1).map((m) => ({ id: m.id, seq: m.seq, name: m.name, status: m.status, funded: !!m.funded_at, gross: m.sub_gross, fee: m.fee_amount, net: m.sub_net, photos: m.evidence_photos.length, dispute_reason: m.dispute_reason })),
+    money: { your_net: eco.sub_net, fee: eco.fee, how: 'The platform collects from the customer and pays you per approved phase. The fee is withheld from each payout.' },
   };
 }
 
-// ---- settlement ledger on completion -----------------------------------------
-function onJobComplete(jobId) {
-  const post = get("SELECT * FROM job_posts WHERE job_id=? AND status='awarded'", jobId);
-  if (!post || get("SELECT 1 FROM ledger WHERE job_id=? AND type IN ('sub_remittance_due','sub_payout_due')", jobId)) return;
-  const e = economics(post);
-  if (e.sub_owes_platform > 0) run("INSERT INTO ledger (sub_id, job_id, type, amount, note) VALUES (?,?, 'sub_remittance_due', ?, 'Sub collected customer balance; remit platform share')", post.awarded_to, jobId, e.sub_owes_platform);
-  if (e.platform_owes_sub > 0) run("INSERT INTO ledger (sub_id, job_id, type, amount, note) VALUES (?,?, 'sub_payout_due', ?, 'Payout owed to sub')", post.awarded_to, jobId, e.platform_owes_sub);
-}
-
-module.exports = { TRADES, signup, login, subFromToken, publicSub, eligibility, createPost, autoPost, boardView, claim, awardedView, economics, onJobComplete, csv };
+module.exports = { TRADES, signup, login, subFromToken, publicSub, eligibility, createPost, autoPost, boardView, claim, awardedView, economics, csv };
