@@ -78,34 +78,35 @@ test('rejects nonsense margins and empty quotes are zero', () => {
   assert.equal(priceQuote([], base, { state: 'TX' }).totals.total, 0);
 });
 
-test('marketplace split: fee is a percentage of the bid; customer fee is optional and itemized', () => {
+test('spread model: your example. $10,000 job, $8,000 bid, 5% fee = $2,400 revenue = 24% of the price', () => {
   const { splitJob } = require('../server/settlement');
-  const s = splitJob({ payout: 14000, fee_pct: 5, customer_fee_pct: 3 });
-  assert.equal(s.sub_fee, 700); assert.equal(s.sub_net, 13300);
-  assert.equal(s.customer_fee, 420); assert.equal(s.customer_total, 14420);
-  assert.equal(s.platform_revenue, 1120); assert.equal(s.take_pct, 8);
-  assert.equal(splitJob({ payout: 10000, fee_pct: 5 }).sub_fee, 500, '5% of a $10,000 award is $500');
-  assert.ok(splitJob({ payout: 10000, fee_pct: 5, acquisition_cost: 3000 }).warnings.some((w) => /below the estimated/.test(w)), 'warns when fees cannot cover the cost of winning the job');
-  assert.equal(splitJob({ payout: 30000, fee_pct: 5, customer_fee_pct: 5, acquisition_cost: 3000 }).warnings.length, 0);
-  assert.ok(splitJob({ payout: 20000, fee_pct: 12 }).warnings.some((w) => /BuildZoom/.test(w)));
-  assert.throws(() => splitJob({ payout: 100, fee_pct: 31 }), RangeError);
-  assert.throws(() => splitJob({ payout: -1, fee_pct: 5 }), RangeError);
+  const s = splitJob({ price: 10000, payout: 8000, fee_pct: 5 });
+  assert.equal(s.spread, 2000); assert.equal(s.spread_pct, 20);
+  assert.equal(s.sub_fee, 400); assert.equal(s.sub_net, 7600);
+  assert.equal(s.revenue, 2400); assert.equal(s.revenue_pct, 24);
+  assert.equal(splitJob({ price: 10000, payout: 8000, fee_pct: 5, risk_reserve_pct: 4 }).after_reserve, 2000, 'a 4% risk reserve ($400) comes off');
+  assert.ok(splitJob({ price: 10000, payout: 8000, fee_pct: 5, acquisition_cost: 3000 }).warnings.some((w) => /loses money/.test(w)), 'warns when revenue cannot cover the cost of winning the job');
+  assert.equal(splitJob({ price: 30000, payout: 24000, fee_pct: 5, acquisition_cost: 1500 }).warnings.length, 0);
+  assert.ok(splitJob({ price: 10000, payout: 10500, fee_pct: 5 }).warnings.some((w) => /ABOVE/.test(w)));
+  assert.ok(splitJob({ price: 20000, payout: 16000, fee_pct: 12 }).warnings.some((w) => /BuildZoom/.test(w)));
+  assert.throws(() => splitJob({ price: 100, payout: 50, fee_pct: 31 }), RangeError);
+  assert.throws(() => splitJob({ price: 100, payout: -1, fee_pct: 5 }), RangeError);
 });
 
-test('payment schedule: every phase is cents-exact and the sub is never paid ahead of the customer', () => {
+test('payment schedule: customer phases sum to the fixed price; contractor phases sum to the bid; fee conserved to the cent', () => {
   const { planPhases } = require('../server/phases');
-  const { buildSchedule, cashSafe } = require('../server/milestones');
+  const { buildCustomerSchedule, allocateSub, cashSafe } = require('../server/milestones');
   const lines = [{ description: 'Demo', direct: 500, hours: 20, qty: 1 }, { description: 'Tile', direct: 4000, hours: 60, qty: 300 }, { description: 'Paint', direct: 600, hours: 12, qty: 900 }];
-  for (const [award, fee, cust] of [[12000, 5, 0], [12000, 5, 3], [9999.99, 7.5, 2.5], [33333.33, 5, 0]]) {
-    const phases = planPhases(lines, { maxPhaseDays: 3 }).phases;
-    const sched = buildSchedule({ phases, award, feePct: fee, customerFeePct: cust });
-    const sum = (k) => sched.reduce((a, m) => a + m[k], 0);
-    assert.ok(Math.abs(sum('sub_gross') - award) < 0.005, `gross ${sum('sub_gross')}`);
-    assert.ok(Math.abs(sum('customer_amount') - Math.round(award * (1 + cust / 100) * 100) / 100) < 0.005);
-    assert.ok(Math.abs(sum('fee_amount') - Math.round(award * fee) / 100) < 0.011);
-    assert.ok(Math.abs(sum('sub_net') + sum('fee_amount') - award) < 0.011);
-    assert.equal(cashSafe(sched), true);
+  for (const [price, bid, fee] of [[10000, 8000, 5], [9999.99, 7421.17, 7.5], [33333.33, 25000, 5], [10000, 10000, 5]]) {
+    const cust = buildCustomerSchedule({ phases: planPhases(lines, { maxPhaseDays: 3 }).phases, total: price });
+    const al = allocateSub(cust, bid, fee), sum = (k) => al.reduce((a, m) => a + m[k], 0);
+    assert.ok(Math.abs(sum('customer_amount') - price) < 0.005);
+    assert.ok(Math.abs(sum('sub_gross') - bid) < 0.005);
+    assert.ok(Math.abs(sum('fee_amount') - Math.round(bid * fee) / 100) < 0.011);
+    assert.ok(Math.abs(sum('sub_net') + sum('fee_amount') - bid) < 0.011);
+    assert.equal(cashSafe(al), true);
   }
+  assert.throws(() => allocateSub(buildCustomerSchedule({ phases: planPhases(lines).phases, total: 1000 }), 1200, 5), RangeError, 'a bid above the customer price is refused');
   assert.equal(cashSafe([{ customer_amount: 100, sub_gross: 150 }]), false, 'paying more than was collected is detected');
 });
 

@@ -5,6 +5,7 @@ const { db, get, all, run, event, j } = require('./db');
 const { token, sha256, safeEq, normPhone, zipState } = require('./util');
 const { splitJob, r2 } = require('./settlement');
 const { planPhases } = require('./phases');
+const MS = require('./milestones');
 const { httpErr } = require('./leads');
 const notify = require('./notify');
 
@@ -70,8 +71,6 @@ const publicSub = (s) => ({
 });
 
 // ---- eligibility ------------------------------------------------------------
-
-// ---- eligibility ------------------------------------------------------------
 function eligibility(sub, post) {
   const why = [];
   if (post.status !== 'open' || new Date(post.closes_at) <= new Date()) why.push('Bidding on this job has closed.');
@@ -87,13 +86,14 @@ function eligibility(sub, post) {
   return why;
 }
 
-// ---- opening an auction (when the customer approves the project plan) -----------
+// ---- opening the auction (after the customer signed and phase 1 CLEARED) -----------
 function tradesFor(items) {
   const set = new Set((items || []).map((i) => CATEGORY_TO_TRADE[String(i.category || '').toLowerCase()] || 'general'));
   return [...set];
 }
 
-// Subs see scope, phases and an area, never the customer's name, contact or street address.
+// Contractors see scope, phases and an area, never the customer's name, contact, street address OR the price they pay us.
+// The ceiling they bid under is our customer price minus the minimum spread; they never see the customer price.
 function createAuction(jobId, opts = {}) {
   const existing = get('SELECT * FROM job_posts WHERE job_id=?', jobId);
   if (existing) return existing;
@@ -105,28 +105,32 @@ function createAuction(jobId, opts = {}) {
   const visit = quote.visit_id ? get('SELECT rooms, preferences FROM visits WHERE id=?', quote.visit_id) : null;
   const phases = parse(quote.phases) || planPhases(result.lines).phases;
   const trades = tradesFor(items), state = zipState(lead.zip);
+  const studio = parse(quote.studio);
   const scope = {
     summary: quote.scope_summary || '',
     items: result.lines.map((l) => ({ description: l.description, qty: l.qty, unit: l.unit })),
     phases: phases.map((p) => ({ seq: p.seq, name: p.name, days: p.days, share_pct: Math.round(p.weight * 1000) / 10, lines: p.lines })),
     rooms: parse(visit?.rooms, []).map((r) => ({ name: r.name, length: r.length, width: r.width, height: r.height, notes: r.notes })),
     preferences: visit?.preferences || '',
+    selections: studio?.selections_text || null,
   };
-  const ceiling = r2(result.totals.total);
-  const hours = Math.min(Math.max(Number(opts.hours) || cfg.marketplace.auctionHours, 24), 120);
+  const minSpread = opts.min_spread_pct ?? cfg.marketplace.minSpreadPct;
+  if (!(minSpread >= 0 && minSpread <= 60)) throw httpErr(400, 'min_spread_pct must be between 0 and 60');
+  const ceiling = r2(result.totals.total * (1 - minSpread / 100));
+  const hours = Math.min(Math.max(Number(opts.hours) || cfg.marketplace.auctionHours, 12), 120);
   const closes = new Date(Date.now() + hours * 3600000).toISOString();
-  const feePct = opts.fee_pct ?? cfg.marketplace.feePct, custPct = opts.customer_fee_pct ?? cfg.marketplace.customerFeePct;
-  if (!(feePct >= 0 && feePct <= 30 && custPct >= 0 && custPct <= 30)) throw httpErr(400, 'fees must be between 0 and 30');
+  const feePct = opts.fee_pct ?? cfg.marketplace.feePct;
+  if (!(feePct >= 0 && feePct <= 30)) throw httpErr(400, 'fee_pct must be between 0 and 30');
   const id = Number(run(`INSERT INTO job_posts (job_id, trades, state, zip, title, scope, payout, flat_fee, fee_pct, customer_fee_pct, payment_mode, ceiling, opens_at, closes_at, sealed, status)
-    VALUES (?,?,?,?,?,?,?,0,?,?,'platform_collects',?,?,?,?, 'open')`, jobId, j(trades), state, lead.zip, `${trades.join(' / ')} · ${state || '??'} ${String(lead.zip || '').slice(0, 3)}xx`, j(scope),
-  ceiling, feePct, custPct, ceiling, new Date().toISOString(), closes, cfg.marketplace.sealed ? 1 : 0).lastInsertRowid);
+    VALUES (?,?,?,?,?,?,?,0,?,0,'platform_collects',?,?,?,?, 'open')`, jobId, j(trades), state, lead.zip, `${trades.join(' / ')} · ${state || '??'} ${String(lead.zip || '').slice(0, 3)}xx`, j(scope),
+  ceiling, feePct, ceiling, new Date().toISOString(), closes, cfg.marketplace.sealed ? 1 : 0).lastInsertRowid);
   run("UPDATE jobs SET status='bidding' WHERE id=?", jobId);
   event(job.lead_id, 'auction_opened', { post: id, ceiling, closes_at: closes });
   return get('SELECT * FROM job_posts WHERE id=?', id);
 }
 
 // ---- bids -----------------------------------------------------------------------
-const bidsOf = (postId) => all("SELECT * FROM bids WHERE post_id=? AND status IN ('active','offered') ORDER BY amount ASC, updated_at ASC, id ASC", postId);
+const bidsOf = (postId) => all("SELECT * FROM bids WHERE post_id=? AND status='active' ORDER BY amount ASC, updated_at ASC, id ASC", postId);
 const lowest = (postId) => bidsOf(postId)[0] || null;
 const minNext = (post, low) => (low && !post.sealed ? Math.floor(low.amount * (1 - post.min_decrement_pct / 100) * 100) / 100 : post.ceiling);
 
@@ -142,7 +146,7 @@ function placeBid(subId, postId, { amount, days, note }) {
     amount = r2(Number(amount)); days = Math.round(Number(days));
     if (!(amount > 0)) throw httpErr(400, 'Enter your bid amount.');
     if (!(days >= 1 && days <= 365)) throw httpErr(400, 'Enter how many working days you need (1-365).');
-    if (amount > post.ceiling) throw httpErr(400, `Bids must be at or below the project budget of $${post.ceiling}.`);
+    if (amount > post.ceiling) throw httpErr(400, `Bids must be at or below the job budget of $${post.ceiling}.`);
     const floor = r2(post.ceiling * post.floor_pct / 100);
     if (amount < floor) throw httpErr(400, `Bids below $${floor} are rejected to protect quality and avoid change-order games.`);
     const mine = get('SELECT * FROM bids WHERE post_id=? AND sub_id=?', postId, subId);
@@ -160,11 +164,11 @@ function placeBid(subId, postId, { amount, days, note }) {
     bid = get('SELECT * FROM bids WHERE post_id=? AND sub_id=?', postId, subId);
     db.exec('COMMIT');
   } catch (e) { db.exec('ROLLBACK'); throw e; }
-  event(get('SELECT lead_id FROM jobs WHERE id=?', post.job_id).lead_id, 'bid_placed', { post: postId, sub: subId, amount, extended: false });
+  event(get('SELECT lead_id FROM jobs WHERE id=?', post.job_id).lead_id, 'bid_placed', { post: postId, sub: subId, amount });
   return { bid, post: get('SELECT * FROM job_posts WHERE id=?', postId) };
 }
 
-// What a subcontractor may see on the board. Identities of other bidders are never shown.
+// What a contractor may see on the board. Identities of other bidders are never shown.
 function boardView(post, sub) {
   const why = sub ? eligibility(sub, post) : [];
   const bids = bidsOf(post.id), low = bids[0] || null, mine = sub ? bids.find((b) => b.sub_id === sub.id) || null : null;
@@ -175,24 +179,35 @@ function boardView(post, sub) {
     my_bid: mine ? { amount: mine.amount, days: mine.days, leading: !!low && low.id === mine.id && !post.sealed } : null,
     min_next_bid: minNext(post, low), floor: r2(post.ceiling * post.floor_pct / 100),
     eligible: why.length === 0, reasons: why, posted_at: post.opens_at,
-    net_if_won_at_current_low: low ? r2(low.amount - low.amount * post.fee_pct / 100) : null,
   };
 }
 
-// ---- closing, choosing the winner, offering to the customer ---------------------
-function offer(post, bid) {
-  const payout = bid.amount, deadline = new Date(Date.now() + cfg.marketplace.acceptHours * 3600000).toISOString();
-  run("UPDATE bids SET status='offered' WHERE id=?", bid.id);
-  run("UPDATE job_posts SET status='pending_acceptance', winning_bid_id=?, payout=?, flat_fee=?, accept_deadline=? WHERE id=?", bid.id, payout, r2(payout * post.fee_pct / 100), deadline, post.id);
-  const job = get('SELECT * FROM jobs WHERE id=?', post.job_id), q = get('SELECT token FROM quotes WHERE id=?', job.quote_id);
-  event(job.lead_id, 'bid_selected', { post: post.id, bid: bid.id, amount: bid.amount });
-  const link = `${cfg.publicUrl}/quote.html?t=${q.token}`;
-  notify.toLead(job.lead_id, {
-    sms: `Bidding on your project is done. The best offer is $${bid.amount.toFixed(2)}. Review the contractor and accept here: ${link}`,
-    email: `Bidding on your project has closed.\nBest offer: $${bid.amount.toFixed(2)} in ${bid.days} working days.\nReview the contractor's license, insurance and the contract, then accept: ${link}\nThis offer is held for ${cfg.marketplace.acceptHours} hours.`, subject: 'Your project has a winning bid',
-  }).catch(() => {});
+// ---- closing and AWARDING --------------------------------------------------------
+// The customer already signed with the platform and paid phase 1 before bidding opened, so there is no customer acceptance
+// step: the lowest eligible bid wins. The contractor's phase payouts are fixed against the customer's schedule right now.
+function awardBid(post, bid) {
+  const job = get('SELECT * FROM jobs WHERE id=?', post.job_id), contract = get('SELECT * FROM contracts WHERE quote_id=?', job.quote_id);
+  const funded = get('SELECT funded_at FROM milestones WHERE job_id=? AND seq=1', post.job_id)?.funded_at;
+  if (!funded) throw httpErr(409, 'Customer funds are not secured yet.');   // funded before committed
+  db.exec('BEGIN IMMEDIATE');
+  try {
+    const r = run("UPDATE job_posts SET status='awarded', winning_bid_id=?, awarded_to=?, awarded_at=datetime('now'), payout=?, flat_fee=? WHERE id=? AND status IN ('open','no_bids')", bid.id, bid.sub_id, bid.amount, r2(bid.amount * post.fee_pct / 100), post.id);
+    if (Number(r.changes) !== 1) throw httpErr(409, 'This auction has already been awarded.');
+    run("UPDATE bids SET status='won' WHERE id=?", bid.id);
+    run("UPDATE bids SET status='lost' WHERE post_id=? AND id<>? AND status='active'", post.id, bid.id);
+    run("UPDATE jobs SET assigned_type='subcontractor', subcontractor_id=?, sub_cost=?, status=? WHERE id=?", bid.sub_id, bid.amount, contract && new Date(contract.rescission_ends) > new Date() ? 'rescission_period' : 'ready', post.job_id);
+    MS.allocateForJob(post.job_id, bid.amount, post.fee_pct);
+    db.exec('COMMIT');
+  } catch (e) { db.exec('ROLLBACK'); throw e; }
   const sub = get('SELECT * FROM subcontractors WHERE id=?', bid.sub_id);
-  notify.send({ channel: 'email', to: sub.email, subject: 'Your bid was selected', body: `Your bid of $${bid.amount.toFixed(2)} was the best. The customer must accept and fund the first phase before the job is confirmed. We will notify you.` }).catch(() => {});
+  event(job.lead_id, 'job_awarded', { post: post.id, sub: bid.sub_id, amount: bid.amount });
+  notify.send({ channel: 'email', to: sub.email, subject: 'You won the job', body: `Your bid of $${bid.amount.toFixed(2)} won. The customer has already funded phase 1. Open your portal for details. Do not start until the cancellation window closes.` }).catch(() => {});
+  const q = get('SELECT token FROM quotes WHERE id=?', job.quote_id);
+  notify.toLead(job.lead_id, {
+    sms: `Good news: a licensed, insured contractor has been assigned to your project. See details and next steps: ${cfg.publicUrl}/quote.html?t=${q.token}`,
+    email: `A licensed, insured contractor has been assigned to your project.\nSee who they are, the schedule and your payment steps: ${cfg.publicUrl}/quote.html?t=${q.token}`, subject: 'Your contractor is assigned',
+  }).catch(() => {});
+  return get('SELECT * FROM job_posts WHERE id=?', post.id);
 }
 
 function closeAuction(postId) {
@@ -200,70 +215,42 @@ function closeAuction(postId) {
   if (!post || post.status !== 'open') return post;
   const low = lowest(postId);
   if (!low) { run("UPDATE job_posts SET status='no_bids' WHERE id=?", postId); event(get('SELECT lead_id FROM jobs WHERE id=?', post.job_id).lead_id, 'auction_no_bids', { post: postId }); return get('SELECT * FROM job_posts WHERE id=?', postId); }
-  offer(post, low);
-  return get('SELECT * FROM job_posts WHERE id=?', postId);
+  return awardBid(post, low);
 }
 
-// The next-best bidder gets the offer when the customer declines or lets it expire.
-function offerNext(postId, reason) {
-  const post = get('SELECT * FROM job_posts WHERE id=?', postId);
-  if (!post || post.status !== 'pending_acceptance') throw httpErr(409, 'Nothing to decline.');
-  run("UPDATE bids SET status=? WHERE id=?", reason, post.winning_bid_id);
-  const next = lowest(postId);
-  if (!next) { run("UPDATE job_posts SET status='no_bids', winning_bid_id=NULL WHERE id=?", postId); return get('SELECT * FROM job_posts WHERE id=?', postId); }
-  offer(post, next);
-  return get('SELECT * FROM job_posts WHERE id=?', postId);
-}
-
-// Admin picks a specific bidder to receive the offer.
-function offerSpecific(postId, bidId) {
-  const post = get('SELECT * FROM job_posts WHERE id=?', postId), bid = get('SELECT * FROM bids WHERE id=?', bidId);
-  offer(post, bid);
+// Admin override: award a specific bidder instead of the lowest (e.g. better record at +2%).
+function awardSpecific(postId, bidId) {
+  const post = get('SELECT * FROM job_posts WHERE id=?', postId), bid = get("SELECT * FROM bids WHERE id=? AND post_id=? AND status='active'", bidId, postId);
+  if (!post || !bid) throw httpErr(404, 'not found');
+  if (!['open', 'no_bids'].includes(post.status)) throw httpErr(409, 'This auction cannot be awarded now.');
+  return awardBid(post, bid);
 }
 
 function auctionTick() {
-  for (const p of all("SELECT id FROM job_posts WHERE status='open' AND closes_at <= ?", new Date().toISOString())) closeAuction(p.id);
-  for (const p of all("SELECT id FROM job_posts WHERE status='pending_acceptance' AND accept_deadline <= ? AND NOT EXISTS (SELECT 1 FROM contracts c JOIN jobs j ON j.quote_id=c.quote_id WHERE j.id=job_posts.job_id)", new Date().toISOString())) {
-    try { offerNext(p.id, 'expired'); } catch (e) { event(null, 'auction_tick_error', { post: p.id, message: e.message }); }
+  for (const p of all("SELECT id FROM job_posts WHERE status='open' AND closes_at <= ?", new Date().toISOString())) {
+    try { closeAuction(p.id); } catch (e) { event(null, 'auction_tick_error', { post: p.id, message: e.message }); }
   }
 }
 
-// Called when the customer's first phase has CLEARED. Only now is the subcontractor committed.
-function confirmAward(jobId) {
-  const post = get("SELECT * FROM job_posts WHERE job_id=? AND status='pending_acceptance'", jobId);
-  if (!post) return null;
-  const bid = get('SELECT * FROM bids WHERE id=?', post.winning_bid_id);
-  db.exec('BEGIN IMMEDIATE');
-  try {
-    run("UPDATE job_posts SET status='awarded', awarded_to=?, awarded_at=datetime('now') WHERE id=?", bid.sub_id, post.id);
-    run("UPDATE bids SET status='won' WHERE id=?", bid.id);
-    run("UPDATE bids SET status='lost' WHERE post_id=? AND id<>? AND status IN ('active','offered')", post.id, bid.id);
-    run("UPDATE jobs SET assigned_type='subcontractor', subcontractor_id=?, sub_cost=? WHERE id=?", bid.sub_id, post.payout, jobId);
-    db.exec('COMMIT');
-  } catch (e) { db.exec('ROLLBACK'); throw e; }
-  const job = get('SELECT * FROM jobs WHERE id=?', jobId), sub = get('SELECT * FROM subcontractors WHERE id=?', bid.sub_id);
-  event(job.lead_id, 'job_awarded', { post: post.id, sub: bid.sub_id });
-  notify.send({ channel: 'email', to: sub.email, subject: 'Job confirmed: customer funded phase 1', body: `The customer signed and funded the first phase. Open your portal for details. Do not start until the cancellation window closes.` }).catch(() => {});
-  return get('SELECT * FROM job_posts WHERE id=?', post.id);
-}
-
-// ---- views for admin and the winning sub ---------------------------------------------
-function economics(post) {
-  return splitJob({ payout: post.payout, fee_pct: post.fee_pct, customer_fee_pct: post.customer_fee_pct, acquisition_cost: cfg.marketplace.acqCostEstimate });
+// ---- views for admin and the winning contractor ---------------------------------------
+// Customer price for a job (what the customer pays us) and the profit estimate for a given payout.
+const customerPrice = (post) => parse(get('SELECT q.result FROM job_posts p JOIN jobs j ON j.id=p.job_id JOIN quotes q ON q.id=j.quote_id WHERE p.id=?', post.id).result).totals.total;
+function economics(post, payoutOverride) {
+  return splitJob({ price: customerPrice(post), payout: payoutOverride ?? post.payout, fee_pct: post.fee_pct, acquisition_cost: cfg.marketplace.acqCostEstimate, risk_reserve_pct: cfg.marketplace.riskReservePct });
 }
 
 function awardedView(post) {
   const job = get('SELECT * FROM jobs WHERE id=?', post.job_id);
   const lead = get('SELECT name, phone, email, address, zip FROM leads WHERE id=?', job.lead_id);
   const contract = get('SELECT rescission_ends, deposit_status FROM contracts WHERE quote_id=?', job.quote_id);
-  const eco = economics(post), MS = require('./milestones');
+  const fee = r2(post.payout * post.fee_pct / 100);
   return {
-    id: post.id, title: post.title, trades: parse(post.trades, []), scope: parse(post.scope), payout: post.payout, fee_pct: post.fee_pct, fee: post.flat_fee,
+    id: post.id, title: post.title, trades: parse(post.trades, []), scope: parse(post.scope), payout: post.payout, fee_pct: post.fee_pct, fee,
     job_id: job.id, job_status: job.status, start_date: job.start_date,
     customer: lead, rescission_ends: contract?.rescission_ends, deposit_status: contract?.deposit_status,
     can_start: contract?.deposit_status === 'paid' && new Date(contract.rescission_ends) <= new Date(),
     milestones: MS.forJob(job.id).map((m) => ({ id: m.id, seq: m.seq, name: m.name, status: m.status, funded: !!m.funded_at, gross: m.sub_gross, fee: m.fee_amount, net: m.sub_net, photos: m.evidence_photos.length, dispute_reason: m.dispute_reason })),
-    money: { your_net: eco.sub_net, fee: eco.sub_fee, how: 'The customer funds each phase through the platform before it starts. The platform pays you per approved phase, with the fee withheld.' },
+    money: { your_net: r2(post.payout - fee), fee, how: 'The customer funds each phase through the platform before it starts. The platform pays you per approved phase, with the fee withheld.' },
   };
 }
 
@@ -272,4 +259,4 @@ function myBids(subId) {
     .map((b) => ({ id: b.id, post_id: b.post_id, title: b.title, amount: b.amount, days: b.days, status: b.status, post_status: b.post_status, closes_at: b.closes_at }));
 }
 
-module.exports = { TRADES, signup, login, subFromToken, publicSub, eligibility, createAuction, placeBid, boardView, closeAuction, offerNext, offerSpecific, auctionTick, confirmAward, awardedView, economics, myBids, bidsOf, lowest, csv };
+module.exports = { TRADES, signup, login, subFromToken, publicSub, eligibility, createAuction, placeBid, boardView, closeAuction, awardSpecific, auctionTick, awardedView, economics, customerPrice, myBids, bidsOf, lowest, csv };

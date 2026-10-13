@@ -41,14 +41,18 @@ module.exports = {
     callHours: [8, 20],
   },
   anthropic: { apiKey: e.ANTHROPIC_API_KEY || '', model: e.ANTHROPIC_MODEL || 'claude-sonnet-5-5' },
+  studio: {
+    marginPct: Number(e.STUDIO_MARGIN_PCT || 30) / 100,    // the price the customer sees = cost / (1 - this). THE central assumption: what customers will pay vs what contractors will bid
+    validDays: 14,                                         // how long an instant quote stays valid
+  },
   marketplace: {
     monthlyPrice: Number(e.SUB_MONTHLY_PRICE || 55),       // subscription, $/month
     feePct: Number(e.SUB_FEE_PCT || 5),                    // % of the sub's award price, withheld from each payout; adjustable per job
     autoApproveHours: Number(e.AUTO_APPROVE_HOURS || 72),  // customer silence after a submitted phase = approval
-    customerFeePct: Number(e.CUSTOMER_FEE_PCT || 0),       // optional fee ADDED to the customer's price (itemized as platform + payment protection)
-    acqCostEstimate: Number(e.ACQ_COST_ESTIMATE || 3000),  // PLACEHOLDER: your real ad + estimator cost per signed job; used only to flag unprofitable fee settings
+    minSpreadPct: Number(e.MIN_SPREAD_PCT || 15),          // the auction ceiling = customer price minus this %: bids above it are refused, so every job keeps at least this spread
+    riskReservePct: Number(e.RISK_RESERVE_PCT || 4),       // ASSUMPTION: % of price you absorb as contractor of record (change orders, callbacks, warranty); used only in the profit estimate
+    acqCostEstimate: Number(e.ACQ_COST_ESTIMATE || 1500),  // PLACEHOLDER: your real studio-ads + verification-visit cost per signed job; used only to flag unprofitable jobs
     auctionHours: Number(e.AUCTION_HOURS || 48),           // default bidding window
-    acceptHours: Number(e.ACCEPT_HOURS || 72),             // customer time to accept the winning bid before it moves to the next bidder
     antiSnipeMinutes: 15, maxExtensions: 4,                // a bid in the last 15 minutes extends the auction, up to 4 times
     sealed: e.AUCTION_SEALED === '1',                      // sealed = bidders can't see the current best bid
     autoPublish: e.AUTO_PUBLISH_JOBS !== '0',              // post to the board as soon as the deposit clears

@@ -3,6 +3,10 @@
 Prepared October 2026. **Facts** below come from sources linked at the end; **assumptions** are labeled and are mine, not data.
 Where I could not verify something I say so in section 8 rather than guess.
 
+## 0a. Revision 3 (October 2026): the spread model supersedes Revision 2's economics
+
+The customer now signs a **fixed price with us** and contractors bid for the work, so revenue is the **spread plus a 5% contractor fee** (your example: $10,000 price, $8,000 bid, $400 fee = $2,400, 24%). Economics are in `spread-model.md` and `unit-economics.js`: with an assumed studio funnel ($100 per completed quote, 12% sign), a 20% spread nets about $750 on a $10K job, $3,700 on $25K and $6,700 on $40K before fixed overhead. **The spread is the whole bet**; it exists only if we price above what contractors normally charge or they bid below it (see the premium/discount table in `spread-model.md`). In exchange we become the contractor of record, with its licensing, escrow/bond and liability. Revision 2 below describes the fee-only marketplace and is kept for comparison.
+
 ## 0. Revision 2 (October 2026): the marketplace model changes the verdict
 
 The design changed from "platform is the general contractor" to **"platform runs a reverse auction among subcontractors, the customer contracts with the winning sub, the platform manages short phases and the payments"** (see `bond-and-structure.md`). The sections below were written for the general-contractor design. What changes:

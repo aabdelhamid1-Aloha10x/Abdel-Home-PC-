@@ -1,5 +1,7 @@
 # Executive summary: what we decided, what we built, how it compares to Block Renovation, and what is missing
 
+> **Update (latest decision):** the model is now the **spread model**: an online design **studio** gives an instant fixed price, the customer signs with us and pays phase 1, then contractors bid in an auction and we keep the spread plus a 5% fee. We are the contractor of record again. Read `spread-model.md` first; sections 1, 3 and 4 below describe the previous (fee-only marketplace) design, and the comparison with Block in section 5 still holds (the spread model is the shape Block started with in 2018-2021).
+
 Prepared October 2026. Block facts are from Block's own pages and press (company claims unless noted). Our numbers come from `node docs/unit-economics.js`; its funnel rates are my assumptions, not data.
 
 ## 1. What we are building (current design)

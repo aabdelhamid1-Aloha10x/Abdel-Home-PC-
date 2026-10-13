@@ -7,13 +7,12 @@ const M = n => '$' + Number(n || 0).toLocaleString('en-US', { minimumFractionDig
 const M0 = n => '$' + Number(n || 0).toLocaleString('en-US', { maximumFractionDigits: 0 });
 const t = new URLSearchParams(location.search).get('t'), app = document.getElementById('app');
 const api = (m, p, b) => fetch('/api/quote/' + encodeURIComponent(t) + p, { method: m, headers: { 'Content-Type': 'application/json' }, body: b ? JSON.stringify(b) : undefined }).then(async r => { const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || r.status); return j; });
-let timer = null;
-function load() { clearInterval(timer); api('GET', '').then(render).catch(() => app.innerHTML = '<div class="card"><h2>Project not found</h2><p class="mute">This link may be wrong or expired. Please contact us.</p></div>'); }
+function load() { api('GET', '').then(render).catch(() => app.innerHTML = '<div class="card"><h2>Project not found</h2><p class="mute">This link may be wrong or expired. Please contact us.</p></div>'); }
 load();
 
-const phaseTable = (q) => `<table><tr><th>Phase</th><th>Work days</th><th style="text-align:right">Share</th><th style="text-align:right">Est.</th></tr>${q.phases.map(p => `<tr><td>${p.seq}. ${E(p.name)}</td><td>${p.days}</td><td style="text-align:right">${p.share_pct}%</td><td style="text-align:right">${M0(p.est_amount)}</td></tr>`).join('')}</table>`;
+const phaseTable = (q, withAmounts) => `<table><tr><th>Phase</th><th>Work days</th>${withAmounts ? '<th style="text-align:right">You pay</th>' : '<th style="text-align:right">Share</th>'}</tr>${q.phases.map(p => `<tr><td>${p.seq}. ${E(p.name)}</td><td>${p.days}</td><td style="text-align:right">${withAmounts ? M(p.amount) : p.share_pct + '%'}</td></tr>`).join('')}</table>`;
 const scopeList = (q) => `<ul>${q.scope.map(l => `<li>${E(l.description)}${l.qty ? ` <span class="mute">(${E(l.qty)} ${E(l.unit)})</span>` : ''}</li>`).join('')}</ul>`;
-const head = (q) => `<div class="card"><p class="mute">${E(q.company.name)} · ${E(q.company.phone)}</p><h2>${E(q.title)}</h2><p>Prepared for ${E(q.customer)}</p><p>${E(q.scope_summary)}</p></div>`;
+const head = (q) => `<div class="card"><p class="mute">${E(q.company.name)} · License ${E(q.company.license)} · ${E(q.company.phone)}</p><h2>${E(q.title)}</h2><p>Prepared for ${E(q.customer)}</p>${q.selections ? `<p>${E(q.selections)}</p>` : `<p>${E(q.scope_summary)}</p>`}</div>`;
 
 function signaturePad() {
   const cv = document.getElementById('cv'), ctx = cv.getContext('2d'); let down = false; const st = { ink: false };
@@ -29,51 +28,30 @@ function signaturePad() {
 function render(q) {
   let h = head(q);
   if (q.stage === 'plan') {
-    h += `<div class="card"><h3>Your project plan</h3><p class="mute">We split the work into short phases. You pay one phase at a time, before it starts, and only through this page. Each phase is paid out to the contractor only after you approve the finished work.</p>${phaseTable(q)}
-    <p><b>Estimated budget (maximum): ${M0(q.budget)}</b> · about ${q.total_days} working days</p><h4>Scope</h4>${scopeList(q)}</div>
-    <div class="card"><h3>How the price is set</h3><p>Licensed, insured contractors in our network <b>bid against each other</b> to win your project. Bids can only be at or below the budget above, and the best offer is yours to accept or decline. Nothing is signed or paid until you accept an offer.</p>
-    <label>Your full name</label><input id="nm" autocomplete="name"><label>How long should bidding stay open?</label><select id="hr"><option value="24">24 hours</option><option value="48" selected>48 hours</option><option value="72">72 hours</option><option value="96">96 hours</option></select>
-    <label style="display:flex;gap:8px;color:var(--ink)"><input type="checkbox" id="ag" style="width:auto;margin-top:4px"><span>I approve this plan and scope and want contractors to bid. I understand nothing is binding until I accept an offer and sign a contract with that contractor.</span></label>
-    <p class="err" id="er"></p><button class="big" id="go">Approve plan and open bidding</button></div>`;
-    app.innerHTML = h;
-    document.getElementById('go').onclick = () => api('POST', '/approve-plan', { name: document.getElementById('nm').value, agree: document.getElementById('ag').checked, hours: +document.getElementById('hr').value }).then(load).catch(e => document.getElementById('er').textContent = e.message);
-    return;
-  }
-  if (q.stage === 'bidding') {
-    const b = q.bidding;
-    h += `<div class="card"><h3>Bidding is open</h3><p style="font-size:28px;margin:6px 0" id="cd"></p><p>${b.bid_count} contractor${b.bid_count === 1 ? '' : 's'} bidding${b.best_bid != null ? ` · best bid so far <b>${M0(b.best_bid)}</b> (budget ${M0(q.budget)})` : ` · budget ${M0(q.budget)}`}</p>
-    <p class="mute">Bids can only go down. If a bid arrives in the last 15 minutes, the clock is extended so the best price wins. When bidding ends you decide: nothing is binding until you accept.</p></div><div class="card"><h3>Project plan</h3>${phaseTable(q)}${scopeList(q)}</div>`;
-    app.innerHTML = h;
-    const tick = () => { const ms = new Date(b.closes_at) - Date.now(); document.getElementById('cd').textContent = ms > 0 ? `${Math.floor(ms / 3600000)}h ${Math.floor(ms / 60000) % 60}m ${Math.floor(ms / 1000) % 60}s left` : 'Closing…'; if (ms < -5000) load(); };
-    let n = 0; tick(); timer = setInterval(() => { tick(); if (++n % 30 === 0) load(); }, 1000); return;
-  }
-  if (q.stage === 'no_bids') { app.innerHTML = h + '<div class="card"><h3>No bids yet</h3><p>We are reaching out to more contractors and will extend bidding. We will message you when there is an offer.</p></div>'; return; }
-  const o = q.offer;
-  if (q.stage === 'offer') {
-    const c = o.contractor;
-    h += `<div class="card"><h3>You have an offer</h3><p style="font-size:30px;margin:4px 0">${M0(o.amount)}${o.platform_fee > 0 ? '' : ''}</p><p class="${o.below_budget_pct > 0 ? 'ok' : 'mute'}">${o.below_budget_pct > 0 ? o.below_budget_pct + '% below the budget of ' + M0(q.budget) : 'At budget'} · about ${o.days} working days</p>
-    <h4>${E(c.company)}</h4><p class="mute">License / registration: ${E(c.license)} ${E(c.license_state)} · Trades: ${E(c.trades)} · Liability insurance valid through ${E(c.insurance_expires)}</p>${o.note ? `<p>“${E(o.note)}”</p>` : ''}
-    <table><tr><th>Payment schedule</th><th style="text-align:right">You pay</th></tr>${o.schedule.map(m => `<tr><td>${m.seq}. ${E(m.name)} <span class="mute">(${m.days} days)</span></td><td style="text-align:right">${M(m.amount)}</td></tr>`).join('')}<tr class="t"><td><b>Total${o.platform_fee > 0 ? ' (includes ' + M(o.platform_fee) + ' platform and payment-protection fee)' : ''}</b></td><td style="text-align:right"><b>${M(o.customer_total)}</b></td></tr></table>
-    <p class="mute">Phase 1 is due at signing. Each later phase is requested just before it starts. Offer held until ${E(new Date(o.accept_deadline).toLocaleString())}.</p></div>
-    <div class="card"><h3>Accept and sign</h3><details><summary>Read the contract</summary><pre id="ct" style="margin-top:10px"></pre></details>
+    h += `<div class="card"><h3>Your fixed price</h3><p style="font-size:34px;margin:4px 0">${M0(q.price)}</p>
+    <p class="mute">Guaranteed once we verify your measurements (within 7 days of signing). If verification changes the price by more than 5%, you can accept the change or cancel for a full refund. About ${q.total_days} working days of work.</p>
+    <h4>How you pay: short phases, one at a time</h4><p class="mute">You pay phase 1 now. Each later phase is requested just before it starts, and only paid out to the crew after you approve the finished work. Pay only through this page.</p>${phaseTable(q, true)}<h4>What's included</h4>${scopeList(q)}</div>
+    <div class="card"><h3>Sign and start</h3><details><summary>Read the contract</summary><pre id="ct" style="margin-top:10px"></pre></details>
     <label>Type your full legal name</label><input id="nm" autocomplete="name"><label>Draw your signature</label><canvas id="cv" width="600" height="150"></canvas><button class="ghost" id="clr" type="button" style="margin:6px 0">Clear</button>
-    <label style="display:flex;gap:8px;color:var(--ink)"><input type="checkbox" id="ag" style="width:auto;margin-top:4px"><span>I accept this offer and agree to the contract with ${E(c.company)}, I will pay only through this page, and I understand I may cancel within 3 business days of signing.</span></label>
-    <p class="err" id="er"></p><button class="big" id="go">Sign and pay phase 1 (${M(o.schedule[0].amount)})</button><br><br><button class="ghost" id="dn">Decline this offer</button></div>`;
+    <label style="display:flex;gap:8px;color:var(--ink)"><input type="checkbox" id="ag" style="width:auto;margin-top:4px"><span>I agree to this contract and the ${M0(q.price)} fixed price, I will pay only through this page, and I understand I may cancel within 3 business days of signing.</span></label>
+    <p class="err" id="er"></p><button class="big" id="go">Sign and pay phase 1 (${M(q.phases[0].amount)})</button></div>`;
     app.innerHTML = h; document.getElementById('ct').textContent = q.contract_preview;
     const pad = signaturePad();
     document.getElementById('go').onclick = async () => { const er = document.getElementById('er'); er.textContent = ''; if (!pad.ink) { er.textContent = 'Please draw your signature.'; return; }
-      try { const j = await api('POST', '/accept-award', { name: document.getElementById('nm').value, agree: document.getElementById('ag').checked, signature: pad.data() }); if (j.checkoutUrl) location.href = j.checkoutUrl; else load(); } catch (e) { er.textContent = e.message; } };
-    document.getElementById('dn').onclick = () => confirm('Decline this offer? The next-best bidder will be offered the job.') && api('POST', '/decline-award').then(load).catch(e => alert(e.message));
+      try { const j = await api('POST', '/sign', { name: document.getElementById('nm').value, agree: document.getElementById('ag').checked, signature: pad.data() }); if (j.checkoutUrl) location.href = j.checkoutUrl; else load(); } catch (e) { er.textContent = e.message; } };
     return;
   }
-  // awaiting_funding | contract
   const c = q.contract, T = q.milestones;
-  h += `<div class="card"><h3>${q.stage === 'contract' ? 'Contract signed ✓' : 'Contract signed: pay phase 1 to confirm your contractor'}</h3><p>With <b>${E(o.contractor.company)}</b> · signed by ${E(c.signer_name)} on ${E(new Date(c.signed_at).toLocaleString())}. You may cancel without penalty until ${E(new Date(c.rescission_ends).toLocaleString())}.</p></div>
+  const banner = q.stage === 'contract' ? `<div class="card"><h3>Your contractor is assigned ✓</h3><p><b>${E(q.contractor.company)}</b> · License / registration ${E(q.contractor.license)} ${E(q.contractor.license_state)} · Liability insurance valid through ${E(q.contractor.insurance_expires)}</p><p class="mute">${E(q.company.name)} remains responsible to you for the work.</p></div>`
+    : q.stage === 'finding' ? '<div class="card"><h3>Phase 1 received ✓: we are assigning your contractor</h3><p>We are matching a licensed, insured contractor to your project. You will get a message as soon as they are assigned. In the meantime you can book your measurement visit below.</p></div>'
+    : '<div class="card"><h3>Contract signed: pay phase 1 to start</h3><p>We assign your contractor after phase 1 is received.</p></div>';
+  h += banner + `<div class="card"><p>Signed by ${E(c.signer_name)} on ${E(new Date(c.signed_at).toLocaleString())}. You may cancel without penalty until ${E(new Date(c.rescission_ends).toLocaleString())}.</p>${q.stage !== 'awaiting_funding' ? `<a class="btn" href="/book.html?lead=${q.lead_ref.id}&k=${q.lead_ref.key}">Book your measurement visit</a>` : ''}</div>
   <div class="card"><h3>Project payments</h3><p class="mute">Pay <b>only</b> through the buttons on this page. Never pay crew members directly: payments made outside this page are not protected and do not count toward your balance.</p><table>${T.map(m => `<tr><td>${m.seq}. ${E(m.name)}<br><span class="mute">${E(m.status.replace('_', ' '))}${m.notes ? ' · ' + E(m.notes) : ''}${m.dispute_reason ? ' · you reported: ' + E(m.dispute_reason) : ''}</span>${m.photos ? '<div>' + Array.from({ length: m.photos }, (_, i) => `<a href="/api/quote/${encodeURIComponent(t)}/milestones/${m.id}/photo/${i}" target="_blank">photo ${i + 1}</a>`).join(' · ') + '</div>' : ''}</td><td style="text-align:right">${M(m.amount)}<br>${m.funded ? '<span class="ok">paid ✓</span>' : m.status === 'invoiced' ? `<button data-pay="${m.id}">Pay</button>` : '<span class="mute">upcoming</span>'}${m.status === 'submitted' ? `<br><button data-ap="${m.id}">Approve work</button> <button class="ghost" data-dp="${m.id}">Report a problem</button><br><span class="mute">Auto-approved ${m.auto_approve_hours}h after submission</span>` : ''}</td></tr>`).join('')}</table></div>
   <div class="card"><h3>Contract</h3><pre id="ct"></pre></div>`;
   app.innerHTML = h; document.getElementById('ct').textContent = c.text;
   app.querySelectorAll('[data-pay]').forEach(b => b.onclick = () => api('POST', `/milestones/${b.dataset.pay}/pay`).then(j => location.href = j.checkoutUrl).catch(e => alert(e.message)));
-  app.querySelectorAll('[data-ap]').forEach(b => b.onclick = () => confirm('Approve this completed work? The contractor will be paid for this phase.') && api('POST', `/milestones/${b.dataset.ap}/approve`).then(load).catch(e => alert(e.message)));
+  app.querySelectorAll('[data-ap]').forEach(b => b.onclick = () => confirm('Approve this completed work? The crew will be paid for this phase.') && api('POST', `/milestones/${b.dataset.ap}/approve`).then(load).catch(e => alert(e.message)));
   app.querySelectorAll('[data-dp]').forEach(b => b.onclick = () => { const r = prompt('What is the problem?'); if (r) api('POST', `/milestones/${b.dataset.dp}/dispute`, { reason: r }).then(load).catch(e => alert(e.message)); });
+  if (q.stage === 'finding') setTimeout(load, 15000);
 }
 </script></body></html>

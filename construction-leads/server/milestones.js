@@ -1,8 +1,8 @@
 'use strict';
 // Phase payments: the mechanism that makes "funded before committed" enforceable.
 //
-//   The customer contracts with the winning subcontractor, but pays ONLY through the platform, one short phase at a time.
-//   The sub is paid by the platform per phase, only after
+//   The customer contracts with the PLATFORM for a fixed price and pays only through the platform, one short phase at a time.
+//   The contractor that wins the auction is paid by the platform per phase, only after
 //     (1) the customer's money for that phase is in (funded) BEFORE the phase starts,
 //     (2) the sub submitted proof of completion + a signed lien waiver,
 //     (3) the customer approved (or stayed silent for AUTO_APPROVE_HOURS) and did not dispute.
@@ -13,22 +13,35 @@ const { r2 } = require('./settlement');
 const { httpErr } = require('./leads');
 const notify = require('./notify');
 
-// Pure: money for every phase, cents-exact. weights come from the quote's phase plan.
-function buildSchedule({ phases, award, feePct, customerFeePct = 0 }) {
+// Pure: the CUSTOMER's schedule for a fixed price, cents-exact. weights come from the quote's phase plan.
+function buildCustomerSchedule({ phases, total }) {
   if (!phases?.length) throw new RangeError('no phases');
-  const totalFee = r2(award * feePct / 100), customerTotal = r2(award * (1 + customerFeePct / 100));
-  let g = 0, f = 0, c = 0;
+  let c = 0;
   return phases.map((p, i) => {
     const last = i === phases.length - 1;
-    const gross = last ? r2(award - g) : r2(award * p.weight);
-    const fee = last ? r2(totalFee - f) : r2(gross * feePct / 100);
-    const cust = last ? r2(customerTotal - c) : r2(gross * (1 + customerFeePct / 100));
-    g = r2(g + gross); f = r2(f + fee); c = r2(c + cust);
-    return { seq: p.seq, name: p.name, days: p.days, weight: p.weight, customer_amount: cust, sub_gross: gross, fee_amount: fee, sub_net: r2(gross - fee) };
+    const amt = last ? r2(total - c) : r2(total * p.weight);
+    c = r2(c + amt);
+    return { seq: p.seq, name: p.name, days: p.days, weight: p.weight, customer_amount: amt, sub_gross: 0, fee_amount: 0, sub_net: 0 };
   });
 }
 
-// Pure: at every phase, has the customer paid in at least as much as the sub has been paid out?
+// Pure: once a contractor wins, split their bid across the same phases in proportion to what the customer pays for each,
+// and withhold the platform fee from each payout.
+function allocateSub(rows, payout, feePct) {
+  const total = rows.reduce((a, m) => a + m.customer_amount, 0);
+  if (payout > total + 0.005) throw new RangeError('the winning bid is above the customer price');
+  const totalFee = r2(payout * feePct / 100);
+  let g = 0, f = 0;
+  return rows.map((m, i) => {
+    const last = i === rows.length - 1;
+    const gross = last ? r2(payout - g) : r2(total > 0 ? payout * m.customer_amount / total : 0);
+    const fee = last ? r2(totalFee - f) : r2(gross * feePct / 100);
+    g = r2(g + gross); f = r2(f + fee);
+    return { ...m, sub_gross: gross, fee_amount: fee, sub_net: r2(gross - fee) };
+  });
+}
+
+// Pure: at every phase, has the customer paid in at least as much as the contractor has been paid out?
 function cashSafe(schedule) {
   let funded = 0, paid = 0;
   for (const m of schedule) { funded += m.customer_amount; paid += m.sub_gross; if (paid > funded + 0.005) return false; }
@@ -37,11 +50,17 @@ function cashSafe(schedule) {
 
 // ---- persistence ------------------------------------------------------------
 function insertSchedule(jobId, rows) {
-  if (!cashSafe(rows)) throw httpErr(409, 'Payment schedule would pay the subcontractor before the customer has funded it.');
   for (const m of rows) {
     run(`INSERT INTO milestones (job_id, seq, name, customer_amount, sub_gross, fee_amount, sub_net, status) VALUES (?,?,?,?,?,?,?,?)`,
       jobId, m.seq, m.name, m.customer_amount, m.sub_gross, m.fee_amount, m.sub_net, m.seq === 1 ? 'invoiced' : 'scheduled');
   }
+}
+
+// When a contractor wins: fix every phase's payout and fee. The customer's amounts never change.
+function allocateForJob(jobId, payout, feePct) {
+  const rows = allocateSub(forJob(jobId), payout, feePct);
+  if (!cashSafe(rows)) throw httpErr(409, 'Payment schedule would pay the contractor before the customer has funded it.');
+  for (const m of rows) run('UPDATE milestones SET sub_gross=?, fee_amount=?, sub_net=? WHERE job_id=? AND seq=?', m.sub_gross, m.fee_amount, m.sub_net, jobId, m.seq);
 }
 
 function forJob(jobId) { return all('SELECT * FROM milestones WHERE job_id=? ORDER BY seq', jobId).map((m) => ({ ...m, evidence_photos: JSON.parse(m.evidence_photos || '[]') })); }
@@ -153,13 +172,13 @@ function release(id) {
   if (!post) throw httpErr(409, 'No awarded subcontractor on this job.');
   if (!m.funded_at) throw httpErr(409, 'Customer funds for this phase have not cleared.');
   if (!m.waiver_signed_at) throw httpErr(409, 'Lien waiver missing.');
-  const custFee = r2(m.customer_amount - m.sub_gross);
+  const spread = r2(m.customer_amount - m.sub_gross);   // our margin on this phase, recognized only when the phase is approved
   db.exec('BEGIN IMMEDIATE');
   try {
     run("UPDATE milestones SET status='released', released_at=datetime('now') WHERE id=? AND status='approved'", id);
     run("INSERT INTO ledger (sub_id, job_id, type, amount, status, note) VALUES (?,?, 'sub_payout', ?, 'due', ?)", post.awarded_to, m.job_id, m.sub_net, `Phase ${m.seq}: ${m.name} (gross ${m.sub_gross}, fee ${m.fee_amount} withheld)`);
     if (m.fee_amount > 0) run("INSERT INTO ledger (sub_id, job_id, type, amount, status, note) VALUES (?,?, 'platform_fee', ?, 'settled', ?)", post.awarded_to, m.job_id, m.fee_amount, `${post.fee_pct}% sub fee withheld, phase ${m.seq}`);
-    if (custFee > 0) run("INSERT INTO ledger (sub_id, job_id, type, amount, status, note) VALUES (?,?, 'customer_fee', ?, 'settled', ?)", post.awarded_to, m.job_id, custFee, `${post.customer_fee_pct}% customer fee, phase ${m.seq}`);
+    if (spread !== 0) run("INSERT INTO ledger (sub_id, job_id, type, amount, status, note) VALUES (?,?, 'platform_spread', ?, 'settled', ?)", post.awarded_to, m.job_id, spread, `Spread on phase ${m.seq} (customer paid ${m.customer_amount}, contractor gross ${m.sub_gross})`);
     db.exec('COMMIT');
   } catch (e) { db.exec('ROLLBACK'); throw e; }
   event(jobOf(m).lead_id, 'phase_released', { milestone: id, sub_net: m.sub_net, fee: m.fee_amount });
@@ -173,4 +192,4 @@ function autoApproveTick() {
   for (const d of due) { try { approve(d.id, 'auto'); } catch (e) { event(null, 'auto_approve_error', { milestone: d.id, message: e.message }); } }
 }
 
-module.exports = { buildSchedule, cashSafe, insertSchedule, forJob, invoice, markFunded, startPhase, submitPhase, addPhoto, approve, dispute, resolveDispute, release, autoApproveTick, mget };
+module.exports = { buildCustomerSchedule, allocateSub, cashSafe, insertSchedule, allocateForJob, forJob, invoice, markFunded, startPhase, submitPhase, addPhoto, approve, dispute, resolveDispute, release, autoApproveTick, mget };

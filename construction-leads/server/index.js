@@ -7,6 +7,7 @@ const cfg = require('./config');
 const { db, get, all, run, event, j } = require('./db');
 const { priceQuote, DEFAULTS } = require('./quote-engine');
 const { planPhases } = require('./phases');
+const STUDIO = require('./studio');
 const { token, safeEq, normPhone, sha256, esc, inServiceArea } = require('./util');
 const L = require('./leads');
 const I = require('./integrations');
@@ -329,7 +330,7 @@ route('POST', '/api/admin/quotes/:id/send', 'admin', async (req, res, { params }
   run("UPDATE quotes SET status='sent', sent_at=datetime('now'), valid_until=datetime('now','+30 days') WHERE id=?", q.id);
   run("UPDATE leads SET status='quoted' WHERE id=? AND status IN ('new','booked','visited')", q.lead_id);
   event(q.lead_id, 'quote_sent', { quote: q.id, link });
-  await notify.toLead(q.lead_id, { sms: `Your project plan from ${cfg.company.name} is ready: ${link}`, email: `Your project plan and budget are ready.\nReview the phases, then approve to open competitive bidding from vetted contractors:\n${link}\n\nValid for 30 days. Questions? ${cfg.company.phone}`, subject: 'Your project plan is ready' });
+  await notify.toLead(q.lead_id, { sms: `Your fixed-price quote from ${cfg.company.name} is ready: ${link}`, email: `Your fixed-price quote and phase plan are ready.\nReview, sign and start here:\n${link}\n\nValid for 30 days. Questions? ${cfg.company.phone}`, subject: 'Your fixed-price quote is ready' });
   send(res, 200, { ok: true, link });
 });
 route('POST', '/api/admin/quotes/:id/mark-deposit-paid', 'admin', (req, res, { params }) => {
@@ -383,32 +384,27 @@ route('GET', '/api/admin/photo/:name', 'admin', (req, res, { params }) => {
 const customerQuote = (t) => get('SELECT * FROM quotes WHERE token=?', t);
 const publicQuote = (q) => {
   const lead = get('SELECT name, address, zip FROM leads WHERE id=?', q.lead_id);
-  const r = parse(q.result), phases = parse(q.phases, []);
+  const r = parse(q.result), phases = parse(q.phases, []), studio = parse(q.studio);
   const job = get('SELECT * FROM jobs WHERE quote_id=?', q.id);
   const post = job && get('SELECT * FROM job_posts WHERE job_id=?', job.id);
   const c = get('SELECT * FROM contracts WHERE quote_id=?', q.id);
-  const budget = r.totals.total;
+  const price = r.totals.total;
+  // plan: review + sign | awaiting_funding: signed, pay phase 1 | finding: funded, we are assigning a contractor | contract: assigned
   let stage = 'plan';
-  if (post) stage = post.status === 'open' ? 'bidding' : post.status === 'no_bids' ? 'no_bids' : post.status === 'awarded' ? 'contract' : c ? 'awaiting_funding' : post.status === 'pending_acceptance' ? 'offer' : 'closed';
+  if (c) stage = post?.status === 'awarded' ? 'contract' : c.deposit_status === 'paid' ? 'finding' : 'awaiting_funding';
+  const schedule = c ? null : MS.buildCustomerSchedule({ phases, total: price });
   const out = {
-    stage, title: q.title, scope_summary: q.scope_summary, status: q.status, valid_until: q.valid_until, customer: lead.name, company: cfg.company,
-    // Customers see scope and the phase plan, never internal cost, margin or hours.
-    budget, scope: r.lines.map((l) => ({ description: l.description, qty: l.qty, unit: l.unit })),
-    phases: phases.map((p) => ({ seq: p.seq, name: p.name, days: p.days, share_pct: Math.round(p.weight * 1000) / 10, est_amount: Math.round(budget * p.weight) })),
-    total_days: Math.round(phases.reduce((a, p) => a + p.days, 0) * 10) / 10,
-    auction_hours: cfg.marketplace.auctionHours, stripe_enabled: !!cfg.stripe.secretKey,
+    stage, title: q.title, scope_summary: q.scope_summary, selections: studio?.selections_text || null, status: q.status, valid_until: q.valid_until, customer: lead.name, company: cfg.company,
+    // Customers see a fixed price, scope and the phase plan, never internal cost, margin, hours, bids or our spread.
+    price, scope: r.lines.map((l) => ({ description: l.description, qty: l.qty, unit: l.unit })),
+    phases: phases.map((p) => ({ seq: p.seq, name: p.name, days: p.days, share_pct: Math.round(p.weight * 1000) / 10, amount: schedule ? schedule[p.seq - 1].customer_amount : null })),
+    total_days: Math.round(phases.reduce((a, p) => a + p.days, 0) * 10) / 10, stripe_enabled: !!cfg.stripe.secretKey,
+    lead_ref: { id: q.lead_id, key: L.leadKey(get('SELECT * FROM leads WHERE id=?', q.lead_id)) },
   };
-  if (post && post.status === 'open') { const low = M.lowest(post.id); out.bidding = { closes_at: post.closes_at, bid_count: M.bidsOf(post.id).length, best_bid: low?.amount ?? null, extensions: post.extensions }; }
-  if (post && ['pending_acceptance', 'awarded'].includes(post.status) && post.winning_bid_id) {
-    const bid = get('SELECT * FROM bids WHERE id=?', post.winning_bid_id), sub = get('SELECT * FROM subcontractors WHERE id=?', bid.sub_id);
-    const schedule = MS.buildSchedule({ phases, award: post.payout, feePct: post.fee_pct, customerFeePct: post.customer_fee_pct });
-    out.offer = {
-      amount: post.payout, days: bid.days, note: bid.note, below_budget_pct: Math.round((1 - post.payout / budget) * 1000) / 10, accept_deadline: post.accept_deadline,
-      customer_total: schedule.reduce((a, m) => a + m.customer_amount, 0), platform_fee: Math.round((schedule.reduce((a, m) => a + m.customer_amount, 0) - post.payout) * 100) / 100,
-      contractor: { company: sub.name, license: sub.license, license_state: sub.license_state, trades: sub.trade, insurance_expires: sub.insurance_expires },
-      schedule: schedule.map((m) => ({ seq: m.seq, name: m.name, days: m.days, amount: m.customer_amount })),
-    };
-    if (!c) out.contract_preview = contractText({ quote: q, lead: { name: lead.name, address: lead.address, zip: lead.zip, service: q.title }, sub, award: post.payout, schedule, rescissionNote: rescission(new Date()).note });
+  if (!c) out.contract_preview = contractText({ quote: q, lead: { name: lead.name, address: lead.address, zip: lead.zip, service: q.title }, schedule, rescissionNote: rescission(new Date()).note });
+  if (post?.status === 'awarded') {
+    const sub = get('SELECT * FROM subcontractors WHERE id=?', post.awarded_to);
+    out.contractor = { company: sub.name, license: sub.license, license_state: sub.license_state, trades: sub.trade, insurance_expires: sub.insurance_expires };
   }
   if (c) {
     out.contract = { text: c.text, signed_at: c.signed_at, signer_name: c.signer_name, deposit_status: c.deposit_status, rescission_ends: c.rescission_ends };
@@ -424,51 +420,54 @@ route('GET', '/api/quote/:token', 'public', (req, res, { params }) => {
   send(res, 200, publicQuote(q));
 });
 
-// 1) Customer approves the project plan: this opens the auction. No contract yet.
-route('POST', '/api/quote/:token/approve-plan', 'public', (req, res, { params, body, ip }) => {
+// The customer signs the fixed-price contract with the platform and pays phase 1. Contractors are found AFTER the deposit clears.
+route('POST', '/api/quote/:token/sign', 'public', async (req, res, { params, body, ip }) => {
   const q = customerQuote(params.token);
-  if (!q || q.status !== 'sent') return send(res, q?.status === 'approved' ? 409 : 404, { error: q?.status === 'approved' ? 'Already approved.' : 'Quote not found' });
-  if (q.valid_until && new Date(q.valid_until.replace(' ', 'T') + 'Z') < new Date()) return send(res, 410, { error: 'This plan has expired. Please contact us for an updated one.' });
-  if (String(body.name || '').trim().length < 3 || body.agree !== true) return send(res, 400, { error: 'Type your full name and tick the box to approve the plan.' });
-  if (!parse(q.phases)) return send(res, 409, { error: 'This plan has no phases yet.' });
-  run("UPDATE quotes SET status='approved', approved_at=datetime('now') WHERE id=?", q.id);
-  const jobId = Number(run("INSERT INTO jobs (quote_id, lead_id, status) VALUES (?,?, 'bidding')", q.id, q.lead_id).lastInsertRowid);
-  const post = M.createAuction(jobId, { hours: Number(body.hours) });
-  event(q.lead_id, 'plan_approved', { quote: q.id, by: String(body.name).trim(), ip });
-  send(res, 201, { ok: true, closes_at: post.closes_at });
-});
-
-// 2) Customer accepts the winning bid: contract is between the customer and the winning contractor; phase 1 is due now.
-route('POST', '/api/quote/:token/accept-award', 'public', async (req, res, { params, body, ip }) => {
-  const q = customerQuote(params.token); const job = q && get('SELECT * FROM jobs WHERE quote_id=?', q.id);
-  const post = job && get("SELECT * FROM job_posts WHERE job_id=? AND status='pending_acceptance'", job.id);
-  if (!post) return send(res, 404, { error: 'There is no offer to accept.' });
-  if (get('SELECT 1 FROM contracts WHERE quote_id=?', q.id)) return send(res, 409, { error: 'Already accepted.' });
-  if (new Date(post.accept_deadline) < new Date()) return send(res, 410, { error: 'This offer has expired.' });
+  if (!q || !['sent', 'approved'].includes(q.status)) return send(res, 404, { error: 'Quote not found' });
+  if (q.status === 'approved' || get('SELECT 1 FROM contracts WHERE quote_id=?', q.id)) return send(res, 409, { error: 'Already signed' });
+  if (q.valid_until && new Date(q.valid_until.replace(' ', 'T') + 'Z') < new Date()) return send(res, 410, { error: 'This price has expired. Please contact us for an updated quote.' });
   const name = String(body.name || '').trim();
   if (name.length < 3 || body.agree !== true || !String(body.signature || '').startsWith('data:image/png;base64,')) return send(res, 400, { error: 'Type your full name, draw your signature and tick the agreement box.' });
   if (String(body.signature).length > 400_000) return send(res, 413, { error: 'signature too large' });
-  const bid = get('SELECT * FROM bids WHERE id=?', post.winning_bid_id), sub = get('SELECT * FROM subcontractors WHERE id=?', bid.sub_id), lead = get('SELECT * FROM leads WHERE id=?', q.lead_id);
-  const schedule = MS.buildSchedule({ phases: parse(q.phases), award: post.payout, feePct: post.fee_pct, customerFeePct: post.customer_fee_pct });
+  if (!parse(q.phases)) return send(res, 409, { error: 'This quote has no phase plan.' });
+  const lead = get('SELECT * FROM leads WHERE id=?', q.lead_id), result = parse(q.result);
+  const schedule = MS.buildCustomerSchedule({ phases: parse(q.phases), total: result.totals.total });
   const now = new Date(), resc = rescission(now);
-  const text = contractText({ quote: q, lead, sub, award: post.payout, schedule, rescissionNote: resc.note });
-  const cid = Number(run(`INSERT INTO contracts (quote_id, text, text_sha256, signer_name, signature, signed_at, signed_ip, deposit_amount, rescission_ends, sub_id)
-    VALUES (?,?,?,?,?,?,?,?,?,?)`, q.id, text, sha256(text), name, body.signature, now.toISOString(), ip, schedule[0].customer_amount, resc.ends.toISOString(), sub.id).lastInsertRowid);
-  MS.insertSchedule(job.id, schedule);
-  run("UPDATE jobs SET status='awaiting_deposit' WHERE id=?", job.id);
-  event(q.lead_id, 'contract_signed', { quote: q.id, contract: cid, sub: sub.id, ip });
+  const text = contractText({ quote: q, lead, schedule, rescissionNote: resc.note });
+  const cid = Number(run(`INSERT INTO contracts (quote_id, text, text_sha256, signer_name, signature, signed_at, signed_ip, deposit_amount, rescission_ends)
+    VALUES (?,?,?,?,?,?,?,?,?)`, q.id, text, sha256(text), name, body.signature, now.toISOString(), ip, schedule[0].customer_amount, resc.ends.toISOString()).lastInsertRowid);
+  run("UPDATE quotes SET status='approved', approved_at=datetime('now') WHERE id=?", q.id);
+  const jobId = Number(run("INSERT INTO jobs (quote_id, lead_id, status) VALUES (?,?, 'awaiting_deposit')", q.id, q.lead_id).lastInsertRowid);
+  MS.insertSchedule(jobId, schedule);
+  event(q.lead_id, 'contract_signed', { quote: q.id, contract: cid, ip });
   let checkoutUrl = null;
   try { checkoutUrl = await I.createDepositCheckout(q, get('SELECT * FROM contracts WHERE id=?', cid), lead); } catch (e) { event(q.lead_id, 'stripe_error', { message: e.message }); }
   send(res, 201, { ok: true, checkoutUrl, rescission_ends: resc.ends.toISOString() });
 });
 
-// 3) Customer declines: the next-best bidder gets the offer.
-route('POST', '/api/quote/:token/decline-award', 'public', (req, res, { params }) => {
-  const q = customerQuote(params.token); const job = q && get('SELECT * FROM jobs WHERE quote_id=?', q.id);
-  const post = job && get("SELECT * FROM job_posts WHERE job_id=? AND status='pending_acceptance'", job.id);
-  if (!post || get('SELECT 1 FROM contracts WHERE quote_id=?', q.id)) return send(res, 404, { error: 'There is no offer to decline.' });
-  const next = M.offerNext(post.id, 'declined');
-  send(res, 200, { ok: true, next_offer: next.status === 'pending_acceptance' });
+// ---- online design studio (public): instant fixed-price quote
+route('GET', '/api/studio/config', 'public', (req, res) => send(res, 200, { rooms: STUDIO.publicConfig(), valid_days: cfg.studio.validDays, company: { name: cfg.company.name, phone: cfg.company.phone } }));
+route('POST', '/api/studio/price', 'public', (req, res, { body, ip }) => {
+  if (limited(ip + 'studio', 120)) return send(res, 429, { error: 'Too many requests' });
+  const q = STUDIO.buildStudioQuote(body);
+  send(res, 200, { price: q.price, groups: q.groups, phases: q.phases, total_days: q.total_days, selections_text: q.selections_text });
+});
+route('POST', '/api/studio/reserve', 'public', (req, res, { body, ip }) => {
+  if (limited(ip + 'reserve', 8)) return send(res, 429, { error: 'Too many requests' });
+  if (body.website) return send(res, 200, { ok: true });   // honeypot
+  const name = String(body.name || '').trim(), phone = normPhone(body.phone), zip = String(body.zip || '').trim();
+  if (name.length < 2 || !phone || phone.length < 11) return send(res, 400, { error: 'Enter your name and a valid phone number.' });
+  if (!zip || !inServiceArea(zip)) return send(res, 400, { error: 'We currently serve New York and New Jersey only. Enter a NY or NJ ZIP code.' });
+  if (body.consent !== true) return send(res, 400, { error: 'Please accept the contact consent to continue.' });
+  const sq = STUDIO.buildStudioQuote(body);
+  const { lead } = L.createLead({ name, phone, email: body.email, zip, address: body.address, service: `${STUDIO.ROOMS[sq.room].label} remodel`, propertyType: 'Residential', details: sq.selections_text, consent: true, consentText: String(body.consentText || '').slice(0, 1000), utm: body.utm || {} }, 'studio');
+  const plan = sq.phase_plan;
+  const id = Number(run(`INSERT INTO quotes (lead_id, token, title, scope_summary, settings, items, result, phases, studio, status, sent_at, valid_until)
+    VALUES (?,?,?,?,?,?,?,?,?, 'sent', datetime('now'), datetime('now', ?))`, lead.id, token(16), `${STUDIO.ROOMS[sq.room].label} remodel`, sq.selections_text, j(sq.result.settings), j(sq.items), j(sq.result), j(plan.phases),
+  j({ room: sq.room, dims: sq.dims, selections_text: sq.selections_text }), `+${cfg.studio.validDays} days`).lastInsertRowid);
+  run("UPDATE leads SET status='quoted' WHERE id=? AND status IN ('new','booked','visited')", lead.id);
+  event(lead.id, 'studio_quote', { quote: id, price: sq.price });
+  send(res, 201, { ok: true, link: `/quote.html?t=${get('SELECT token FROM quotes WHERE id=?', id).token}` });
 });
 
 route('POST', '/webhooks/stripe', 'public', (req, res, { raw }) => {
@@ -635,35 +634,27 @@ route('GET', '/api/admin/subs/:id/coi', 'admin', (req, res, { params }) => {
 });
 route('GET', '/api/admin/posts', 'admin', (req, res) => send(res, 200, all(`SELECT p.*, s.name sub_name FROM job_posts p LEFT JOIN subcontractors s ON s.id=p.awarded_to ORDER BY p.id DESC`).map((p) => {
   const bids = all("SELECT b.*, s.name company FROM bids b JOIN subcontractors s ON s.id=b.sub_id WHERE b.post_id=? ORDER BY b.amount ASC, b.updated_at ASC", p.id);
-  let eco = null; try { eco = M.economics({ ...p, payout: p.payout || p.ceiling }); } catch { /* ignore */ }
-  return { ...p, scope: undefined, trades: JSON.parse(p.trades), bids, economics: eco };
+  const low = bids.find((b) => b.status === 'active' || b.status === 'won');
+  let eco = null, price = null; try { price = M.customerPrice(p); eco = M.economics(p, p.status === 'awarded' ? p.payout : low?.amount ?? p.ceiling); } catch { /* ignore */ }
+  return { ...p, scope: undefined, trades: JSON.parse(p.trades), bids, economics: eco, customer_price: price, has_bid: !!low };
 })));
-// Admin may tune an auction that has not been awarded: budget ceiling, floor, fees. Fees lock at award.
+// Admin may tune an auction that has not been awarded: ceiling, floor, fee. Terms lock at award.
 route('PATCH', '/api/admin/posts/:id', 'admin', (req, res, { params, body }) => {
   const p = get('SELECT * FROM job_posts WHERE id=?', Number(params.id)); if (!p) return send(res, 404, { error: 'not found' });
   if (p.status === 'awarded') return send(res, 409, { error: 'Already awarded: terms are locked.' });
   const pick = (k, d) => (body[k] != null ? Number(body[k]) : d);
-  const fee = pick('fee_pct', p.fee_pct), cust = pick('customer_fee_pct', p.customer_fee_pct), ceiling = pick('ceiling', p.ceiling), floor = pick('floor_pct', p.floor_pct), dec = pick('min_decrement_pct', p.min_decrement_pct);
-  if (!(fee >= 0 && fee <= 30 && cust >= 0 && cust <= 30 && ceiling > 0 && floor >= 10 && floor <= 100 && dec >= 0 && dec <= 10)) return send(res, 400, { error: 'invalid auction settings' });
-  run('UPDATE job_posts SET fee_pct=?, customer_fee_pct=?, ceiling=?, floor_pct=?, min_decrement_pct=? WHERE id=?', fee, cust, ceiling, floor, dec, p.id);
+  const fee = pick('fee_pct', p.fee_pct), ceiling = pick('ceiling', p.ceiling), floor = pick('floor_pct', p.floor_pct), dec = pick('min_decrement_pct', p.min_decrement_pct);
+  const price = M.customerPrice(p);
+  if (!(fee >= 0 && fee <= 30 && ceiling > 0 && floor >= 10 && floor <= 100 && dec >= 0 && dec <= 10)) return send(res, 400, { error: 'invalid auction settings' });
+  if (ceiling > price) return send(res, 400, { error: 'The ceiling cannot exceed the customer price: the job would lose money before any other cost.' });
+  run('UPDATE job_posts SET fee_pct=?, ceiling=?, floor_pct=?, min_decrement_pct=? WHERE id=?', fee, ceiling, floor, dec, p.id);
   if (body.status === 'closed' && ['open', 'no_bids'].includes(p.status)) run("UPDATE job_posts SET status='closed' WHERE id=?", p.id);
   if (body.extend_hours && ['open', 'no_bids', 'closed'].includes(p.status)) run("UPDATE job_posts SET status='open', closes_at=? WHERE id=?", new Date(Date.now() + Math.min(Number(body.extend_hours), 120) * 3600000).toISOString(), p.id);
   send(res, 200, get('SELECT * FROM job_posts WHERE id=?', p.id));
 });
 route('POST', '/api/admin/posts/:id/close-now', 'admin', (req, res, { params }) => send(res, 200, M.closeAuction(Number(params.id))));
-// Admin override: offer the job to a specific bidder instead of the lowest (e.g. better reviews at +2%).
-route('POST', '/api/admin/posts/:id/offer/:bidId', 'admin', (req, res, { params }) => {
-  const post = get('SELECT * FROM job_posts WHERE id=?', Number(params.id)), bid = get('SELECT * FROM bids WHERE id=? AND post_id=?', Number(params.bidId), Number(params.id));
-  if (!post || !bid) return send(res, 404, { error: 'not found' });
-  if (!['open', 'no_bids', 'pending_acceptance'].includes(post.status)) return send(res, 409, { error: 'This auction cannot be re-offered.' });
-  if (get('SELECT 1 FROM contracts c JOIN jobs j ON j.quote_id=c.quote_id WHERE j.id=?', post.job_id)) return send(res, 409, { error: 'The customer already signed with the current winner.' });
-  run("UPDATE bids SET status='active' WHERE post_id=? AND status='offered'", post.id);
-  run("UPDATE job_posts SET status='open' WHERE id=?", post.id);
-  M.closeAuction(post.id); // reuse the standard path, then point it at the chosen bid
-  const fresh = get('SELECT * FROM job_posts WHERE id=?', post.id);
-  if (fresh.winning_bid_id !== bid.id) { run("UPDATE bids SET status='active' WHERE id=?", fresh.winning_bid_id); run("UPDATE job_posts SET status='open' WHERE id=?", post.id); M.offerSpecific(post.id, bid.id); }
-  send(res, 200, get('SELECT * FROM job_posts WHERE id=?', post.id));
-});
+// Admin override: award a specific bidder instead of the lowest (e.g. better record at +2%).
+route('POST', '/api/admin/posts/:id/award/:bidId', 'admin', (req, res, { params }) => send(res, 200, M.awardSpecific(Number(params.id), Number(params.bidId))));
 route('GET', '/api/admin/ledger', 'admin', (req, res) => send(res, 200, all('SELECT l.*, s.name sub_name FROM ledger l LEFT JOIN subcontractors s ON s.id=l.sub_id ORDER BY l.id DESC LIMIT 300')));
 route('POST', '/api/admin/ledger/:id/settle', 'admin', (req, res, { params }) => { run("UPDATE ledger SET status='settled' WHERE id=?", Number(params.id)); send(res, 200, { ok: true }); });
 

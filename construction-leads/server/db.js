@@ -106,8 +106,12 @@ addCol('job_posts', 'fee_pct', 'REAL NOT NULL DEFAULT 5');
  ['floor_pct', 'REAL NOT NULL DEFAULT 60'], ['customer_fee_pct', 'REAL NOT NULL DEFAULT 0'], ['winning_bid_id', 'INTEGER'], ['accept_deadline', 'TEXT'], ['sealed', 'INTEGER NOT NULL DEFAULT 0']]
   .forEach(([c, d]) => addCol('job_posts', c, d));
 addCol('quotes', 'phases', 'TEXT');
+addCol('quotes', 'studio', 'TEXT');
 addCol('contracts', 'sub_id', 'INTEGER');
 db.exec(`
+CREATE TABLE IF NOT EXISTS studio_options (
+  id INTEGER PRIMARY KEY, room TEXT NOT NULL, grp TEXT NOT NULL, label TEXT NOT NULL, blurb TEXT, swatch TEXT, catalog_name TEXT NOT NULL, sort INTEGER NOT NULL DEFAULT 0, active INTEGER NOT NULL DEFAULT 1
+);
 CREATE TABLE IF NOT EXISTS bids (
   id INTEGER PRIMARY KEY, post_id INTEGER NOT NULL REFERENCES job_posts(id), sub_id INTEGER NOT NULL REFERENCES subcontractors(id),
   amount REAL NOT NULL, days INTEGER NOT NULL, note TEXT,

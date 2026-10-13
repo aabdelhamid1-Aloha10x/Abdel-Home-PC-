@@ -1,5 +1,7 @@
 # Bonds, and what "I don't want to be the contractor" means legally and financially
 
+> **Update (spread model, see `spread-model.md`):** the design changed again. The customer now signs a fixed price **with us**, so we ARE the contractor of record. That means: section 3's deposit-security bond/trust-account duty applies to **us**, the licensing questions in section 4 apply to us directly, and section 5's fee-only economics are superseded by the spread economics. The bond cost facts (sections 1-2) are unchanged. The marketplace version is preserved in git at commit `82f9eed`.
+
 Prepared October 2026. Facts are sourced (links at the end). Where I could not verify something, it is in section 6.
 
 ## 1. Can we get a bond through Stripe?

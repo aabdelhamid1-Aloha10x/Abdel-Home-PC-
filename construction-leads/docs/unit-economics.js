@@ -1,58 +1,64 @@
 'use strict';
-// Unit economics of the MARKETPLACE model (customer contracts with the winning sub; the platform earns only fees).
-// Run: node docs/unit-economics.js
+// Unit economics of the SPREAD model: the customer signs a fixed price with the platform; contractors then bid for the
+// work; the platform keeps (customer price - winning bid) + a % fee on the bid. Run: node docs/unit-economics.js
 //
-// SOURCED: cost per lead $90-$250 for remodeling on Google; ACH 0.8% capped at $5; Stripe Connect $2/active account/month
-//          and 0.25% + $0.25 per payout; BuildZoom charges 2.5-4.5% on contracts under $50K; Handy ~20% (2015 reporting).
-// ASSUMPTIONS (mine, not data; replace with your own numbers after a test campaign): funnel rates, estimator cost per visit,
-//          auction discount, dispute reserve, job sizes.
-const { priceQuote } = require('../server/quote-engine');
+// SOURCED: NAHB (FY2024) remodelers average 29.9% gross margin and 6.3% net margin, operating expenses 23.6% of revenue;
+//          ACH 0.8% capped at $5; Stripe Connect $2/active account/month and 0.25% + $0.25 per payout; ad cost per lead $90-$250.
+// ASSUMPTIONS (mine, NOT data; replace after a test campaign): cost per completed studio quote, quote-to-signed rate,
+//          verification-visit cost, support time per job, risk reserve (change orders/callbacks/warranty you absorb as contractor of record).
 const { splitJob } = require('../server/settlement');
 
 const A = {
-  leadToBooked: 0.35, bookedToVisit: 0.75, visitToSigned: 0.25,   // ASSUMPTION. "Signed" here = a customer who approves the plan AND accepts an offer
-  visitCost: 120,                                                // ASSUMPTION: ~2.5h loaded estimator time incl. travel
-  auctionDiscount: 0.10,                                         // ASSUMPTION: winning bid vs the budget ceiling
-  disputeReservePct: 0.005,                                      // ASSUMPTION: chargebacks / mediation cost, % of award
-  phases: 5, achCap: 5, payouts: 5,
-  marketMargin: 0.25,
+  verifyVisit: 120,        // ASSUMPTION: one field-verification visit per signed job
+  support: 250,            // ASSUMPTION: planner/admin time per job
+  riskReservePct: 4,       // ASSUMPTION: % of price absorbed as the contractor of record
+  achCap: 5, phases: 6, payouts: 6,
+  feePct: 5,
 };
 
-function scenario(directCost, cpl, subPct, custPct) {
-  const q = priceQuote([{ description: 'x', qty: 1, material_unit_cost: directCost }], { margin_pct: A.marketMargin }, { state: 'NY' });
-  const budget = q.totals.total, award = budget * (1 - A.auctionDiscount);
-  const s = splitJob({ payout: award, fee_pct: subPct, customer_fee_pct: custPct });
-  const signedPerLead = A.leadToBooked * A.bookedToVisit * A.visitToSigned;
-  const acquisition = cpl / signedPerLead + A.visitCost / A.visitToSigned;
-  const payments = A.phases * A.achCap + A.payouts * (0.0025 * award / A.payouts + 0.25);
-  const reserve = award * A.disputeReservePct;
-  const fixedCost = acquisition + payments + reserve;
-  return { budget: Math.round(budget), award: Math.round(award), revenue: Math.round(s.platform_revenue), take: s.take_pct, acquisition: Math.round(acquisition), contribution: Math.round(s.platform_revenue - fixedCost), breakevenTakePct: Math.round((fixedCost / (award * (1 - 0)) * 100) * 10) / 10 };
+function job({ price, spreadPct, quoteCost, closeRate, feePct = A.feePct }) {
+  const payout = price * (1 - spreadPct / 100);
+  const s = splitJob({ price, payout, fee_pct: feePct, risk_reserve_pct: A.riskReservePct });
+  const acquisition = quoteCost / closeRate + A.verifyVisit;
+  const payments = A.phases * A.achCap + A.payouts * (0.0025 * payout / A.payouts + 0.25);
+  const contribution = s.after_reserve - acquisition - payments - A.support;
+  return { ...s, acquisition, payments, contribution, opexPct: (acquisition + payments + A.support) / price * 100 };
 }
+const $ = (n) => Math.round(n).toLocaleString('en-US');
 
-console.log('A) Contribution per signed job at $165 cost per lead, by fee structure (sub fee % / customer fee %)');
-const rows = [];
-for (const cost of [6000, 12000, 20000]) {
-  const base = scenario(cost, 165, 5, 0);
-  const row = { 'budget': base.budget, 'winning bid': base.award };
-  for (const [sp, cp] of [[5, 0], [5, 5], [8, 5], [10, 8]]) row[`${sp}% + ${cp}%`] = scenario(cost, 165, sp, cp).contribution;
-  rows.push(row);
+console.log('YOUR EXAMPLE: $10,000 price, $8,000 bid, 5% fee');
+const ex = splitJob({ price: 10000, payout: 8000, fee_pct: 5, risk_reserve_pct: A.riskReservePct });
+console.log(`  spread $${ex.spread} + fee $${ex.sub_fee} = revenue $${ex.revenue} (${ex.revenue_pct}% of the price); after a ${A.riskReservePct}% risk reserve: $${ex.after_reserve}\n`);
+
+console.log('A) Contribution per signed job (after acquisition, verification visit, support, payments, risk reserve)');
+console.log('   Studio funnel assumed: $100 per completed studio quote, 12% of quotes sign  =>  ~$953 to acquire a signed job\n');
+const rowsA = [];
+for (const price of [10000, 15000, 25000, 40000]) {
+  const r = { 'customer price': price };
+  for (const sp of [10, 15, 20, 25]) r[`spread ${sp}%`] = $(job({ price, spreadPct: sp, quoteCost: 100, closeRate: 0.12 }).contribution);
+  rowsA.push(r);
 }
-console.table(rows);
+console.table(rowsA);
 
-console.log('B) Total take rate (sub fee + customer fee, as % of the winning bid) needed to BREAK EVEN on one job, by cost per lead');
-const be = [];
-for (const cost of [6000, 12000, 20000]) {
-  const row = { 'winning bid': scenario(cost, 165, 5, 0).award };
-  for (const cpl of [0, 40, 100, 165, 250]) row[`CPL $${cpl}`] = scenario(cost, cpl, 5, 0).breakevenTakePct + '%';
-  be.push(row);
+console.log('B) Contribution at a 20% spread, by studio funnel quality (cost per completed quote / quote-to-signed rate)');
+const rowsB = [];
+for (const price of [10000, 25000, 40000]) {
+  const r = { 'customer price': price };
+  for (const [qc, cr] of [[50, 0.18], [100, 0.12], [165, 0.12], [165, 0.08]]) r[`$${qc} @ ${cr * 100}%`] = $(job({ price, spreadPct: 20, quoteCost: qc, closeRate: cr }).contribution);
+  rowsB.push(r);
 }
-console.table(be);
-console.log('   (CPL $0 = leads that cost nothing; the estimator visit cost remains. CPL $40 ~ strong organic/referral mix.)\n');
+console.table(rowsB);
 
-console.log('C) What the subscription adds');
-console.log(`   1 sub x $55/month = $660/year. 15 subs = $825/month. Not material.\n`);
+console.log('C) Break-even SPREAD % (with a 5% contractor fee) by price and funnel');
+const be = (price, qc, cr) => { for (let sp = 0; sp <= 60; sp += 0.5) if (job({ price, spreadPct: sp, quoteCost: qc, closeRate: cr }).contribution >= 0) return sp + '%'; return '>60%'; };
+const rowsC = [];
+for (const price of [10000, 15000, 25000, 40000]) rowsC.push({ 'customer price': price, '$50 @ 18%': be(price, 50, 0.18), '$100 @ 12%': be(price, 100, 0.12), '$165 @ 12%': be(price, 165, 0.12), '$165 @ 8%': be(price, 165, 0.08) });
+console.table(rowsC);
 
-const signedPerLead = A.leadToBooked * A.bookedToVisit * A.visitToSigned;
-console.log(`D) Funnel check: ${(1 / signedPerLead).toFixed(1)} leads and ${(1 / A.visitToSigned).toFixed(0)} estimator visits per signed job (assumed rates).`);
-console.log(`   Card fee on a $10,000 phase: $${(10000 * 0.029 + 0.30).toFixed(2)}; ACH: $${Math.min(10000 * 0.008, 5).toFixed(2)}.`);
+console.log('D) Operating cost as % of price (compare NAHB remodeler average: operating expenses 23.6% of revenue, net 6.3%)');
+for (const price of [10000, 25000, 40000]) { const j = job({ price, spreadPct: 20, quoteCost: 100, closeRate: 0.12 }); console.log(`   $${$(price)} job: our modeled costs ${j.opexPct.toFixed(1)}% of price; revenue ${j.revenue_pct}%; net ${(j.contribution / price * 100).toFixed(1)}% (before fixed overhead: staff, software, insurance, bond)`); }
+
+console.log('\nE) PRICE RISK: the spread only exists if contractors bid well below your fixed price. If bids land closer to your price:');
+for (const sp of [20, 15, 10, 5, 0]) console.log(`   spread ${sp}%: contribution on a $25,000 job = $${$(job({ price: 25000, spreadPct: sp, quoteCost: 100, closeRate: 0.12 }).contribution)}`);
+console.log('\nF) Fixed overhead break-even (insurance, bond, software, planner, ops; assumed $25,000/month) at a 20% spread, $100 @ 12% funnel:');
+for (const price of [15000, 25000, 40000]) { const c = job({ price, spreadPct: 20, quoteCost: 100, closeRate: 0.12 }).contribution; console.log(`   $${$(price)} jobs: ${(25000 / c).toFixed(1)} signed jobs per month`); }

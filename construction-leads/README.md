@@ -1,15 +1,16 @@
-# Construction lead-to-contract pipeline + subcontractor auction marketplace
+# Online design studio + contractor auction: lead-to-contract platform for NY/NJ renovations
 
-Meta/Google ads → lead → booked free estimate → recorded site visit → **estimate with a short-phase plan** (the budget ceiling) →
-customer approves the plan → **reverse auction among vetted subs** → customer accepts the best bid and signs **with the winning sub** →
-pays phase 1 → sub confirmed → phase-by-phase: customer funds, sub works, customer approves, platform pays the sub (fee withheld).
-The platform is the marketplace and payment administrator, not the contractor. See `docs/bond-and-structure.md`.
+A customer designs a kitchen or bathroom in the **studio**, gets an **instant fixed price**, signs a contract **with us** and pays a small **phase 1**.
+Then licensed contractors **bid in a reverse auction** under a ceiling; the lowest eligible bid wins. The customer pays us phase by phase (each funded
+before it starts); we pay the contractor per approved phase, withholding a 5% fee. **Our revenue = the spread (customer price minus winning bid) + the fee.**
+We are the **contractor of record** (see `docs/spread-model.md`). Leads also arrive from Meta/Google ads and the free-estimate booking flow; an estimator
+can build the same kind of fixed-price quote after a site visit. The earlier fee-only marketplace is preserved at git commit `82f9eed`.
 
 Zero dependencies. Needs Node 22.5+ (uses the built-in SQLite).
 
 ```
 npm start          # http://localhost:3000   (seeds a starter price book + 2 estimators)
-npm test           # 32 tests: quote and phase planning, fee/schedule math, the whole funnel, the auction rules and the payment gates
+npm test           # 32 tests: studio pricing, quote and phase planning, spread/schedule math, the whole funnel, the auction rules and the payment gates
 ```
 
 ## The pipeline
@@ -29,23 +30,24 @@ npm test           # 32 tests: quote and phase planning, fee/schedule math, the 
                                      ▼
         transcribe (ElevenLabs STT) ─► AI drafts scope + suggested price-book lines (Claude)
                                      ▼
-   /admin.html QUOTE BUILDER: price-book lines × measurements ─► budget ceiling + SHORT-PHASE PLAN (live preview)
+   /admin.html QUOTE BUILDER (or /studio.html): fixed customer price + SHORT-PHASE PLAN, ceiling = price - minimum spread
                                      ▼
-   customer link /quote.html?t=…: reviews the plan + budget ─► approves ─► AUCTION opens (24-96h, anti-sniping)
+   customer link /quote.html?t=…: reviews price + phases ─► signs the contract WITH THE PLATFORM ─► pays phase 1 (<= 10%)
                                      ▼
-   /sub.html: vetted subs BID at or below the budget ─► best eligible bid is OFFERED to the customer
+   phase 1 CLEARED ─► AUCTION opens (/sub.html: vetted contractors bid under the ceiling; anti-sniping) ─► lowest eligible bid WINS
                                      ▼
-   customer accepts + signs WITH THE WINNING SUB ─► pays phase 1 (<= 10%) ─► cleared ─► sub CONFIRMED, details unlock
+   winner confirmed, customer details unlock ─► per phase: customer funds ─► contractor works ─► photos + lien waiver ─► customer approves
                                      ▼
-   per phase: customer funds ─► sub starts ─► photos + lien waiver ─► customer approves ─► platform pays sub (fee withheld)
-   JOB: bidding ─► awaiting_deposit ─► rescission_period (3 business days) ─► ready ─► in progress ─► complete
+   platform pays the contractor (fee withheld) and books the spread on each approved phase
+   JOB: awaiting_deposit ─► bidding ─► rescission_period (3 business days) ─► ready ─► in progress ─► complete
 ```
 
 ## Pages
 
 | URL | Who | What |
 |---|---|---|
-| `/` | public | Landing page + lead form (UTM / gclid / fbclid captured) |
+| `/` | public | Landing page + lead form (UTM / gclid / fbclid captured) and a link to the studio |
+| `/studio.html` | customer | Design studio: room, dimensions, finishes, instant fixed price, reserve |
 | `/book.html?lead=&k=` | lead | Slot picker (links go out by SMS/email) |
 | `/tech.html#<token>` | estimator | Consent script, recorder, measurements, photos |
 | `/admin.html` | you | Pipeline, lead detail, quote builder, jobs, price book, subs, team, message log |
@@ -95,47 +97,40 @@ deposit     = total × deposit %            (capped by state law, see below)
 `do_not_call` permanently flags the lead and blocks all calls and texts.
 
 
-## Subcontractor auction marketplace (`/sub.html`)
+## Contractor auction (`/sub.html`) and the spread
 
 Service area is **New York and New Jersey** (ZIP-routed; out-of-area leads are saved but never booked or called).
 
-**Flow:** sub applies (license, insurance, trades, ZIP coverage) → you review and **approve** → they **subscribe** ($50-60/mo via Stripe) →
-the customer approves a project plan → an **auction** opens on the board → eligible subs **bid** → the lowest eligible bid is **offered** to the customer →
-the customer **accepts and signs the contract with that sub** and pays phase 1 → the sub is **confirmed** and the customer's details unlock → phases run.
+**Contractor flow:** applies (license, insurance, trades, ZIP coverage) → you review and **approve** → subscribes ($50-60/mo via Stripe) → **bids** on live auctions →
+the lowest eligible bid **wins automatically** when the clock ends → customer details unlock → phases run. Remember: the bidders for whole-room jobs must be licensed remodeling
+contractors (single-trade subs fit exteriors natively).
 
-**The estimate becomes a phase plan.** Every quote is split into short phases automatically (`server/phases.js`): lines are ordered by construction stage
-(demo, rough-in, main install, finishes), packed into phases of at most N crew-days and M% of the price (defaults 5 days, 25%), a large line is split across
-phases, the **first payment is capped (default 10%)** and 10% is held as final retainage. The customer funds each phase before it starts, so cash flows continuously.
-The quote's price is the **budget ceiling**: no bid can exceed it.
+**Quotes carry a phase plan.** Every quote (studio or estimator-built) is split into short phases (`server/phases.js`): lines ordered by construction stage, packed into phases of at most
+N crew-days and M% of the price (defaults 5 days, 25%), big lines split across phases, the **first payment capped (default 10%)**, 10% held as final retainage.
 
-**Auction rules** (`marketplace.placeBid`): bids at or below the ceiling and at or above a floor (default 60%, stops "too good to be true" lowballs);
-open auction (best bid visible, other bidders anonymous; `AUCTION_SEALED=1` hides it); a new bid must beat the best by a minimum decrement (default 1%);
-a sub can only lower their own bid; a bid in the last 15 minutes extends the clock (max 4 times); bids are binding; default window 48h (customer picks 24-96h).
-If the customer declines, or lets the offer lapse (72h), the **runner-up** gets the offer. You can re-open, extend, change ceiling/floor/fees, or offer a specific bidder.
+**The ceiling.** Contractors bid at or below `price × (1 - MIN_SPREAD_PCT)` (default 15%) and at or above a floor (60% of the ceiling). They **never see the customer price**, only the ceiling.
 
-**Revenue:** a **sub fee** (default 5% of the winning bid, `SUB_FEE_PCT`, withheld from payouts, never invoiced) plus an optional **customer fee**
-(`CUSTOMER_FEE_PCT`, itemized in the contract). Both adjustable per auction until awarded. **At 5% alone the model loses money per job at typical lead costs; read
-`docs/bond-and-structure.md` section 5** (break-even take is roughly 12-19% for $17-28K jobs at $165/lead). The admin screen flags auctions whose fees cannot cover `ACQ_COST_ESTIMATE`.
+**Auction rules** (`marketplace.placeBid`): open auction (best bid visible, bidders anonymous; `AUCTION_SEALED=1` hides it); a new bid must beat the best by a minimum decrement (1%);
+a contractor can only lower their own bid; a bid in the last 15 minutes extends the clock (max 4 times); bids are binding; default window 48h. Admin can close now, re-open, tune the
+fee/ceiling/floor, or award a specific bidder. **Funded before committed:** no auction opens (and nothing can be awarded) until phase 1 has cleared.
 
-**What subs see before bidding:** trade, ZIP3 area, scope, phases with durations and shares, measurements, customer wishes, the budget, the best bid and bid count.
-**Never:** customer name/phone/address until the job is confirmed (they win AND the customer funded phase 1).
-
-**Who can bid** (enforced server-side): approved · subscription active · liability insurance current · covers the state and ZIP prefixes · trade matches (or "general").
-No work starts until phase 1 has cleared **and** the customer's 3-business-day cancellation window has closed.
+**Revenue:** spread + `SUB_FEE_PCT` (default 5% of the bid, withheld from payouts, never invoiced). Example: $10,000 price, $8,000 bid → spread $2,000 + fee $400 = **$2,400 (24%)**.
+The spread is recognized phase by phase when each phase is approved. The admin screen shows each auction's revenue and warns when it cannot cover `ACQ_COST_ESTIMATE`.
+**The spread only exists if contractors bid below your price; read `docs/spread-model.md` section 4 before trusting 20%.**
 
 ### Money flow: phases, funded first, platform pays per approved phase
-Example: winning bid $40,000, 5% sub fee, 3% customer fee, 5 phases. The customer pays $41,200 in total through the platform (ACH preferred: $5 vs ~$290 per $10K by card):
-1. Customer accepts, signs with the winning sub, pays **phase 1** (<= 10%). It clears (card, or ACH after the bank debit settles) → **only now is the sub committed.**
-2. Cancellation window closes. The sub starts phase 1; uploads photos + a lien waiver; submits. The next phase is invoiced to the customer.
-3. The customer approves (silence = approved after 72h; a dispute freezes just that phase). Payout = phase gross minus the 5% fee, via Stripe Connect transfer or recorded as due in the ledger.
-4. Repeat. **No phase starts unfunded, and the sub is never paid more than the customer has already paid in** (checked in code).
+The customer pays **the platform** (ACH preferred: $5 vs ~$290 per $10K by card):
+1. Customer signs the fixed-price contract and pays **phase 1**. It clears (card, or ACH after the bank debit settles) → **only now does the auction open.**
+2. The winner is awarded; the contractor's payouts are fixed against the customer's schedule, proportional per phase. Cancellation window (3 business days) closes; work starts.
+3. Contractor uploads photos + a lien waiver and submits; the next phase is invoiced; the customer approves (silence = approved after 72h; a dispute freezes only that phase).
+4. Payout = phase gross minus the 5% fee (Stripe Connect transfer, or recorded as due in the ledger). **No phase starts unfunded, and the contractor is never paid more than the customer has paid in** (checked in code).
 
-See **[docs/payment-enforcement.md](docs/payment-enforcement.md)** (enforcement on customer and sub, abuse cases),
-**[docs/bond-and-structure.md](docs/bond-and-structure.md)** (bond costs, who sells them, the licensing and fund-holding questions of "not being the contractor", fee economics) and
-**[docs/feasibility-study.md](docs/feasibility-study.md)** (competitors, structures, risks, sources). `node docs/unit-economics.js` reproduces the economics.
+See **[docs/spread-model.md](docs/spread-model.md)** (the model, what it costs in legal exposure, the premium/discount math, what is not built),
+**[docs/payment-enforcement.md](docs/payment-enforcement.md)**, **[docs/bond-and-structure.md](docs/bond-and-structure.md)** (bond costs, licensing, fund-holding),
+**[docs/feasibility-study.md](docs/feasibility-study.md)** and **[docs/executive-summary.md](docs/executive-summary.md)**. `node docs/unit-economics.js` reproduces the economics.
 
-Config keys: `SUB_MONTHLY_PRICE`, `SUB_FEE_PCT`, `CUSTOMER_FEE_PCT`, `ACQ_COST_ESTIMATE`, `AUCTION_HOURS`, `ACCEPT_HOURS`, `AUCTION_SEALED`, `AUTO_APPROVE_HOURS`.
-Stripe needs webhook events `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed`, `customer.subscription.deleted`, `invoice.payment_failed`, `invoice.paid`, and Stripe Connect (Express) for sub payouts.
+Config keys: `SUB_MONTHLY_PRICE`, `SUB_FEE_PCT`, `MIN_SPREAD_PCT`, `STUDIO_MARGIN_PCT`, `RISK_RESERVE_PCT`, `ACQ_COST_ESTIMATE`, `AUCTION_HOURS`, `AUCTION_SEALED`, `AUTO_APPROVE_HOURS`.
+Stripe needs webhook events `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed`, `customer.subscription.deleted`, `invoice.payment_failed`, `invoice.paid`, and Stripe Connect (Express) for contractor payouts.
 
 ### NY / NJ: confirm with an attorney before launch
 Not legal advice. These are the issues to put in front of a NY/NJ construction lawyer:
@@ -165,10 +160,12 @@ These are the things that can actually get a contractor sued or fined. The code 
 
 - Recording is uploaded when the estimator taps Stop, so record the conversation in one segment. A phone crash mid-recording loses it.
 - Single company (not yet multi-tenant), single timezone, admin is one shared token.
-- One sub per job: a multi-trade job (e.g. kitchen + roof) goes to a single winner; splitting an auction by trade is a next step.
-- No sub ratings/reviews or messaging yet; the winner is the lowest eligible bid unless you override it (rating-weighted selection is a natural next step).
-- The platform currently collects into its own Stripe balance and transfers to subs; the lower-risk 'funds held in the sub's connected account' architecture is documented but not built.
-- If a customer accepts but never pays phase 1, the contract stays pending (no automatic expiry yet).
+- One contractor per job: a multi-trade job (e.g. kitchen + roof) goes to a single winner; splitting an auction by trade is a next step.
+- No contractor ratings/reviews or messaging yet; the winner is the lowest eligible bid unless you override it.
+- The studio uses rules of thumb for rectangular rooms and a placeholder price book; no 3D visualization, permits, board approvals or financing.
+- **Change orders, contractor-default re-assignment and verified-measurement checks are not built** (see `docs/spread-model.md` section 6); the contract promises change orders.
+- The platform collects into its own Stripe balance and transfers to contractors. Because we are the contractor of record, how pre-completion funds are held (NY trust account or bond) is a legal/operational choice not implemented in code.
+- If a customer signs but never pays phase 1, the contract stays pending (no automatic expiry yet).
 - Sub password reset and email verification aren't built yet.
 - No change-order or progress-billing flow yet; milestone invoices are the natural next module.
 - The availability model is estimator-based with fixed 90-minute slots (Mon-Sat 8-6); edit `booking` in `server/config.js`.

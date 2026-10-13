@@ -87,13 +87,11 @@ function markDepositPaid(contractId, via) {
   if (m1) require('./milestones').markFunded(m1.id, via);
   const quote = get('SELECT * FROM quotes WHERE id=?', c.quote_id);
   // Work cannot start until the cancellation window closes, even if the deposit is already in.
-  const status = new Date(c.rescission_ends) > new Date() ? 'rescission_period' : 'ready';
-  run('UPDATE jobs SET status=? WHERE quote_id=? AND status=\'awaiting_deposit\'', status, c.quote_id);
   run("UPDATE leads SET status='won' WHERE id=?", quote.lead_id);
   event(quote.lead_id, 'deposit_paid', { contract: contractId, amount: c.deposit_amount, via });
-  // Phase 1 has CLEARED: only now is the winning subcontractor committed to the job.
+  // Phase 1 has CLEARED: only now do we go find a contractor (funded before committed).
   const job = get('SELECT id FROM jobs WHERE quote_id=?', c.quote_id);
-  if (job) require('./marketplace').confirmAward(job.id);
+  if (job) { try { require('./marketplace').createAuction(job.id); } catch (e) { event(quote.lead_id, 'auction_open_error', { message: e.message }); } }
   return get('SELECT * FROM contracts WHERE id=?', contractId);
 }
 

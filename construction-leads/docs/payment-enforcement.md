@@ -4,15 +4,14 @@
 **The honest answer:** you cannot physically stop two adults paying each other. You make the platform path *clearly better* for both, make the off-platform path *costly and unprotected*, and make sure **you are never exposed** if they try it. Four layers, strongest first.
 
 ## Layer 1: Structure. All money flows through the platform's payment administration
-- **Updated design:** the customer signs the contract with the **winning subcontractor** (the contractor of record); the platform is named as marketplace and **payment administrator** and the sub authorizes it to collect and release payments. The platform fee is withheld from the sub's payout, and an optional customer fee is itemized. See `bond-and-structure.md` for the legal implications.
+- **Current design (spread model):** the customer signs a fixed-price contract **with the platform** (the contractor of record) and pays only the platform; the platform pays the winning contractor per approved phase, withholding its fee. The customer never deals with the contractor on money. See `spread-model.md`.
 - The signed contract (clause 2A, in `server/contract.js`) says: pay only through our links; crew and subs are **not authorized** to take payment; a payment made to anyone else **does not count** toward the price and is **not covered by the warranty**; we may suspend work while a payment is overdue.
 - So if a customer slips the crew $2,000 cash, the customer still owes the phase payment (the contract says off-platform payments do not count). The only way "cash on site" saves the customer money is if you never find out, which the next layers address.
 
 ## Layer 2: Money mechanics. The platform is the only way anyone gets paid
 ```
- Plan approved ─► AUCTION (subs bid at or below the budget; open, anti-sniping) ─► lowest eligible bid is OFFERED to the customer
- Customer accepts + signs with the winner ─► pays phase 1 (small, <= 10%)
- Gate 1  phase 1 CLEARED  ->  the winner is CONFIRMED and sees the customer's details   (funded before committed)
+ Studio/quote ─► customer signs the fixed-price contract with the platform ─► pays phase 1 (small, <= 10%)
+ Gate 1  phase 1 CLEARED  ->  the auction OPENS (funded before committed); the lowest eligible bid wins automatically and sees the customer's details
  Gate 2  phase N funded   ->  sub may START phase N                                    (no pay, no work)
  Gate 3  sub submits photos + lien waiver -> customer approves (or silence for 72h) -> payout for phase N
  Gate 4  a dispute freezes that phase's payout only
@@ -23,7 +22,7 @@ Implemented in `server/milestones.js`, `server/marketplace.js` and tested (`test
 
 | Rule | Where enforced |
 |---|---|
-| A sub is not **committed** to a job (and cannot see the customer) until phase 1 has cleared | `marketplace.confirmAward`, called only from the funding handler |
+| No auction opens, and no contractor can be awarded or see the customer, until phase 1 has cleared | `marketplace.createAuction` (called only from the funding handler) and `awardBid` (re-checks funding) |
 | A sub cannot **start** a phase until the customer funded it, the cancellation window closed, and the previous phase was approved | `milestones.startPhase` |
 | A sub cannot **submit** without at least one photo and a signed lien waiver | `milestones.submitPhase` |
 | Payout happens only if funded + waiver + approved + not disputed; created atomically; double-approval cannot double-pay | `milestones.release` |
