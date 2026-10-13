@@ -58,3 +58,15 @@ Findings:
 5. Still open from U2: axe/Lighthouse, slow-phone check, theme icon browser test.
 6. Haiku default for typed Masar messages was already live (reported earlier).
 Fix message sent (security rule, cleanup confirmation, axe run on public pages). Nothing published.
+
+## 2026-10-13 04:30 UTC · U3 delivery, owner answers, quotes/AI/refund round · PASS WITH GAPS
+Last reviewed Lovable message ids: main:agent#00000000021677#don:NYBUNEYW (U3), main:agent#00000000021934#don:TRAP6QIK (03:24), main:agent#00000000022080#don:FQBKL4MY (03:50).
+Verified in diff: downgrade mid-cycle keeps credits (webhook.ts; upgrade raises now, new period resets); billing@ swapped to support@ in brand.ts; OpenAI candidates priced and eval-only, Anthropic stays default; AI router now Anthropic first, built-in AI backup on error, rate limit or 30 s timeout, provider logged; cancel/refund wording in billing footer, cancel dialog, checkout summary and in-app Terms. A&H on Solo, keeps 4,000 credits until the Oct 25 reset to 300.
+Findings:
+1. Signed-in browser tests still not run. Lovable's sign-in call is refused with "requires user approval, unavailable in this context"; no approval pause exists for me to answer. Owner must start the sign-in from the editor or re-run so a prompt shows. Nothing was bypassed.
+2. Twilio login rejected (401): Account SID or Auth Token wrong in Secrets (owner action). No Masar assistant on the Vapi account points to our webhook; needs sync from Settings > Voice (blocked by item 1).
+3. Quotes address needs one owner decision: Lovable proposes q.masar10x.io (one MX record) because root MX serves Hostinger (info@, sales@, support@). Not built yet. Resend inbound inclusion in plan unconfirmed.
+4. U3 gaps reported: floor stored as rate per mile, so net per mile vs floor not shown; MPG is monthly not per fill-up; goal label overlaps tallest bar at 390 px; Lighthouse and slow-phone not run; /design is public (sample data only, labelled).
+5. New cancel/refund wording needs Spanish; website Terms and /refunds update sent to website project.
+6. Gateway model price is unverified (verified:false) in router pricing table.
+No rule violations seen (no credit prices, nothing published, no ANH data). No new fix message sent; open items need owner actions.
