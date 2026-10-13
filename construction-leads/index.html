@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Free Home Renovation Estimate | Bathrooms, Roofing, Full Remodels</title>
+<meta name="description" content="Free, no-obligation estimates for bathroom remodels, roofing, siding, concrete, gutters and full-home renovations. Residential and commercial.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap bar">
+    <a class="brand" href="#"><span class="mark">▲</span> <span data-cfg="companyName">Company</span></a>
+    <a class="call" id="callLink" href="#"><span data-cfg="phone"></span></a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="eyebrow">Licensed &amp; Insured · Residential + Commercial</p>
+      <h1>One crew for everything<br>from the roof to the driveway.</h1>
+      <p class="lead">Bathrooms, full gut renovations, roofing, siding, gutters, concrete and more, inside and out. Get a free on-site estimate and a clear written quote.</p>
+      <ul class="ticks">
+        <li>Free, no-obligation estimate</li>
+        <li>Written quote you can compare</li>
+        <li>Booked within days, not weeks</li>
+      </ul>
+    </div>
+
+    <div class="card" id="formCard">
+      <div id="step1">
+        <h2>Get your free estimate</h2>
+        <p class="sub">Takes under a minute. Pick a time on the next screen.</p>
+        <form id="leadForm" novalidate>
+          <div class="row">
+            <label>Full name<input name="name" autocomplete="name" required></label>
+            <label>Phone<input name="phone" type="tel" autocomplete="tel" inputmode="tel" required></label>
+          </div>
+          <div class="row">
+            <label>Email<input name="email" type="email" autocomplete="email"></label>
+            <label>Project ZIP<input name="zip" inputmode="numeric" autocomplete="postal-code" required></label>
+          </div>
+          <div class="row">
+            <label>What do you need?
+              <select name="service" required>
+                <option value="">Select a service</option>
+                <option>Bathroom renovation</option>
+                <option>Full home gut / total renovation</option>
+                <option>Kitchen remodel</option>
+                <option>Roofing</option>
+                <option>Siding</option>
+                <option>Gutters</option>
+                <option>Concrete / driveway</option>
+                <option>Exterior renovation</option>
+                <option>Interior renovation</option>
+                <option>Commercial build-out / renovation</option>
+                <option>Other / not sure</option>
+              </select>
+            </label>
+            <label>Property type
+              <select name="propertyType" required>
+                <option value="">Select</option>
+                <option>Residential</option>
+                <option>Commercial</option>
+              </select>
+            </label>
+          </div>
+          <label>When do you want to start?
+            <select name="timeline">
+              <option value="">Select</option>
+              <option>As soon as possible</option>
+              <option>Within 1 month</option>
+              <option>1–3 months</option>
+              <option>Just planning / budgeting</option>
+            </select>
+          </label>
+          <label>Tell us about the project (optional)<textarea name="details" rows="3"></textarea></label>
+          <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <label class="consent"><input type="checkbox" name="consent" required>
+            <span>I agree to be contacted by <span data-cfg="companyName">the company</span> by phone, text, and email about my project, including by calls from an automated/AI voice assistant. Consent is not a condition of purchase. Msg &amp; data rates may apply.</span>
+          </label>
+          <p class="err" id="err" role="alert"></p>
+          <button class="btn" id="submitBtn" type="submit">Get my free estimate</button>
+        </form>
+      </div>
+
+      <div id="step2" hidden>
+        <h2>You're in. Pick a time.</h2>
+        <p class="sub">Choose a slot for your free on-site estimate. Skip it and we'll call you shortly to set one up.</p>
+        <div id="booking"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="services">
+  <div class="wrap">
+    <h2>What we build and fix</h2>
+    <div class="grid">
+      <article><h3>Bathrooms</h3><p>Full remodels, tile, tubs, showers, vanities.</p></article>
+      <article><h3>Total home renovation</h3><p>Full gut of the interior, structure to finish.</p></article>
+      <article><h3>Roofing</h3><p>Repair, replacement, storm damage.</p></article>
+      <article><h3>Siding &amp; exteriors</h3><p>New siding, trim, curb-appeal refreshes.</p></article>
+      <article><h3>Gutters</h3><p>Install, repair, guards and drainage.</p></article>
+      <article><h3>Concrete &amp; driveways</h3><p>Driveways, walkways, patios, slabs.</p></article>
+      <article><h3>Interiors</h3><p>Kitchens, flooring, drywall, paint, basements.</p></article>
+      <article><h3>Commercial</h3><p>Offices, retail and business renovations.</p></article>
+    </div>
+  </div>
+</section>
+
+<section class="how">
+  <div class="wrap">
+    <h2>How it works</h2>
+    <ol class="steps">
+      <li><b>Tell us what you need</b><span>Fill out the short form.</span></li>
+      <li><b>Book your free estimate</b><span>Pick a time that works, or we'll call you.</span></li>
+      <li><b>We walk the job</b><span>On-site measurements and your questions answered.</span></li>
+      <li><b>Get a clear written quote</b><span>Line-item pricing, no pressure.</span></li>
+    </ol>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>© <span id="yr"></span> <span data-cfg="companyName"></span> · Serving <span data-cfg="serviceArea"></span></p>
+    <p class="fine">License # [add] · Insured. By submitting the form you consent to calls/texts, including automated calls, at the number provided. Reply STOP to opt out.</p>
+  </div>
+</footer>
+
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
