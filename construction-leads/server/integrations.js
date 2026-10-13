@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const cfg = require('./config');
 const { get, all, run, event, j } = require('./db');
-const { tzParts } = require('./util');
+const { tzParts, inServiceArea } = require('./util');
 const { leadKey, firstName } = require('./leads');
 const notify = require('./notify');
 
@@ -50,6 +50,7 @@ async function followUpTick() {
       if (!get("SELECT 1 FROM events WHERE lead_id=? AND type='needs_human_call'", lead.id)) event(lead.id, 'needs_human_call', { reason: 'no automated-call consent' });
       continue;
     }
+    if (!inServiceArea(lead.zip)) continue;
     if (!inCallWindow()) continue;
     await placeCall(lead).catch((e) => event(lead.id, 'voice_call_error', { message: e.message }));
   }
@@ -88,6 +89,9 @@ function markDepositPaid(contractId, via) {
   run('UPDATE jobs SET status=? WHERE quote_id=? AND status=\'awaiting_deposit\'', status, c.quote_id);
   run("UPDATE leads SET status='won' WHERE id=?", quote.lead_id);
   event(quote.lead_id, 'deposit_paid', { contract: contractId, amount: c.deposit_amount, via });
+  // Deposit cleared: put the job on the subcontractor board automatically.
+  const job = get('SELECT id FROM jobs WHERE quote_id=?', c.quote_id);
+  if (job) require('./marketplace').autoPost(job.id);
   return get('SELECT * FROM contracts WHERE id=?', contractId);
 }
 
@@ -95,6 +99,36 @@ function releaseRescissionTick() {
   const due = all(`SELECT j.id, j.lead_id FROM jobs j JOIN contracts c ON c.quote_id=j.quote_id
                    WHERE j.status='rescission_period' AND c.rescission_ends <= ?`, new Date().toISOString());
   for (const x of due) { run("UPDATE jobs SET status='ready' WHERE id=?", x.id); event(x.lead_id, 'job_ready', {}); }
+}
+
+// ---- Subcontractor subscription + per-job fee (Stripe) ------------------------
+const stripeForm = async (path, params) => {
+  const r = await fetch('https://api.stripe.com/v1' + path, { method: 'POST', headers: { Authorization: `Bearer ${cfg.stripe.secretKey}`, 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(params) });
+  const body = await r.json();
+  if (!r.ok) throw new Error(body.error?.message || `stripe ${r.status}`);
+  return body;
+};
+
+async function createSubCheckout(sub) {
+  if (!cfg.stripe.secretKey) return null;
+  const params = {
+    mode: 'subscription', 'payment_method_types[0]': 'card',
+    'line_items[0][price_data][currency]': 'usd', 'line_items[0][price_data][unit_amount]': String(Math.round(cfg.marketplace.monthlyPrice * 100)),
+    'line_items[0][price_data][recurring][interval]': 'month', 'line_items[0][price_data][product_data][name]': `${cfg.company.name} subcontractor network`,
+    'line_items[0][quantity]': '1', customer_email: sub.email, client_reference_id: String(sub.id), 'metadata[sub_id]': String(sub.id),
+    'subscription_data[metadata][sub_id]': String(sub.id),
+    success_url: `${cfg.publicUrl}/sub.html?subscribed=1`, cancel_url: `${cfg.publicUrl}/sub.html`,
+  };
+  if (sub.stripe_customer_id) { delete params.customer_email; params.customer = sub.stripe_customer_id; }
+  return (await stripeForm('/checkout/sessions', params)).url;
+}
+
+// Adds the flat job fee to the sub's next Stripe invoice (their subscription invoice).
+async function billJobFee(sub, ledgerId, amount, description) {
+  if (!cfg.stripe.secretKey || !sub.stripe_customer_id) return false;
+  await stripeForm('/invoiceitems', { customer: sub.stripe_customer_id, amount: String(Math.round(amount * 100)), currency: 'usd', description });
+  run("UPDATE ledger SET status='billed' WHERE id=?", ledgerId);
+  return true;
 }
 
 // ---- Site visit: transcription + scope extraction --------------------------
@@ -137,4 +171,4 @@ Return ONLY JSON: {"summary": string, "style_preferences": string[], "budget_hin
   return m ? JSON.parse(m[0]) : null;
 }
 
-module.exports = { followUpTick, placeCall, createDepositCheckout, markDepositPaid, releaseRescissionTick, transcribe, extractScope, inCallWindow };
+module.exports = { createSubCheckout, billJobFee, followUpTick, placeCall, createDepositCheckout, markDepositPaid, releaseRescissionTick, transcribe, extractScope, inCallWindow };

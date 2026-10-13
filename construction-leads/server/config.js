@@ -27,7 +27,7 @@ module.exports = {
     name: e.COMPANY_NAME || '[Company Name] Construction',
     phone: e.COMPANY_PHONE || '(000) 000-0000',
     tz: e.COMPANY_TZ || 'America/New_York',
-    state: e.COMPANY_STATE || '',
+    state: e.COMPANY_STATE || 'NY',
     license: e.COMPANY_LICENSE || '[License #]',
   },
   // Booking: estimate visits are 90 minutes, on the hour grid, within these hours (company local time).
@@ -41,6 +41,12 @@ module.exports = {
     callHours: [8, 20],
   },
   anthropic: { apiKey: e.ANTHROPIC_API_KEY || '', model: e.ANTHROPIC_MODEL || 'claude-sonnet-5-5' },
+  marketplace: {
+    monthlyPrice: Number(e.SUB_MONTHLY_PRICE || 55),       // subscription, $/month
+    flatFee: Number(e.SUB_FLAT_FEE || 150),                // flat fee per awarded job (PLACEHOLDER: set yours)
+    paymentMode: e.SUB_PAYMENT_MODE === 'platform_collects' ? 'platform_collects' : 'direct_balance',
+    autoPublish: e.AUTO_PUBLISH_JOBS !== '0',              // post to the board as soon as the deposit clears
+  },
   stripe: { secretKey: e.STRIPE_SECRET_KEY || '', webhookSecret: e.STRIPE_WEBHOOK_SECRET || '' },
   twilio: { sid: e.TWILIO_ACCOUNT_SID || '', token: e.TWILIO_AUTH_TOKEN || '', from: e.TWILIO_FROM || '' },
   resend: { apiKey: e.RESEND_API_KEY || '', from: e.EMAIL_FROM || '' },

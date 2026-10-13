@@ -76,6 +76,8 @@ function priceQuote(items, settingsIn = {}, opts = {}) {
   if (deposit > cap) {
     warnings.push(`Deposit reduced to the legal cap for ${String(opts.state).toUpperCase()} ($${r2(cap)}).`);
     deposit = cap;
+  } else if (opts.state && String(opts.state).toUpperCase() !== 'CA') {
+    warnings.push(`No deposit cap is built in for ${String(opts.state).toUpperCase()}. Confirm the home-improvement down-payment rules with counsel.`);
   } else if (!opts.state) {
     warnings.push('Company state not set: confirm your state\'s cap on home-improvement down payments.');
   }

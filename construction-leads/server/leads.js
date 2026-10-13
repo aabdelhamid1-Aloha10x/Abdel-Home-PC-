@@ -1,7 +1,7 @@
 'use strict';
 const cfg = require('./config');
 const { get, all, run, event, j } = require('./db');
-const { normPhone, tzParts, zonedToUtc } = require('./util');
+const { normPhone, tzParts, zonedToUtc, inServiceArea } = require('./util');
 const notify = require('./notify');
 
 // ---- lead intake -----------------------------------------------------------
@@ -17,6 +17,7 @@ function createLead(d, source) {
     return { lead: get('SELECT * FROM leads WHERE id=?', dup.id), duplicate: true };
   }
   const consent = d.consent ? 1 : 0;
+  const outOfArea = !inServiceArea(d.zip);
   const info = run(
     `INSERT INTO leads (name, phone, email, zip, address, service, property_type, timeline, details, source, external_id, utm, consent_contact, consent_text, consent_at)
      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
@@ -24,9 +25,10 @@ function createLead(d, source) {
     source, d.externalId || null, j(d.utm || {}), consent, d.consentText || null, consent ? new Date().toISOString() : null);
   const id = Number(info.lastInsertRowid);
   event(id, 'lead_created', { source, service: d.service, consent: !!consent });
+  if (outOfArea) run("UPDATE leads SET status='out_of_area' WHERE id=?", id);
   const lead = get('SELECT * FROM leads WHERE id=?', id);
-  afterCreate(lead).catch(() => {});
-  return { lead, duplicate: false };
+  if (!outOfArea) afterCreate(lead).catch(() => {});
+  return { lead, duplicate: false, outOfArea };
 }
 
 async function afterCreate(lead) {

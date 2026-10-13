@@ -23,6 +23,7 @@ Work not listed above is excluded. Changes require a written change order signed
 Contract price: ${money(t.total)}${t.tax ? ` (includes sales tax ${money(t.tax)})` : ''}${t.permit ? ` and permit fees ${money(t.permit)}` : ''}.
 Deposit due at signing: ${money(t.deposit)}.
 Balance: ${money(t.balance)}, due on substantial completion unless a milestone schedule is attached.
+Contractor may designate a licensed, insured subcontractor to perform the work and to receive the balance on Contractor's behalf. Payment of the balance to that designee satisfies Customer's payment obligation, and Contractor remains fully responsible to Customer for the work. [Attorney: confirm this assignment/direction-to-pay language for NY and NJ.]
 
 3. RIGHT TO CANCEL
 ${rescissionNote}

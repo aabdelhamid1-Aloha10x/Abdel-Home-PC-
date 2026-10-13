@@ -1,7 +1,7 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Admin</title><link rel="stylesheet" href="/ui.css"></head>
 <body><div class="wrap">
-<nav id="nav"><a href="#pipeline">Pipeline</a><a href="#jobs">Jobs</a><a href="#catalog">Price book</a><a href="#subs">Subcontractors</a><a href="#team">Team</a><a href="#outbox">Messages</a></nav>
+<nav id="nav"><a href="#pipeline">Pipeline</a><a href="#jobs">Jobs</a><a href="#catalog">Price book</a><a href="#market">Marketplace</a><a href="#team">Team</a><a href="#outbox">Messages</a></nav>
 <div id="v"></div></div>
 <script>
 const E = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -21,7 +21,7 @@ async function route() {
   const [name, arg] = location.hash.slice(1).split('/');
   document.querySelectorAll('#nav a').forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#' + (name || 'pipeline')));
   v.innerHTML = 'Loading…';
-  try { await ({ '': pipeline, pipeline, lead, quote, jobs, catalog, subs, team, outbox }[name] || pipeline)(arg); } catch (e) { v.innerHTML = '<p class="err">' + E(e.message) + '</p>'; }
+  try { await ({ '': pipeline, pipeline, lead, quote, jobs, catalog, market, team, outbox }[name] || pipeline)(arg); } catch (e) { v.innerHTML = '<p class="err">' + E(e.message) + '</p>'; }
 }
 addEventListener('hashchange', route);
 
@@ -29,7 +29,7 @@ async function pipeline() {
   const d = await api('GET', '/api/admin/pipeline'), s = d.stats;
   v.innerHTML = `<div class="stats card">${[['Leads', s.leads], ['Booked', s.booked], ['Quoted', s.quoted], ['Won', s.won], ['Won value', M(s.won_value)]].map(x => `<div class="stat"><b>${x[1]}</b><span>${x[0]}</span></div>`).join('')}</div>
   <div class="card"><b>By source</b> ${d.bySource.map(x => `<span class="pill">${E(x.source)}: ${x.leads} leads, ${x.won || 0} won</span>`).join(' ')}</div>
-  <div class="card"><div class="row" style="margin-bottom:8px"><select id="fs"><option value="">All statuses</option>${['new','booked','visited','quoted','won','lost','dnc'].map(x => `<option>${x}</option>`).join('')}</select><button id="nl" class="ghost">+ New lead</button></div><table id="t"></table></div>`;
+  <div class="card"><div class="row" style="margin-bottom:8px"><select id="fs"><option value="">All statuses</option>${['new','booked','visited','quoted','won','lost','dnc','out_of_area'].map(x => `<option>${x}</option>`).join('')}</select><button id="nl" class="ghost">+ New lead</button></div><table id="t"></table></div>`;
   const draw = () => { const f = document.getElementById('fs').value; document.getElementById('t').innerHTML = '<tr><th>Lead</th><th>Service</th><th>Source</th><th>Status</th><th>Visit</th><th>Quote</th></tr>' + d.leads.filter(l => !f || l.status === f).map(l => `<tr><td><a href="#lead/${l.id}">${E(l.name || l.phone)}</a><br><span class="mute">${E(l.phone)} ${l.consent_contact ? '' : '· <span title="No automated-call consent">no auto-call consent</span>'}</span></td><td>${E(l.service)}<br><span class="mute">${E(l.zip)}</span></td><td>${E(l.source)}</td><td><span class="pill ${E(l.status)}">${E(l.status)}</span></td><td>${l.appt ? E(new Date(l.appt).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })) : ''}</td><td>${M(l.quote_total)} <span class="mute">${E(l.qstatus || '')}</span></td></tr>`).join(''); };
   document.getElementById('fs').onchange = draw; draw();
   document.getElementById('nl').onclick = guard(async () => { const name = prompt('Name'), phone = prompt('Phone'); if (!name || !phone) return; const l = await api('POST', '/api/admin/leads', { name, phone, service: prompt('Service') || '', zip: prompt('ZIP') || '' }); location.hash = 'lead/' + l.id; });
@@ -72,7 +72,7 @@ async function quote(id) {
     const n = JSON.parse(sessionStorage.getItem('newQuote') || 'null'); if (!n) { location.hash = 'pipeline'; return; }
     leadId = n.leadId; title = n.title; settings = await api('GET', '/api/admin/defaults');
     if (n.visit) { visitId = n.visit.id; scope = n.visit.scope; summary = scope?.summary || '';
-      (scope?.suggested_items || []).forEach(s => { const c = catalog.find(x => x.id === s.catalog_id); if (c) items.push({ description: c.name, unit: c.unit, qty: s.qty ?? 0, material_unit_cost: c.material_unit_cost, labor_hours_per_unit: c.labor_hours_per_unit, waste_pct: c.waste_pct }); });
+      (scope?.suggested_items || []).forEach(s => { const c = catalog.find(x => x.id === s.catalog_id); if (c) items.push({ category: c.category, description: c.name, unit: c.unit, qty: s.qty ?? 0, material_unit_cost: c.material_unit_cost, labor_hours_per_unit: c.labor_hours_per_unit, waste_pct: c.waste_pct }); });
       (scope?.custom_items || []).forEach(c => items.push({ description: c.description, unit: c.unit || 'ea', qty: c.qty ?? 0, material_unit_cost: 0, labor_hours_per_unit: 0, waste_pct: 0 })); }
   } else { q = await api('GET', '/api/admin/quotes/' + id); items = q.items; settings = q.settings; title = q.title; summary = q.scope_summary; leadId = q.lead_id; }
   const locked = q && q.status === 'approved';
@@ -99,7 +99,7 @@ async function quote(id) {
     <tr><td>Sell price</td><td>${M2(t.sell)}</td><td>Gross profit</td><td class="ok">${M2(t.gross_profit)} (${(t.effective_margin * 100).toFixed(1)}%)</td><td>Tax + permit</td><td>${M2(t.tax + t.permit)}</td></tr>
     <tr class="t"><td colspan="2">Customer total</td><td>${M2(t.total)}</td><td>Deposit</td><td>${M2(t.deposit)}</td><td>Balance ${M2(t.balance)}</td></tr></table>${r.warnings.map(w => `<p class="warn">⚠ ${E(w)}</p>`).join('')}`; }), 250); };
   drawItems(); preview();
-  document.getElementById('cs').onchange = e => { const c = catalog.find(x => x.id == e.target.value); if (c) { items.push({ description: c.name, unit: c.unit, qty: 1, material_unit_cost: c.material_unit_cost, labor_hours_per_unit: c.labor_hours_per_unit, waste_pct: c.waste_pct }); drawItems(); preview(); } e.target.value = ''; };
+  document.getElementById('cs').onchange = e => { const c = catalog.find(x => x.id == e.target.value); if (c) { items.push({ category: c.category, description: c.name, unit: c.unit, qty: 1, material_unit_cost: c.material_unit_cost, labor_hours_per_unit: c.labor_hours_per_unit, waste_pct: c.waste_pct }); drawItems(); preview(); } e.target.value = ''; };
   document.getElementById('ac').onclick = () => { items.push({ description: '', unit: 'ea', qty: 1, material_unit_cost: 0, labor_hours_per_unit: 0, waste_pct: 0 }); drawItems(); };
   document.querySelectorAll('[data-s]').forEach(i => i.oninput = preview);
   const save = async () => { if (id === 'new') { const c = await api('POST', '/api/admin/quotes', body()); sessionStorage.removeItem('newQuote'); return c.id; } await api('PUT', '/api/admin/quotes/' + id, body()); return id; };
@@ -112,10 +112,12 @@ async function quote(id) {
 async function jobs() {
   const [js, subs] = await Promise.all([api('GET', '/api/admin/jobs'), api('GET', '/api/admin/subs')]);
   v.innerHTML = '<div class="card"><h2>Jobs</h2><table id="jt"></table></div>';
-  document.getElementById('jt').innerHTML = '<tr><th>Customer</th><th>Job</th><th>Value / cost</th><th>Deposit</th><th>Status</th><th>Assigned</th><th>Start</th></tr>' + js.map(j => `<tr><td>${E(j.customer)}<br><span class="mute">${E(j.address)}</span></td><td>${E(j.title)}</td><td>${M(j.total)}<br><span class="mute">cost ${M(j.cost)}${j.sub_cost ? ' · sub ' + M(j.sub_cost) : ''}</span></td><td>${E(j.deposit_status)}${j.status === 'rescission_period' ? '<br><span class="warn">cancel window until ' + E(new Date(j.rescission_ends).toLocaleDateString()) + '</span>' : ''}</td>
+  document.getElementById('jt').innerHTML = '<tr><th>Customer</th><th>Job</th><th>Value / cost</th><th>Deposit</th><th>Status</th><th>Assigned</th><th>Start</th><th>Marketplace</th></tr>' + js.map(j => `<tr><td>${E(j.customer)}<br><span class="mute">${E(j.address)}</span></td><td>${E(j.title)}</td><td>${M(j.total)}<br><span class="mute">cost ${M(j.cost)}${j.sub_cost ? ' · sub ' + M(j.sub_cost) : ''}</span></td><td>${E(j.deposit_status)}${j.status === 'rescission_period' ? '<br><span class="warn">cancel window until ' + E(new Date(j.rescission_ends).toLocaleDateString()) + '</span>' : ''}</td>
   <td><select data-j="${j.id}" data-k="status">${['awaiting_deposit', 'rescission_period', 'ready', 'scheduled', 'in_progress', 'punch_list', 'complete'].map(s => `<option ${s === j.status ? 'selected' : ''}>${s}</option>`).join('')}</select></td>
   <td><select data-j="${j.id}" data-k="assign"><option value="in_house" ${j.assigned_type === 'in_house' ? 'selected' : ''}>In-house</option>${subs.map(s => `<option value="${s.id}" ${j.subcontractor_id === s.id ? 'selected' : ''}>Sub: ${E(s.name)} (${E(s.trade)})</option>`).join('')}<option value="" ${j.assigned_type === 'unassigned' ? 'selected' : ''}>Unassigned</option></select>${j.assigned_type === 'subcontractor' ? `<br><input data-j="${j.id}" data-k="sub_cost" type="number" placeholder="sub bid $" value="${j.sub_cost ?? ''}" style="margin-top:4px">` : ''}</td>
-  <td><input type="date" data-j="${j.id}" data-k="start_date" value="${E(j.start_date || '')}"></td></tr>`).join('');
+  <td><input type="date" data-j="${j.id}" data-k="start_date" value="${E(j.start_date || '')}"></td>
+  <td>${j.post_id ? `<span class="pill">${E(j.post_status)}</span><br><span class="mute">${M(j.post_payout)} − ${M(j.post_fee)} fee</span>` : j.deposit_status === 'paid' ? `<button class="ghost" data-post="${j.id}">Post to subs</button>` : '<span class="mute">after deposit</span>'}</td></tr>`).join('');
+  document.querySelectorAll('[data-post]').forEach(b => b.onclick = guard(async () => { await api('POST', `/api/admin/jobs/${b.dataset.post}/post`, {}); route(); }));
   document.querySelectorAll('[data-j]').forEach(el => el.onchange = guard(async () => {
     const k = el.dataset.k, b = {};
     if (k === 'assign') { if (el.value === 'in_house') b.assigned_type = 'in_house'; else if (el.value === '') b.assigned_type = 'unassigned'; else { b.assigned_type = 'subcontractor'; b.subcontractor_id = +el.value; } }
@@ -133,11 +135,28 @@ async function catalog() {
   document.getElementById('na').onclick = guard(async () => { const b = {}; ['category', 'name', 'unit', 'material_unit_cost', 'labor_hours_per_unit', 'waste_pct'].forEach(k => b[k] = document.getElementById('n_' + k).value); await api('POST', '/api/admin/catalog', b); route(); });
 }
 
-async function subs() {
-  const s = await api('GET', '/api/admin/subs');
-  v.innerHTML = `<div class="card"><h2>Subcontractors</h2><table>${'<tr><th>Name</th><th>Trade</th><th>Phone</th><th>License</th><th>Insurance expires</th></tr>' + s.map(x => `<tr><td>${E(x.name)}</td><td>${E(x.trade)}</td><td>${E(x.phone)}</td><td>${E(x.license)}</td><td>${E(x.insurance_expires)}</td></tr>`).join('')}</table>
-  <h3>Add</h3><div class="row">${['name', 'trade', 'phone', 'email', 'license', 'insurance_expires'].map(k => `<div><label>${k}</label><input id="s_${k}"></div>`).join('')}<button id="sa">Add</button></div><p class="mute">Never assign a sub whose license or liability insurance you haven't verified.</p></div>`;
-  document.getElementById('sa').onclick = guard(async () => { const b = {}; ['name', 'trade', 'phone', 'email', 'license', 'insurance_expires'].forEach(k => b[k] = document.getElementById('s_' + k).value); await api('POST', '/api/admin/subs', b); route(); });
+async function market() {
+  const [subs, posts, ledger] = await Promise.all([api('GET', '/api/admin/subs'), api('GET', '/api/admin/posts'), api('GET', '/api/admin/ledger')]);
+  const pending = subs.filter(x => x.status === 'pending').length, active = subs.filter(x => x.subscription_status === 'active').length;
+  v.innerHTML = `<div class="stats card"><div class="stat"><b>${pending}</b><span>Awaiting approval</span></div><div class="stat"><b>${active}</b><span>Paying subs</span></div><div class="stat"><b>${M(active * (subs[0]?.monthly_price || 55))}</b><span>Monthly recurring</span></div><div class="stat"><b>${posts.filter(p => p.status === 'open').length}</b><span>Open jobs</span></div></div>
+  <div class="card"><h2>Subcontractors</h2><p class="mute">Check license and insurance before approving. "Activate" is for subs you bill outside Stripe.</p><table id="st"></table></div>
+  <div class="card"><h2>Job board</h2><table id="pt"></table></div>
+  <div class="card"><h2>Ledger</h2><p class="mute">job_fee = flat fee the sub owes us · sub_remittance_due = sub collected the customer's balance and owes us our share · sub_payout_due = we owe the sub.</p><table id="lt"></table></div>`;
+  document.getElementById('st').innerHTML = '<tr><th>Company</th><th>Trades / area</th><th>License · insurance</th><th>Status</th><th>Subscription</th><th></th></tr>' + subs.map(x => `<tr><td>${E(x.company || x.name)}<br><span class="mute">${E(x.contact_name)} ${E(x.email)} ${E(x.phone)}</span></td><td>${E(x.trades.join(', '))}<br><span class="mute">${E(x.states.join('/'))} ${E(x.zip_prefixes.join(','))}</span></td><td>${E(x.license)} ${E(x.license_state)}<br><span class="${new Date(x.insurance_expires) < new Date() ? 'err' : 'mute'}">ins. ${E(x.insurance_expires)}</span> ${x.has_coi ? `<a href="#" data-coi="${x.id}">view COI</a>` : '<span class="warn">no COI</span>'}</td><td><span class="pill ${x.status === 'approved' ? 'won' : x.status === 'pending' ? 'new' : 'dnc'}">${E(x.status)}</span></td><td>${E(x.subscription_status)}</td>
+    <td>${x.status !== 'approved' ? `<button data-s="${x.id}" data-v="approved">Approve</button>` : `<button class="ghost" data-s="${x.id}" data-v="suspended">Suspend</button>`} ${x.subscription_status !== 'active' ? `<button class="ghost" data-sub="${x.id}">Activate</button>` : ''}</td></tr>`).join('');
+  document.querySelectorAll('[data-s]').forEach(b => b.onclick = guard(async () => { await api('PATCH', '/api/admin/subs/' + b.dataset.s, { status: b.dataset.v }); route(); }));
+  document.querySelectorAll('[data-sub]').forEach(b => b.onclick = guard(async () => { await api('PATCH', '/api/admin/subs/' + b.dataset.sub, { subscription_status: 'active' }); route(); }));
+  document.querySelectorAll('[data-coi]').forEach(a => a.onclick = async e => { e.preventDefault(); window.open(await blobUrl('/api/admin/subs/' + a.dataset.coi + '/coi')); });
+  document.getElementById('pt').innerHTML = '<tr><th>Job</th><th>Status</th><th>Payout (sub earns)</th><th>Flat fee</th><th>Pay mode</th><th>Your profit</th><th></th></tr>' + posts.map(p => { const e = p.economics, open = p.status !== 'awarded'; return `<tr><td>${E(p.title)}<br><span class="mute">job #${p.job_id}${p.sub_name ? ' → ' + E(p.sub_name) : ''}</span></td><td><span class="pill">${E(p.status)}</span></td>
+    <td><input data-p="${p.id}" data-k="payout" type="number" value="${p.payout}" ${open ? '' : 'disabled'}></td><td><input data-p="${p.id}" data-k="flat_fee" type="number" value="${p.flat_fee}" ${open ? '' : 'disabled'}></td>
+    <td><select data-p="${p.id}" data-k="payment_mode" ${open ? '' : 'disabled'}><option value="direct_balance" ${p.payment_mode === 'direct_balance' ? 'selected' : ''}>Customer pays sub the balance</option><option value="platform_collects" ${p.payment_mode === 'platform_collects' ? 'selected' : ''}>We collect all, pay sub</option></select></td>
+    <td>${e ? `<b class="${e.platform_profit < 0 ? 'err' : 'ok'}">${M2(e.platform_profit)}</b>${e.sub_owes_platform ? `<br><span class="warn">sub must remit ${M2(e.sub_owes_platform)}</span>` : ''}` : ''}</td>
+    <td>${p.status === 'open' ? `<button class="ghost" data-close="${p.id}">Keep in-house</button>` : p.status === 'closed' ? `<button class="ghost" data-open="${p.id}">Re-open</button>` : ''}</td></tr>`; }).join('');
+  document.querySelectorAll('#pt [data-p]').forEach(i => i.onchange = guard(async () => { try { await api('PATCH', '/api/admin/posts/' + i.dataset.p, { [i.dataset.k]: i.dataset.k === 'payment_mode' ? i.value : +i.value }); } finally { route(); } }));
+  document.querySelectorAll('[data-close]').forEach(b => b.onclick = guard(async () => { await api('PATCH', '/api/admin/posts/' + b.dataset.close, { status: 'closed' }); route(); }));
+  document.querySelectorAll('[data-open]').forEach(b => b.onclick = guard(async () => { await api('PATCH', '/api/admin/posts/' + b.dataset.open, { status: 'open' }); route(); }));
+  document.getElementById('lt').innerHTML = '<tr><th>When</th><th>Sub</th><th>Type</th><th>Amount</th><th>Status</th><th></th></tr>' + ledger.map(l => `<tr><td class="mute">${E(l.ts)}</td><td>${E(l.sub_name)}</td><td>${E(l.type)}<br><span class="mute">job #${l.job_id}</span></td><td>${M2(l.amount)}</td><td>${E(l.status)}</td><td>${l.status === 'settled' ? '' : `<button class="ghost" data-l="${l.id}">Mark settled</button>`}</td></tr>`).join('');
+  document.querySelectorAll('[data-l]').forEach(b => b.onclick = guard(async () => { await api('POST', `/api/admin/ledger/${b.dataset.l}/settle`); route(); }));
 }
 
 async function team() {

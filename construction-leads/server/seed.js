@@ -40,9 +40,6 @@ function seed() {
     run("INSERT INTO staff (name, role, token) VALUES ('Estimator 1','tech',?)", token(16));
     run("INSERT INTO staff (name, role, token) VALUES ('Estimator 2','tech',?)", token(16));
   }
-  if (!get('SELECT 1 FROM subcontractors LIMIT 1')) {
-    run("INSERT INTO subcontractors (name, trade, notes) VALUES ('Example Roofing Co','roofing','Placeholder: add license and insurance')");
-  }
 }
 
 module.exports = { seed };

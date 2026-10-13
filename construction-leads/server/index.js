@@ -6,12 +6,13 @@ const crypto = require('node:crypto');
 const cfg = require('./config');
 const { db, get, all, run, event, j } = require('./db');
 const { priceQuote, DEFAULTS } = require('./quote-engine');
-const { token, safeEq, normPhone, sha256, esc } = require('./util');
+const { token, safeEq, normPhone, sha256, esc, inServiceArea } = require('./util');
 const L = require('./leads');
 const I = require('./integrations');
 const { contractText, rescission } = require('./contract');
 const notify = require('./notify');
 const { seed } = require('./seed');
+const M = require('./marketplace');
 
 const ROOT = path.join(__dirname, '..');
 const MIME = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml', '.png': 'image/png', '.json': 'application/json' };
@@ -49,6 +50,7 @@ const staffFrom = (req) => { const t = req.headers['x-staff-token']; return t ? 
 // ===========================================================================
 const rate = new Map();
 function limited(ip, max = 20, windowMs = 60_000) {
+  if (process.env.NO_RATE_LIMIT === '1') return false; // test suite only
   const now = Date.now(); const a = (rate.get(ip) || []).filter((t) => now - t < windowMs);
   a.push(now); rate.set(ip, a); return a.length > max;
 }
@@ -57,8 +59,8 @@ route('POST', '/api/leads', 'public', async (req, res, { body, ip }) => {
   if (limited(ip, 10)) return send(res, 429, { error: 'Too many requests' });
   if (body.website) return send(res, 200, { ok: true }); // honeypot: pretend success
   if (!body.name || !normPhone(body.phone)) return send(res, 400, { error: 'name and phone are required' });
-  const { lead, duplicate } = L.createLead({ ...body, consent: body.consent === true }, 'website');
-  send(res, 201, { ok: true, leadId: lead.id, key: L.leadKey(lead), duplicate });
+  const { lead, duplicate, outOfArea } = L.createLead({ ...body, consent: body.consent === true }, 'website');
+  send(res, 201, { ok: true, leadId: lead.id, key: L.leadKey(lead), duplicate, outOfArea: !!outOfArea });
 });
 
 route('GET', '/api/availability', 'public', (req, res) => send(res, 200, { timezone: cfg.company.tz, days: L.availability().map((d) => ({ date: d.date, slots: d.slots.map((s) => s.start) })) }));
@@ -67,6 +69,7 @@ route('POST', '/api/book', 'public', (req, res, { body, ip }) => {
   if (limited(ip, 10)) return send(res, 429, { error: 'Too many requests' });
   const lead = get('SELECT * FROM leads WHERE id=?', Number(body.leadId));
   if (!lead || !safeEq(body.key || '', L.leadKey(lead))) return send(res, 403, { error: 'Invalid booking link' });
+  if (lead.status === 'out_of_area') return send(res, 409, { error: 'We do not serve your area yet.' });
   if (body.address) run('UPDATE leads SET address=? WHERE id=?', String(body.address).slice(0, 200), lead.id);
   const a = L.bookAppointment(lead.id, body.start);
   send(res, 201, { ok: true, appointment: { id: a.id, starts_at: a.starts_at } });
@@ -327,26 +330,30 @@ route('POST', '/api/admin/quotes/:id/mark-deposit-paid', 'admin', (req, res, { p
 });
 
 // Subcontractors & jobs
-route('GET', '/api/admin/subs', 'admin', (req, res) => send(res, 200, all('SELECT * FROM subcontractors WHERE active=1 ORDER BY trade, name')));
 route('POST', '/api/admin/subs', 'admin', (req, res, { body }) => {
-  const id = Number(run('INSERT INTO subcontractors (name, trade, phone, email, license, insurance_expires, notes) VALUES (?,?,?,?,?,?,?)', body.name, body.trade || '', body.phone || '', body.email || '', body.license || '', body.insurance_expires || '', body.notes || '').lastInsertRowid);
+  // Admin-created subs are pre-approved (your own existing crews). They have no portal login until they sign up.
+  const id = Number(run("INSERT INTO subcontractors (name, trade, phone, email, license, insurance_expires, notes, status) VALUES (?,?,?,?,?,?,?, 'approved')", body.name, body.trade || '', body.phone || '', body.email || '', body.license || '', body.insurance_expires || '', body.notes || '').lastInsertRowid);
   send(res, 201, get('SELECT * FROM subcontractors WHERE id=?', id));
 });
 route('GET', '/api/admin/jobs', 'admin', (req, res) => send(res, 200, all(`
-  SELECT j.*, l.name customer, l.address, q.title, s.name sub_name, c.rescission_ends, c.deposit_status,
+  SELECT j.*, l.name customer, l.address, q.title, s.name sub_name, c.rescission_ends, c.deposit_status, p.id post_id, p.status post_status, p.payout post_payout, p.flat_fee post_fee,
          json_extract(q.result,'$.totals.total') total, json_extract(q.result,'$.totals.cost') cost
   FROM jobs j JOIN leads l ON l.id=j.lead_id JOIN quotes q ON q.id=j.quote_id JOIN contracts c ON c.quote_id=q.id
-  LEFT JOIN subcontractors s ON s.id=j.subcontractor_id ORDER BY j.id DESC`)));
+  LEFT JOIN subcontractors s ON s.id=j.subcontractor_id LEFT JOIN job_posts p ON p.job_id=j.id ORDER BY j.id DESC`)));
 route('PATCH', '/api/admin/jobs/:id', 'admin', (req, res, { body, params }) => {
   const job = get('SELECT j.*, c.rescission_ends, c.deposit_status FROM jobs j JOIN contracts c ON c.quote_id=j.quote_id WHERE j.id=?', Number(params.id));
   if (!job) return send(res, 404, { error: 'not found' });
-  const advancing = ['scheduled', 'in_progress'].includes(body.status) || body.start_date;
+  const advancing = ['scheduled', 'in_progress', 'punch_list', 'complete'].includes(body.status) || body.start_date;
   if (advancing && (job.deposit_status !== 'paid' || new Date(job.rescission_ends) > new Date())) {
     return send(res, 409, { error: 'Cannot schedule or start: deposit unpaid or the customer\'s cancellation period is still open.' });
   }
   if (body.assigned_type === 'subcontractor' && !body.subcontractor_id && !job.subcontractor_id) return send(res, 400, { error: 'pick a subcontractor' });
+  const post0 = get('SELECT * FROM job_posts WHERE job_id=?', job.id);
+  if (post0?.status === 'awarded' && ('assigned_type' in body || 'subcontractor_id' in body)) return send(res, 409, { error: 'This job was awarded through the board. Close or re-open it from Marketplace.' });
   for (const k of ['assigned_type', 'subcontractor_id', 'sub_cost', 'status', 'start_date', 'notes']) if (k in body) run(`UPDATE jobs SET ${k}=? WHERE id=?`, body[k], job.id);
+  if (['in_house', 'subcontractor'].includes(body.assigned_type) && post0?.status === 'open') run("UPDATE job_posts SET status='closed' WHERE id=?", post0.id);
   event(job.lead_id, 'job_updated', body);
+  if (body.status === 'complete') M.onJobComplete(job.id);
   send(res, 200, get('SELECT * FROM jobs WHERE id=?', job.id));
 });
 
@@ -421,13 +428,119 @@ route('POST', '/webhooks/stripe', 'public', (req, res, { raw }) => {
   const expected = crypto.createHmac('sha256', secret).update(`${parts.t}.${raw.toString('utf8')}`).digest('hex');
   const fresh = Math.abs(Date.now() / 1000 - Number(parts.t)) < 300;
   if (!parts.v1 || !safeEq(parts.v1, expected) || !fresh) return send(res, 400, 'bad signature');
-  const ev = JSON.parse(raw.toString('utf8'));
-  if (ev.type === 'checkout.session.completed' && ev.data.object.payment_status === 'paid') {
-    const cid = Number(ev.data.object.metadata?.contract_id || ev.data.object.client_reference_id);
+  const ev = JSON.parse(raw.toString('utf8')), o = ev.data.object;
+  if (ev.type === 'checkout.session.completed' && o.mode === 'subscription') {
+    const sid = Number(o.metadata?.sub_id || o.client_reference_id);
+    if (sid) { run("UPDATE subcontractors SET subscription_status='active', stripe_customer_id=?, stripe_subscription_id=? WHERE id=?", o.customer, o.subscription, sid); event(null, 'sub_subscribed', { sub: sid }); }
+  } else if (ev.type === 'checkout.session.completed' && o.payment_status === 'paid') {
+    const cid = Number(o.metadata?.contract_id || o.client_reference_id);
     if (cid) I.markDepositPaid(cid, 'stripe');
+  } else if (ev.type === 'invoice.payment_failed') {
+    run("UPDATE subcontractors SET subscription_status='past_due' WHERE stripe_customer_id=?", o.customer);
+  } else if (ev.type === 'invoice.paid') {
+    run("UPDATE subcontractors SET subscription_status='active' WHERE stripe_customer_id=? AND subscription_status='past_due'", o.customer);
+  } else if (ev.type === 'customer.subscription.deleted') {
+    run("UPDATE subcontractors SET subscription_status='canceled' WHERE stripe_customer_id=?", o.customer);
   }
   send(res, 200, 'ok');
 });
+
+
+// ===========================================================================
+// SUBCONTRACTOR PLATFORM: signup, board, claim, my jobs
+// ===========================================================================
+const fs2 = fs;
+route('POST', '/api/sub/signup', 'public', (req, res, { body, ip }) => {
+  if (limited(ip, 5, 600_000)) return send(res, 429, { error: 'Too many attempts. Try again later.' });
+  const id = M.signup(body);
+  send(res, 201, { ok: true, id, message: 'Application received. We review license and insurance before approving.' });
+});
+route('POST', '/api/sub/login', 'public', (req, res, { body, ip }) => {
+  if (limited(ip, 10, 600_000)) return send(res, 429, { error: 'Too many attempts. Try again later.' });
+  send(res, 200, { token: M.login(body.email, body.password) });
+});
+route('GET', '/api/sub/me', 'sub', (req, res, { sub }) => send(res, 200, M.publicSub(sub)));
+route('PUT', '/api/sub/profile', 'sub', (req, res, { sub, body }) => {
+  const exp = String(body.insurance_expires || sub.insurance_expires || '');
+  const prefixes = M.csv(body.zip_prefixes ?? sub.zip_prefixes).filter((x) => /^\d{3}$/.test(x)).join(',');
+  const trades = (Array.isArray(body.trades) ? body.trades : M.csv(sub.trade)).filter((t) => M.TRADES.includes(t)).join(',') || sub.trade;
+  // Material changes after approval put the account back in review so a bad license can't sneak in.
+  const licenseChanged = body.license_number && body.license_number !== sub.license;
+  run('UPDATE subcontractors SET insurance_expires=?, zip_prefixes=?, trade=?, phone=COALESCE(?,phone), license=COALESCE(?,license), status=CASE WHEN ? THEN \'pending\' ELSE status END WHERE id=?',
+    exp, prefixes, trades, body.phone ? normPhone(body.phone) : null, body.license_number || null, licenseChanged ? 1 : 0, sub.id);
+  event(null, 'sub_profile_updated', { sub: sub.id });
+  send(res, 200, M.publicSub(get('SELECT * FROM subcontractors WHERE id=?', sub.id)));
+});
+route('PUT', '/api/sub/coi', 'sub', async (req, res, { sub }) => {
+  const buf = await readBody(req, 10_000_000, true);
+  const ext = buf.slice(0, 4).toString() === '%PDF' ? 'pdf' : buf[0] === 0xff && buf[1] === 0xd8 ? 'jpg' : buf.slice(1, 4).toString() === 'PNG' ? 'png' : null;
+  if (!ext) return send(res, 400, { error: 'Upload a PDF, JPG or PNG certificate of insurance.' });
+  fs2.mkdirSync(path.join(cfg.dataDir, 'docs'), { recursive: true });
+  const file = path.join(cfg.dataDir, 'docs', `coi-${sub.id}.${ext}`);
+  fs2.writeFileSync(file, buf);
+  run('UPDATE subcontractors SET coi_path=? WHERE id=?', file, sub.id);
+  send(res, 200, { ok: true });
+});
+route('POST', '/api/sub/subscribe', 'sub', async (req, res, { sub }) => {
+  if (sub.status !== 'approved') return send(res, 403, { error: 'Your account must be approved before you can subscribe.' });
+  if (sub.subscription_status === 'active') return send(res, 409, { error: 'Already subscribed.' });
+  const url = await I.createSubCheckout(sub);
+  if (!url) return send(res, 503, { error: 'Online payments are not set up yet. Contact us to activate your subscription.' });
+  send(res, 200, { checkoutUrl: url });
+});
+route('GET', '/api/sub/jobs', 'sub', (req, res, { sub }) => {
+  const posts = all("SELECT * FROM job_posts WHERE status='open' ORDER BY id DESC LIMIT 100");
+  send(res, 200, posts.map((p) => M.boardView(p, sub)));
+});
+route('POST', '/api/sub/jobs/:id/claim', 'sub', async (req, res, { sub, params, ip }) => {
+  if (limited(ip + 'claim', 30)) return send(res, 429, { error: 'Slow down.' });
+  const post = M.claim(sub.id, Number(params.id));
+  send(res, 200, M.awardedView(post));
+  // Flat fee goes onto the sub's next Stripe invoice. Failure is logged, and the ledger row stays 'due'.
+  const row = get("SELECT * FROM ledger WHERE job_id=? AND type='job_fee' ORDER BY id DESC", post.job_id);
+  I.billJobFee(sub, row.id, row.amount, row.note).catch((e) => event(null, 'fee_billing_error', { ledger: row.id, message: e.message }));
+});
+route('GET', '/api/sub/my-jobs', 'sub', (req, res, { sub }) => send(res, 200, all("SELECT * FROM job_posts WHERE awarded_to=? ORDER BY awarded_at DESC", sub.id).map(M.awardedView)));
+route('GET', '/api/sub/ledger', 'sub', (req, res, { sub }) => send(res, 200, all('SELECT * FROM ledger WHERE sub_id=? ORDER BY id DESC', sub.id)));
+
+// ---- admin side of the marketplace
+route('GET', '/api/admin/subs', 'admin', (req, res) => send(res, 200, all('SELECT * FROM subcontractors WHERE active=1 ORDER BY (status=\'pending\') DESC, id DESC').map((s) => ({ ...M.publicSub(s), password_hash: undefined }))));
+route('PATCH', '/api/admin/subs/:id', 'admin', (req, res, { body, params }) => {
+  const id = Number(params.id);
+  if ('status' in body) { if (!['pending', 'approved', 'suspended'].includes(body.status)) return send(res, 400, { error: 'bad status' }); run('UPDATE subcontractors SET status=? WHERE id=?', body.status, id); }
+  if ('subscription_status' in body) { if (!['none', 'active', 'past_due', 'canceled'].includes(body.subscription_status)) return send(res, 400, { error: 'bad status' }); run('UPDATE subcontractors SET subscription_status=? WHERE id=?', body.subscription_status, id); }
+  event(null, 'sub_admin_update', { sub: id, ...body });
+  send(res, 200, M.publicSub(get('SELECT * FROM subcontractors WHERE id=?', id)));
+});
+route('GET', '/api/admin/subs/:id/coi', 'admin', (req, res, { params }) => {
+  const s = get('SELECT coi_path FROM subcontractors WHERE id=?', Number(params.id));
+  if (!s?.coi_path || !fs.existsSync(s.coi_path)) return send(res, 404, { error: 'no certificate on file' });
+  const t = { pdf: 'application/pdf', jpg: 'image/jpeg', png: 'image/png' }[s.coi_path.split('.').pop()];
+  res.writeHead(200, { 'Content-Type': t }); fs.createReadStream(s.coi_path).pipe(res);
+});
+route('GET', '/api/admin/posts', 'admin', (req, res) => send(res, 200, all(`SELECT p.*, s.name sub_name, l.zip FROM job_posts p LEFT JOIN subcontractors s ON s.id=p.awarded_to JOIN jobs j ON j.id=p.job_id JOIN leads l ON l.id=j.lead_id ORDER BY p.id DESC`).map((p) => {
+  let eco = null; try { eco = M.economics(p); } catch { /* ignore */ }
+  return { ...p, scope: undefined, trades: JSON.parse(p.trades), economics: eco };
+})));
+route('POST', '/api/admin/jobs/:id/post', 'admin', (req, res, { params, body }) => {
+  const job = get('SELECT j.*, c.deposit_status FROM jobs j JOIN contracts c ON c.quote_id=j.quote_id WHERE j.id=?', Number(params.id));
+  if (!job) return send(res, 404, { error: 'job not found' });
+  if (job.deposit_status !== 'paid') return send(res, 409, { error: 'Only jobs with a paid deposit can be posted.' });
+  send(res, 201, M.createPost(job.id, { payout: body.payout, flat_fee: body.flat_fee, payment_mode: body.payment_mode }));
+});
+route('PATCH', '/api/admin/posts/:id', 'admin', (req, res, { params, body }) => {
+  const p = get('SELECT * FROM job_posts WHERE id=?', Number(params.id)); if (!p) return send(res, 404, { error: 'not found' });
+  if (p.status === 'awarded') return send(res, 409, { error: 'Already awarded: terms are locked.' });
+  const payout = body.payout != null ? Number(body.payout) : p.payout, fee = body.flat_fee != null ? Number(body.flat_fee) : p.flat_fee;
+  if (!(payout >= 0) || !(fee >= 0) || fee > payout) return send(res, 400, { error: 'invalid payout or fee' });
+  const mode = body.payment_mode || p.payment_mode;
+  if (!['platform_collects', 'direct_balance'].includes(mode)) return send(res, 400, { error: 'bad payment mode' });
+  const status = ['open', 'closed'].includes(body.status) ? body.status : p.status;
+  run('UPDATE job_posts SET payout=?, flat_fee=?, payment_mode=?, status=? WHERE id=?', payout, fee, mode, status, p.id);
+  send(res, 200, get('SELECT * FROM job_posts WHERE id=?', p.id));
+});
+route('GET', '/api/admin/ledger', 'admin', (req, res) => send(res, 200, all('SELECT l.*, s.name sub_name FROM ledger l LEFT JOIN subcontractors s ON s.id=l.sub_id ORDER BY l.id DESC LIMIT 300')));
+route('POST', '/api/admin/ledger/:id/settle', 'admin', (req, res, { params }) => { run("UPDATE ledger SET status='settled' WHERE id=?", Number(params.id)); send(res, 200, { ok: true }); });
 
 // ===========================================================================
 // server
@@ -443,8 +556,9 @@ async function handle(req, res) {
       if (r.auth === 'admin' && !isAdmin(req)) return send(res, 401, { error: 'unauthorized' });
       if (r.auth === 'staff') { ctx.staff = staffFrom(req); if (!ctx.staff) return send(res, 401, { error: 'unauthorized' }); }
       if (r.auth === 'voice' && !voiceAuth(req)) return send(res, 401, { error: 'unauthorized' });
+      if (r.auth === 'sub') { ctx.sub = M.subFromToken(req.headers['x-sub-token']); if (!ctx.sub) return send(res, 401, { error: 'Please sign in.' }); }
       const rawRoute = url.pathname.startsWith('/webhooks/meta') || url.pathname === '/webhooks/stripe';
-      const binary = (req.method === 'PUT' && url.pathname.endsWith('/audio')) || url.pathname.endsWith('/photo');
+      const binary = (req.method === 'PUT' && (url.pathname.endsWith('/audio') || url.pathname === '/api/sub/coi')) || url.pathname.endsWith('/photo');
       if (!binary) {
         if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
           if (rawRoute) ctx.raw = await readBody(req, 1_000_000, true); else ctx.body = await readBody(req);
@@ -468,7 +582,7 @@ async function handle(req, res) {
     if (url.pathname === '/favicon.ico') { res.writeHead(204); return res.end(); }
     if (url.pathname === '/config.js') {
       res.writeHead(200, { 'Content-Type': MIME['.js'] });
-      return res.end(`window.SITE_CONFIG=${JSON.stringify({ companyName: cfg.company.name, phone: cfg.company.phone, serviceArea: cfg.company.state || '', leadWebhookUrl: '/api/leads', bookingUrl: '' })};`);
+      return res.end(`window.SITE_CONFIG=${JSON.stringify({ companyName: cfg.company.name, phone: cfg.company.phone, serviceArea: 'New York & New Jersey', leadWebhookUrl: '/api/leads', bookingUrl: '' })};`);
     }
     send(res, 404, 'Not found');
   } catch (err) {

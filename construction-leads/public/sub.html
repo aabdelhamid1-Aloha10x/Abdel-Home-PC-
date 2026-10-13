@@ -1,0 +1,69 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Get more jobs | Subcontractor network</title><link rel="stylesheet" href="/ui.css">
+<style>.hero{padding:40px 0 20px}.hero h1{font-size:clamp(28px,5vw,44px);line-height:1.1}.pts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:18px 0}.pts div{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:10px;padding:14px}.tabs{margin:12px 0}.chk{display:flex;gap:6px;flex-wrap:wrap}.chk label{display:flex;gap:4px;align-items:center;margin:0;padding:5px 9px;border:1px solid var(--line);border-radius:99px;color:var(--ink);font-size:13px}.chk input{width:auto}</style></head>
+<body><div class="wrap" id="app"></div>
+<script>
+const E = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const M = n => '$' + Number(n || 0).toLocaleString('en-US', { maximumFractionDigits: 0 });
+const app = document.getElementById('app');
+let T = localStorage.getItem('subtok') || '', me = null;
+const TR = ['roofing','siding','gutters','concrete','bathroom','kitchen','interior','exterior','demolition','general','electrical','plumbing','hvac','commercial'];
+async function api(m, p, b, raw) { const r = await fetch(p, { method: m, headers: { ...(raw ? {} : { 'Content-Type': 'application/json' }), 'x-sub-token': T }, body: raw || (b ? JSON.stringify(b) : undefined) }); const j = await r.json().catch(() => ({})); if (!r.ok) { const e = new Error(j.error || r.status); e.status = r.status; throw e; } return j; }
+
+function landing(msg) {
+  app.innerHTML = `<div class="hero"><p class="mute">NY &amp; NJ subcontractor network</p><h1>Stop chasing leads.<br>Get signed, deposit-paid jobs.</h1>
+  <p class="mute" style="max-width:40em">We run the ads, do the free estimate, sign the contract and collect the deposit. You claim the jobs that fit your trade and area.</p>
+  <div class="pts"><div><b>${M(me?.monthly_price ?? 55)}/mo</b><br><span class="mute">Flat subscription. No percentage of your job.</span></div><div><b>Flat fee per job</b><br><span class="mute">Only when you take a job. You see it before you claim.</span></div><div><b>Pre-sold work</b><br><span class="mute">Scope measured and contract signed. Customer details unlock when you claim.</span></div></div></div>
+  <div class="row" style="align-items:start"><div class="card"><h3>Apply</h3><p class="err" id="e1"></p>
+  <label>Company</label><input id="co"><label>Your name</label><input id="cn"><label>Email</label><input id="em" type="email"><label>Phone</label><input id="ph" type="tel"><label>Password (10+ characters)</label><input id="pw" type="password">
+  <label>Trades</label><div class="chk" id="tr">${TR.map(t => `<label><input type="checkbox" value="${t}">${t}</label>`).join('')}</div>
+  <label>States you work in</label><div class="chk" id="st"><label><input type="checkbox" value="NY">New York</label><label><input type="checkbox" value="NJ">New Jersey</label></div>
+  <label>Narrow by ZIP prefixes (optional, comma-separated, e.g. 105,106,100)</label><input id="zp">
+  <div class="row"><div><label>License / registration #</label><input id="ln"></div><div><label>License state</label><input id="ls" maxlength="2"></div></div>
+  <label style="display:flex;gap:6px;color:var(--ink)"><input type="checkbox" id="ex" style="width:auto"> My trade/work does not require a license</label>
+  <label>General liability insurance expires</label><input id="ie" type="date">
+  <label style="display:flex;gap:6px;color:var(--ink)"><input type="checkbox" id="tm" style="width:auto"> I agree to the subcontractor terms: I hold the required licenses and insurance, I am an independent contractor, and the platform fee applies when I claim a job.</label>
+  <br><button id="go" class="big">Apply</button></div>
+  <div class="card"><h3>Sign in</h3><p class="err" id="e2">${E(msg || '')}</p><label>Email</label><input id="le" type="email"><label>Password</label><input id="lp" type="password"><br><button id="li" class="big">Sign in</button></div></div>`;
+  const chk = id => [...document.querySelectorAll('#' + id + ' input:checked')].map(i => i.value);
+  document.getElementById('go').onclick = async () => { const g = i => document.getElementById(i).value; try { await api('POST', '/api/sub/signup', { company: g('co'), contact_name: g('cn'), email: g('em'), phone: g('ph'), password: g('pw'), trades: chk('tr'), states: chk('st'), zip_prefixes: g('zp'), license_number: g('ln'), license_state: g('ls'), license_exempt: document.getElementById('ex').checked, insurance_expires: g('ie'), accept_terms: document.getElementById('tm').checked }); app.innerHTML = '<div class="card narrow"><h2>Application received ✓</h2><p>We verify license and insurance, then approve your account (usually within 1 business day). Sign in any time to check your status and upload your certificate of insurance.</p><a class="btn" href="/sub.html">Sign in</a></div>'; } catch (e) { document.getElementById('e1').textContent = e.message; } };
+  document.getElementById('li').onclick = async () => { try { T = (await api('POST', '/api/sub/login', { email: document.getElementById('le').value, password: document.getElementById('lp').value })).token; localStorage.setItem('subtok', T); portal(); } catch (e) { document.getElementById('e2').textContent = e.message; } };
+}
+
+async function portal(tab = 'board') {
+  try { me = await api('GET', '/api/sub/me'); } catch { T = ''; localStorage.removeItem('subtok'); return landing('Please sign in.'); }
+  const flag = me.status !== 'approved' ? `<div class="card"><b class="warn">Account ${E(me.status)}.</b> ${me.status === 'pending' ? 'We are verifying your license and insurance. Upload your certificate of insurance under Account to speed this up.' : 'Contact us.'}</div>` : me.subscription_status !== 'active' ? `<div class="card"><b class="warn">Subscription ${E(me.subscription_status)}.</b> Subscribe (${M(me.monthly_price)}/mo) to claim jobs. <button id="sb" style="margin-left:8px">Subscribe</button></div>` : '';
+  app.innerHTML = `<h2>${E(me.company)}</h2><nav><a href="#" data-t="board" class="${tab === 'board' ? 'on' : ''}">Job board</a><a href="#" data-t="mine" class="${tab === 'mine' ? 'on' : ''}">My jobs</a><a href="#" data-t="acct" class="${tab === 'acct' ? 'on' : ''}">Account</a><a href="#" id="out">Sign out</a></nav>${flag}<div id="pv"></div>`;
+  document.querySelectorAll('nav [data-t]').forEach(a => a.onclick = e => { e.preventDefault(); portal(a.dataset.t); });
+  document.getElementById('out').onclick = e => { e.preventDefault(); T = ''; localStorage.removeItem('subtok'); landing(); };
+  const sb = document.getElementById('sb'); if (sb) sb.onclick = async () => { try { location.href = (await api('POST', '/api/sub/subscribe')).checkoutUrl; } catch (e) { alert(e.message); } };
+  const pv = document.getElementById('pv');
+  if (tab === 'board') {
+    const jobs = await api('GET', '/api/sub/jobs');
+    pv.innerHTML = jobs.length ? '' : '<div class="card mute">No open jobs match right now. New jobs appear here as customers sign and pay their deposit.</div>';
+    jobs.forEach(j => { const d = document.createElement('div'); d.className = 'card';
+      d.innerHTML = `<div class="row"><div><h3>${E(j.title)}</h3><span class="pill">${E(j.trades.join(', '))}</span> <span class="mute">area ${E(j.area)} · ${E(j.state)}${j.earliest_start ? ' · start after ' + E(new Date(j.earliest_start).toLocaleDateString()) : ''}</span></div><div style="text-align:right;flex:0 0 auto"><b style="font-size:22px">${M(j.payout)}</b><br><span class="mute">award price</span><br><span class="mute">− ${M(j.flat_fee)} fee = <b>${M(j.net_to_you)}</b> to you</span></div></div>
+      <p>${E(j.scope.summary)}</p><ul>${j.scope.items.map(i => `<li>${E(i.description)}${i.qty ? ' <span class="mute">(' + E(i.qty) + ' ' + E(i.unit) + ')</span>' : ''}</li>`).join('')}</ul>
+      ${j.scope.rooms.length ? '<p class="mute">Measured: ' + j.scope.rooms.map(r => `${E(r.name)} ${r.length}×${r.width}×${r.height} ft`).join('; ') + '</p>' : ''}${j.scope.preferences ? '<p class="mute">Customer wishes: ' + E(j.scope.preferences) + '</p>' : ''}
+      <p class="mute">${j.payment_mode === 'direct_balance' ? 'Payment: the customer pays you the balance after the deposit; you remit the platform share (shown after you claim).' : 'Payment: the platform collects from the customer and pays you your net.'}</p>
+      ${j.eligible ? '<button class="big" data-c="' + j.id + '">Claim this job</button>' : '<p class="warn">Cannot claim: ' + E(j.reasons.join(' ')) + '</p>'}`; pv.appendChild(d); });
+    pv.querySelectorAll('[data-c]').forEach(b => b.onclick = async () => { if (!confirm('Claim this job? The flat fee applies and the job becomes yours.')) return; try { await api('POST', `/api/sub/jobs/${b.dataset.c}/claim`); portal('mine'); } catch (e) { alert(e.message); portal('board'); } });
+  } else if (tab === 'mine') {
+    const mine = await api('GET', '/api/sub/my-jobs');
+    pv.innerHTML = mine.length ? '' : '<div class="card mute">You have not claimed any jobs yet.</div>';
+    mine.forEach(j => { const m = j.money, c = j.customer; const d = document.createElement('div'); d.className = 'card';
+      d.innerHTML = `<h3>${E(j.title)} <span class="pill">${E(j.job_status)}</span></h3><p><b>${E(c.name)}</b> · ${E(c.phone)} · ${E(c.email)}<br>${E(c.address)} ${E(c.zip)}</p>
+      <p class="${j.can_start ? 'ok' : 'warn'}">${j.can_start ? 'Cleared to start.' : 'Do NOT start yet: the customer has a legal right to cancel until ' + E(j.rescission_ends ? new Date(j.rescission_ends).toLocaleDateString() : 'the cancellation window closes') + ' and the deposit must be paid.'}</p>
+      <table><tr><td>Award price</td><td>${M(j.payout)}</td></tr><tr><td>Flat fee</td><td>− ${M(j.flat_fee)}</td></tr><tr><td><b>Your net</b></td><td><b>${M(m.your_net)}</b></td></tr>
+      ${m.customer_pays_you ? `<tr><td>Customer pays you directly</td><td>${M(m.customer_pays_you)}</td></tr><tr><td>You remit to the platform on completion</td><td>${M(m.you_remit_to_platform)}</td></tr>` : `<tr><td>Platform pays you on completion</td><td>${M(m.platform_pays_you)}</td></tr>`}</table>
+      <p>${E(j.scope.summary)}</p><ul>${j.scope.items.map(i => `<li>${E(i.description)} (${E(i.qty)} ${E(i.unit)})</li>`).join('')}</ul>`; pv.appendChild(d); });
+  } else {
+    pv.innerHTML = `<div class="card"><h3>Account</h3><p>${E(me.email)} · ${E(me.phone)}<br>Trades: ${E(me.trades.join(', '))} · States: ${E(me.states.join(', '))} ${E(me.zip_prefixes.join(','))}<br>License: ${E(me.license)} ${E(me.license_state)}</p>
+    <label>Insurance expires (keep current or you cannot claim jobs)</label><input type="date" id="ie" value="${E(me.insurance_expires)}"><br><button id="si" class="ghost">Update</button>
+    <label>Certificate of insurance (PDF / JPG / PNG) ${me.has_coi ? '<span class="ok">on file ✓</span>' : '<span class="warn">not uploaded</span>'}</label><input type="file" id="cf" accept=".pdf,image/*"></div>`;
+    document.getElementById('si').onclick = async () => { try { await api('PUT', '/api/sub/profile', { insurance_expires: document.getElementById('ie').value }); portal('acct'); } catch (e) { alert(e.message); } };
+    document.getElementById('cf').onchange = async e => { try { await api('PUT', '/api/sub/coi', null, e.target.files[0]); portal('acct'); } catch (er) { alert(er.message); } };
+  }
+}
+T ? portal() : landing();
+</script></body></html>

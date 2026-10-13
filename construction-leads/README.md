@@ -1,4 +1,4 @@
-# Construction lead-to-contract pipeline
+# Construction lead-to-contract pipeline + subcontractor marketplace
 
 Meta/Google ads → lead → booked free estimate → recorded site visit → internal quote
 (materials + labor + margin) → customer signs + pays deposit → in-house or subcontractor job.
@@ -7,7 +7,7 @@ Zero dependencies. Needs Node 22.5+ (uses the built-in SQLite).
 
 ```
 npm start          # http://localhost:3000   (seeds a starter price book + 2 estimators)
-npm test           # 19 tests: quote math + the whole funnel end to end
+npm test           # 28 tests: quote math, settlement math, the whole funnel, and the marketplace
 ```
 
 ## The pipeline
@@ -31,6 +31,7 @@ npm test           # 19 tests: quote math + the whole funnel end to end
                                      ▼
    customer link /quote.html?t=…: sees scope + price only ─► signs ─► contract (hash stored) ─► deposit (Stripe)
                                      ▼
+   JOB (deposit paid) ─► auto-posted to the SUBCONTRACTOR BOARD ─► eligible sub claims it ─► customer details unlock
    JOB: awaiting_deposit ─► rescission_period (3 business days) ─► ready ─► scheduled ─► in progress ─► complete
         assigned in-house OR to a subcontractor (with sub bid, margin re-computed)
 ```
@@ -88,6 +89,54 @@ deposit     = total × deposit %            (capped by state law, see below)
 
 `do_not_call` permanently flags the lead and blocks all calls and texts.
 
+
+## Subcontractor marketplace (`/sub.html`)
+
+Service area is **New York and New Jersey** (ZIP-routed; out-of-area leads are saved but never booked or called).
+
+**Flow:** sub applies (license, insurance, trades, ZIP coverage) → you review and **approve** → they **subscribe**
+($50-60/mo via Stripe) → when a customer signs and the deposit clears, the job is **auto-posted** →
+an eligible sub **claims** it (first come, atomic: two subs racing gives exactly one winner) →
+customer name, phone and address unlock for that sub only.
+
+**Revenue model:** monthly subscription + a **flat fee per claimed job** (no percentage). Set `SUB_MONTHLY_PRICE` and `SUB_FLAT_FEE`;
+you can override the fee and award price per job in Admin → Marketplace before it's claimed. The fee is added to the sub's next Stripe invoice (and always logged in the ledger).
+
+**What subs see before claiming:** trade, ZIP3 area ("105xx"), scope lines and quantities, room measurements, customer wishes, award price, fee, net.
+**Never:** customer name/phone/address, the contract price, your margin (tested). The award price defaults to your direct cost + contingency; edit it per job.
+
+**Who can claim** (enforced server-side): account approved · subscription active · liability insurance not expired · covers the state and ZIP prefixes · trade matches
+(or the sub has "general"). A sub can't be assigned or start work until the deposit is paid **and** the customer's cancellation window has closed.
+
+### Money flow: the two modes (`SUB_PAYMENT_MODE`, switchable per job)
+
+Example: $20,000 job, $2,000 deposit, sub award price $14,000, flat fee $150. Your profit is **$6,150 in both modes** (price − award + fee, before tax pass-through).
+
+| | `direct_balance` (your plan) | `platform_collects` |
+|---|---|---|
+| Customer pays the platform | $2,000 deposit | $20,000 |
+| Customer pays the sub | $18,000 balance | nothing |
+| Sub is entitled to | $13,850 (award − fee) | $13,850 |
+| Settlement | **Sub remits $4,150 to you** | You pay the sub $13,850 |
+
+**Read this before choosing `direct_balance`.** The balance the customer pays the sub includes *your margin*. So:
+1. **Credit risk is yours.** If the sub keeps the money, you chase them for $4,150. You hold only the deposit, and a legal 10-15% deposit often can't cover your share.
+2. **The sub sees the full contract price** when they invoice the customer, so your margin isn't hidden.
+3. **The contract and lien law get complicated.** The customer contracts with *you*; paying the sub directly needs a clear direction-to-pay clause (a draft is in the contract template for your attorney).
+My recommendation: use `platform_collects` with milestone payments (the sub is paid after you collect), or at minimum require a signed remittance agreement and withhold fees from the sub's next payouts. The ledger records `sub_remittance_due` / `sub_payout_due` when a job completes, and the admin screen shows the sub's remittance exposure per job.
+
+### NY / NJ: confirm with an attorney before launch
+Not legal advice. These are the issues to put in front of a NY/NJ construction lawyer:
+- **Licensing.** NYC requires a home improvement contractor license (DCWP); several NY counties (e.g. Westchester, Nassau, Suffolk, Rockland, Putnam) have their own; NJ requires home improvement contractor registration with Consumer Affairs, and plumbers/electricians are separately licensed. Decide whether *you* are the licensed contractor of record (most likely, since the customer signs with you) and what you require of subs. Admin approval is where you check licenses; the system only stores the number, state and insurance date.
+- **Your liability.** You contracted with the customer, so you are responsible for the sub's work. Require a certificate of insurance naming you as additional insured, and consider workers' comp proof.
+- **Trust-fund and lien rules.** NY (and NJ) have rules on how contractors must handle owner payments and pay subs. Deposit handling and the remittance flow above should be reviewed against them.
+- **Deposit limits and the 3-day cancellation right** in both states. No NY/NJ deposit cap is hard-coded (the engine warns); the cancellation window is enforced.
+- **Worker classification.** NY is strict about independent contractor vs employee. Terms, control and exclusivity matter.
+- **Fees to subs** for access to work, and whether the platform is a referral service, a staffing arrangement, or a general contractor, can change your licensing and tax treatment.
+
+Config keys: `SUB_MONTHLY_PRICE`, `SUB_FLAT_FEE`, `SUB_PAYMENT_MODE`, `AUTO_PUBLISH_JOBS`.
+Stripe additionally needs webhook events `customer.subscription.deleted`, `invoice.payment_failed`, `invoice.paid`.
+
 ## Compliance and legal: read before going live
 
 These are the things that can actually get a contractor sued or fined. The code enforces what it can; the rest needs your attorney.
@@ -103,6 +152,9 @@ These are the things that can actually get a contractor sued or fined. The code 
 ## Known limits (v1)
 
 - Recording is uploaded when the estimator taps Stop, so record the conversation in one segment. A phone crash mid-recording loses it.
-- Single company, single timezone, admin is one shared token. Add real user accounts before giving staff separate access.
+- Single company (not yet multi-tenant: other construction companies can't run their own pipeline on it), single timezone, admin is one shared token.
+- One sub per job. A multi-trade job (e.g. kitchen + roof) goes to a single claimer; splitting a job by trade is a next step.
+- No sub ratings, reviews, bidding or messaging yet. Jobs are first-come at a fixed award price.
+- Sub password reset and email verification aren't built yet.
 - No change-order or progress-billing flow yet; milestone invoices are the natural next module.
 - The availability model is estimator-based with fixed 90-minute slots (Mon-Sat 8-6); edit `booking` in `server/config.js`.

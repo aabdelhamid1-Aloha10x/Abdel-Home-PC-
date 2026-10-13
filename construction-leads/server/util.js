@@ -34,4 +34,15 @@ function zonedToUtc(y, m, d, h, min, tz) {
   return new Date(guess);
 }
 
-module.exports = { normPhone, token, sha256, safeEq, esc, money, tzParts, zonedToUtc };
+// ZIP3 ranges: NJ 070-089, NY 100-149. (Good enough to route leads; not a USPS lookup.)
+function zipState(zip) {
+  const z = String(zip || '').replace(/\D/g, '').padStart(5, '0').slice(0, 5);
+  if (String(zip || '').replace(/\D/g, '').length < 5) return '';
+  const n = Number(z.slice(0, 3));
+  if (n >= 70 && n <= 89) return 'NJ';
+  if (n >= 100 && n <= 149) return 'NY';
+  return '';
+}
+const inServiceArea = (zip) => !String(zip || '').trim() || ['NY', 'NJ'].includes(zipState(zip));
+
+module.exports = { zipState, inServiceArea, normPhone, token, sha256, safeEq, esc, money, tzParts, zonedToUtc };

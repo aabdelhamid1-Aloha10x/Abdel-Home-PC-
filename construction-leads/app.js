@@ -22,7 +22,9 @@
     document.getElementById("step1").hidden = true;
     document.getElementById("step2").hidden = false;
     var box = document.getElementById("booking");
-    if (res && res.leadId && window.mountBooking) {
+    if (res && res.outOfArea) {
+      box.innerHTML = '<p class="sub">Thanks! We currently serve New York and New Jersey only. We saved your details and will reach out if we expand to your area.</p>';
+    } else if (res && res.leadId && window.mountBooking) {
       window.mountBooking(box, res.leadId, res.key);
     } else if (cfg.bookingUrl) {
       var u = new URL(cfg.bookingUrl);
