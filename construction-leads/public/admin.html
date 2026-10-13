@@ -1,0 +1,155 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin</title><link rel="stylesheet" href="/ui.css"></head>
+<body><div class="wrap">
+<nav id="nav"><a href="#pipeline">Pipeline</a><a href="#jobs">Jobs</a><a href="#catalog">Price book</a><a href="#subs">Subcontractors</a><a href="#team">Team</a><a href="#outbox">Messages</a></nav>
+<div id="v"></div></div>
+<script>
+const E = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const M = n => n == null ? '' : '$' + Number(n).toLocaleString('en-US', { maximumFractionDigits: 0 });
+const M2 = n => '$' + Number(n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+let TOKEN = localStorage.getItem('adm') || '';
+const v = document.getElementById('v');
+async function api(m, p, b) {
+  const r = await fetch(p, { method: m, headers: { 'x-admin-token': TOKEN, 'Content-Type': 'application/json' }, body: b ? JSON.stringify(b) : undefined });
+  if (r.status === 401) { TOKEN = prompt('Admin token') || ''; localStorage.setItem('adm', TOKEN); return api(m, p, b); }
+  const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || r.status); return j;
+}
+const blobUrl = async p => { const r = await fetch(p, { headers: { 'x-admin-token': TOKEN } }); return URL.createObjectURL(await r.blob()); };
+const guard = f => async (...a) => { try { await f(...a); } catch (e) { alert(e.message); } };
+
+async function route() {
+  const [name, arg] = location.hash.slice(1).split('/');
+  document.querySelectorAll('#nav a').forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#' + (name || 'pipeline')));
+  v.innerHTML = 'Loading…';
+  try { await ({ '': pipeline, pipeline, lead, quote, jobs, catalog, subs, team, outbox }[name] || pipeline)(arg); } catch (e) { v.innerHTML = '<p class="err">' + E(e.message) + '</p>'; }
+}
+addEventListener('hashchange', route);
+
+async function pipeline() {
+  const d = await api('GET', '/api/admin/pipeline'), s = d.stats;
+  v.innerHTML = `<div class="stats card">${[['Leads', s.leads], ['Booked', s.booked], ['Quoted', s.quoted], ['Won', s.won], ['Won value', M(s.won_value)]].map(x => `<div class="stat"><b>${x[1]}</b><span>${x[0]}</span></div>`).join('')}</div>
+  <div class="card"><b>By source</b> ${d.bySource.map(x => `<span class="pill">${E(x.source)}: ${x.leads} leads, ${x.won || 0} won</span>`).join(' ')}</div>
+  <div class="card"><div class="row" style="margin-bottom:8px"><select id="fs"><option value="">All statuses</option>${['new','booked','visited','quoted','won','lost','dnc'].map(x => `<option>${x}</option>`).join('')}</select><button id="nl" class="ghost">+ New lead</button></div><table id="t"></table></div>`;
+  const draw = () => { const f = document.getElementById('fs').value; document.getElementById('t').innerHTML = '<tr><th>Lead</th><th>Service</th><th>Source</th><th>Status</th><th>Visit</th><th>Quote</th></tr>' + d.leads.filter(l => !f || l.status === f).map(l => `<tr><td><a href="#lead/${l.id}">${E(l.name || l.phone)}</a><br><span class="mute">${E(l.phone)} ${l.consent_contact ? '' : '· <span title="No automated-call consent">no auto-call consent</span>'}</span></td><td>${E(l.service)}<br><span class="mute">${E(l.zip)}</span></td><td>${E(l.source)}</td><td><span class="pill ${E(l.status)}">${E(l.status)}</span></td><td>${l.appt ? E(new Date(l.appt).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })) : ''}</td><td>${M(l.quote_total)} <span class="mute">${E(l.qstatus || '')}</span></td></tr>`).join(''); };
+  document.getElementById('fs').onchange = draw; draw();
+  document.getElementById('nl').onclick = guard(async () => { const name = prompt('Name'), phone = prompt('Phone'); if (!name || !phone) return; const l = await api('POST', '/api/admin/leads', { name, phone, service: prompt('Service') || '', zip: prompt('ZIP') || '' }); location.hash = 'lead/' + l.id; });
+}
+
+async function lead(id) {
+  const d = await api('GET', '/api/admin/leads/' + id), l = d.lead;
+  v.innerHTML = `<p><a href="#pipeline">← Pipeline</a></p><div class="card"><h2>${E(l.name)} <span class="pill ${E(l.status)}">${E(l.status)}</span></h2>
+  <p>${E(l.phone)} · ${E(l.email)} · ${E(l.address)} ${E(l.zip)}<br>${E(l.service)} (${E(l.property_type)}) · timeline: ${E(l.timeline || '?')} · source: ${E(l.source)} <span class="mute">${E(JSON.stringify(l.utm))}</span></p>
+  <pre>${E(l.details)}</pre><p class="mute">Automated-call consent: ${l.consent_contact ? 'yes (' + E(l.consent_at) + ')' : 'NO: human call only'}${l.do_not_contact ? ' · DO NOT CONTACT' : ''}</p>
+  <div class="row"><button class="ghost" id="dnc">${l.do_not_contact ? 'Allow contact' : 'Mark do-not-contact'}</button><button class="ghost" id="lost">Mark lost</button></div></div>
+  <div class="card"><h3>Site visits</h3>${d.visits.length ? '' : '<p class="mute">None yet. Appointments: ' + (d.appointments.map(a => E(new Date(a.starts_at).toLocaleString()) + ' (' + E(a.tech) + ', ' + E(a.status) + ')').join('; ') || 'none') + '</p>'}<div id="vs"></div></div>
+  <div class="card"><h3>Quotes</h3>${d.quotes.map(q => `<p><a href="#quote/${q.id}">#${q.id} ${E(q.title)}</a> · ${M(q.total)} · <span class="pill">${E(q.status)}</span></p>`).join('')}<button id="nq">+ New quote${d.visits[0] ? ' from latest visit' : ''}</button></div>
+  <div class="card"><h3>Timeline</h3><table>${d.events.map(e => `<tr><td class="mute">${E(e.ts)}</td><td>${E(e.type)}</td><td class="mute">${E(JSON.stringify(e.data)).slice(0, 160)}</td></tr>`).join('')}</table></div>`;
+  document.getElementById('dnc').onclick = guard(async () => { await api('PATCH', '/api/admin/leads/' + id, { do_not_contact: l.do_not_contact ? 0 : 1 }); route(); });
+  document.getElementById('lost').onclick = guard(async () => { await api('PATCH', '/api/admin/leads/' + id, { status: 'lost' }); route(); });
+  document.getElementById('nq').onclick = () => { sessionStorage.setItem('newQuote', JSON.stringify({ leadId: l.id, visit: d.visits[0] || null, title: l.service })); location.hash = 'quote/new'; };
+  const vs = document.getElementById('vs');
+  for (const x of d.visits) {
+    const div = document.createElement('div'); div.className = 'card';
+    const sc = x.scope;
+    div.innerHTML = `<b>Visit #${x.id}</b> <span class="mute">${E(x.created_at)} · ${E(x.status)} · recording consent: ${x.recording_consent ? 'granted by ' + E(x.consent_by) : x.consent_at ? 'DECLINED' : 'not recorded'}</span>
+    <table><tr><th>Room</th><th>L×W×H</th><th>Floor ft²</th><th>Notes</th></tr>${x.rooms.map(r => `<tr><td>${E(r.name)}</td><td>${r.length}×${r.width}×${r.height}</td><td>${(r.length * r.width).toFixed(0)}</td><td>${E(r.notes)}</td></tr>`).join('')}</table>
+    <p><b>Wishes:</b> ${E(x.preferences)}</p>${x.photos.map(p => `<img data-p="${E(p)}" style="height:80px;border-radius:6px;margin:2px">`).join('')}
+    ${x.has_audio ? '<p><button class="ghost" data-a="' + x.id + '">▶ Load recording</button></p>' : ''}
+    ${x.transcript ? `<details><summary>Transcript</summary><pre>${E(x.transcript)}</pre></details>` : ''}
+    ${sc ? `<details open><summary>AI-drafted scope (verify before quoting)</summary><p>${E(sc.summary)}</p><p><b>Style:</b> ${E((sc.style_preferences || []).join(', '))} · <b>Budget:</b> ${E(sc.budget_hint || '?')} · <b>Timeline:</b> ${E(sc.timeline || '?')}</p>${(sc.red_flags || []).length ? '<p class="warn">Flags: ' + E(sc.red_flags.join('; ')) + '</p>' : ''}${(sc.open_questions || []).length ? '<p class="warn">Open questions: ' + E(sc.open_questions.join('; ')) + '</p>' : ''}</details>` : ''}`;
+    vs.appendChild(div);
+    div.querySelectorAll('img[data-p]').forEach(async im => im.src = await blobUrl('/api/admin/photo/' + im.dataset.p));
+    div.querySelectorAll('button[data-a]').forEach(b => b.onclick = async () => { const a = document.createElement('audio'); a.controls = true; a.src = await blobUrl('/api/admin/recording/' + b.dataset.a); b.replaceWith(a); });
+  }
+}
+
+const COLS = ['description', 'unit', 'qty', 'material_unit_cost', 'labor_hours_per_unit', 'waste_pct', 'sub_cost'];
+const SET = [['labor_rate', 'Labor $/hr'], ['burden_pct', 'Labor burden'], ['contingency_pct', 'Contingency'], ['overhead_pct', 'Overhead'], ['margin_pct', 'Gross margin'], ['tax_pct', 'Sales tax'], ['deposit_pct', 'Deposit'], ['permit_fee', 'Permit fee $']];
+async function quote(id) {
+  const n0 = id === 'new' ? JSON.parse(sessionStorage.getItem('newQuote') || 'null') : null;
+  let q, items = [], settings, title = '', summary = '', leadId, visitId = null, scope = null, catalog = await api('GET', '/api/admin/catalog');
+  if (id === 'new') {
+    const n = JSON.parse(sessionStorage.getItem('newQuote') || 'null'); if (!n) { location.hash = 'pipeline'; return; }
+    leadId = n.leadId; title = n.title; settings = await api('GET', '/api/admin/defaults');
+    if (n.visit) { visitId = n.visit.id; scope = n.visit.scope; summary = scope?.summary || '';
+      (scope?.suggested_items || []).forEach(s => { const c = catalog.find(x => x.id === s.catalog_id); if (c) items.push({ description: c.name, unit: c.unit, qty: s.qty ?? 0, material_unit_cost: c.material_unit_cost, labor_hours_per_unit: c.labor_hours_per_unit, waste_pct: c.waste_pct }); });
+      (scope?.custom_items || []).forEach(c => items.push({ description: c.description, unit: c.unit || 'ea', qty: c.qty ?? 0, material_unit_cost: 0, labor_hours_per_unit: 0, waste_pct: 0 })); }
+  } else { q = await api('GET', '/api/admin/quotes/' + id); items = q.items; settings = q.settings; title = q.title; summary = q.scope_summary; leadId = q.lead_id; }
+  const locked = q && q.status === 'approved';
+  v.innerHTML = `<p><a href="#lead/${leadId}">← Lead</a></p><div class="card"><h2>${id === 'new' ? 'New quote' : 'Quote #' + id + ' <span class="pill">' + E(q.status) + '</span>'}</h2>
+  <label>Title</label><input id="qt" value="${E(title)}"><label>Scope summary (customer sees this)</label><textarea id="qs" rows="3">${E(summary)}</textarea>
+  ${(n0?.visit?.rooms || []).length ? '<p class="mute">From the visit: floor ' + n0.visit.rooms.reduce((a, r) => a + r.length * r.width, 0).toFixed(0) + ' ft², wall ' + n0.visit.rooms.reduce((a, r) => a + 2 * (r.length + r.width) * r.height, 0).toFixed(0) + ' ft² (' + n0.visit.rooms.map(r => E(r.name)).join(', ') + '). Use these to set quantities.</p>' : ''}
+  ${(scope?.open_questions || []).length ? '<p class="warn">Resolve before sending: ' + E(scope.open_questions.join('; ')) + '</p>' : ''}</div>
+  <div class="card"><h3>Line items <span class="mute">(from the price book; costs are internal)</span></h3><table id="it"></table>
+  <div class="row" style="margin-top:8px"><select id="cs"><option value="">Add from price book…</option>${catalog.map(c => `<option value="${c.id}">${E(c.category)}: ${E(c.name)} (${E(c.unit)})</option>`).join('')}</select><button class="ghost" id="ac">+ Custom line</button></div></div>
+  <div class="card"><h3>Pricing</h3><div class="row">${SET.map(([k, lab]) => `<div><label>${lab}</label><input data-s="${k}" type="number" step="0.01" value="${settings[k]}"></div>`).join('')}<div><label>Fulfilment</label><select data-s="fulfillment"><option value="in_house">In-house crew</option><option value="subcontractor">Subcontractor</option></select></div></div></div>
+  <div class="card"><h3>Result</h3><div id="res"></div></div>
+  <div class="row"><button id="save" ${locked ? 'disabled' : ''}>${id === 'new' ? 'Create quote' : 'Save'}</button>${q && !locked ? '<button id="snd" class="ghost">Save &amp; send to customer</button>' : ''}${q ? '<button id="lnk" class="ghost">Copy customer link</button>' : ''}${q?.contract && q.contract.deposit_status !== 'paid' ? '<button id="paid" class="ghost">Mark deposit paid (offline)</button>' : ''}</div>`;
+  document.querySelector('[data-s=fulfillment]').value = settings.fulfillment || 'in_house';
+  const body = () => { const s = {}; document.querySelectorAll('[data-s]').forEach(i => s[i.dataset.s] = i.tagName === 'SELECT' ? i.value : parseFloat(i.value) || 0); return { leadId, visitId, title: document.getElementById('qt').value, scope_summary: document.getElementById('qs').value, items, settings: s }; };
+  const drawItems = () => {
+    document.getElementById('it').innerHTML = '<tr><th>Description</th><th>Unit</th><th>Qty</th><th>Mat $/unit</th><th>Labor h/unit</th><th>Waste</th><th>Sub bid $</th><th></th></tr>' + items.map((it, i) => `<tr>${COLS.map(c => `<td><input data-i="${i}" data-c="${c}" ${['description', 'unit'].includes(c) ? '' : 'type="number" step="0.01"'} value="${E(it[c] ?? '')}" ${locked ? 'disabled' : ''}></td>`).join('')}<td>${locked ? '' : `<button class="ghost" data-d="${i}">✕</button>`}</td></tr>`).join('');
+    document.querySelectorAll('#it input').forEach(inp => inp.oninput = () => { const c = inp.dataset.c; items[inp.dataset.i][c] = ['description', 'unit'].includes(c) ? inp.value : inp.value === '' ? null : parseFloat(inp.value); preview(); });
+    document.querySelectorAll('#it [data-d]').forEach(b => b.onclick = () => { items.splice(+b.dataset.d, 1); drawItems(); preview(); });
+  };
+  let tm; const preview = () => { clearTimeout(tm); tm = setTimeout(guard(async () => {
+    const b = body(), r = await api('POST', '/api/admin/quotes/preview', { items: b.items, settings: b.settings }), t = r.totals;
+    document.getElementById('res').innerHTML = `<table class="tot"><tr><td>Materials</td><td>${M2(t.materials)}</td><td>Labor (${t.labor_hours} h)</td><td>${M2(t.labor)}</td><td>Subs</td><td>${M2(t.subcontractor)}</td></tr>
+    <tr><td>Contingency</td><td>${M2(t.contingency)}</td><td>Overhead</td><td>${M2(t.overhead)}</td><td><b>Your cost</b></td><td><b>${M2(t.cost)}</b></td></tr>
+    <tr><td>Sell price</td><td>${M2(t.sell)}</td><td>Gross profit</td><td class="ok">${M2(t.gross_profit)} (${(t.effective_margin * 100).toFixed(1)}%)</td><td>Tax + permit</td><td>${M2(t.tax + t.permit)}</td></tr>
+    <tr class="t"><td colspan="2">Customer total</td><td>${M2(t.total)}</td><td>Deposit</td><td>${M2(t.deposit)}</td><td>Balance ${M2(t.balance)}</td></tr></table>${r.warnings.map(w => `<p class="warn">⚠ ${E(w)}</p>`).join('')}`; }), 250); };
+  drawItems(); preview();
+  document.getElementById('cs').onchange = e => { const c = catalog.find(x => x.id == e.target.value); if (c) { items.push({ description: c.name, unit: c.unit, qty: 1, material_unit_cost: c.material_unit_cost, labor_hours_per_unit: c.labor_hours_per_unit, waste_pct: c.waste_pct }); drawItems(); preview(); } e.target.value = ''; };
+  document.getElementById('ac').onclick = () => { items.push({ description: '', unit: 'ea', qty: 1, material_unit_cost: 0, labor_hours_per_unit: 0, waste_pct: 0 }); drawItems(); };
+  document.querySelectorAll('[data-s]').forEach(i => i.oninput = preview);
+  const save = async () => { if (id === 'new') { const c = await api('POST', '/api/admin/quotes', body()); sessionStorage.removeItem('newQuote'); return c.id; } await api('PUT', '/api/admin/quotes/' + id, body()); return id; };
+  document.getElementById('save').onclick = guard(async () => { const nid = await save(); location.hash = 'quote/' + nid; if (id !== 'new') route(); });
+  const snd = document.getElementById('snd'); if (snd) snd.onclick = guard(async () => { await save(); const r = await api('POST', `/api/admin/quotes/${id}/send`); prompt('Sent. Customer link:', r.link); route(); });
+  const lnk = document.getElementById('lnk'); if (lnk) lnk.onclick = () => prompt('Customer link', q.link);
+  const pd = document.getElementById('paid'); if (pd) pd.onclick = guard(async () => { if (confirm('Confirm the deposit was received?')) { await api('POST', `/api/admin/quotes/${id}/mark-deposit-paid`); route(); } });
+}
+
+async function jobs() {
+  const [js, subs] = await Promise.all([api('GET', '/api/admin/jobs'), api('GET', '/api/admin/subs')]);
+  v.innerHTML = '<div class="card"><h2>Jobs</h2><table id="jt"></table></div>';
+  document.getElementById('jt').innerHTML = '<tr><th>Customer</th><th>Job</th><th>Value / cost</th><th>Deposit</th><th>Status</th><th>Assigned</th><th>Start</th></tr>' + js.map(j => `<tr><td>${E(j.customer)}<br><span class="mute">${E(j.address)}</span></td><td>${E(j.title)}</td><td>${M(j.total)}<br><span class="mute">cost ${M(j.cost)}${j.sub_cost ? ' · sub ' + M(j.sub_cost) : ''}</span></td><td>${E(j.deposit_status)}${j.status === 'rescission_period' ? '<br><span class="warn">cancel window until ' + E(new Date(j.rescission_ends).toLocaleDateString()) + '</span>' : ''}</td>
+  <td><select data-j="${j.id}" data-k="status">${['awaiting_deposit', 'rescission_period', 'ready', 'scheduled', 'in_progress', 'punch_list', 'complete'].map(s => `<option ${s === j.status ? 'selected' : ''}>${s}</option>`).join('')}</select></td>
+  <td><select data-j="${j.id}" data-k="assign"><option value="in_house" ${j.assigned_type === 'in_house' ? 'selected' : ''}>In-house</option>${subs.map(s => `<option value="${s.id}" ${j.subcontractor_id === s.id ? 'selected' : ''}>Sub: ${E(s.name)} (${E(s.trade)})</option>`).join('')}<option value="" ${j.assigned_type === 'unassigned' ? 'selected' : ''}>Unassigned</option></select>${j.assigned_type === 'subcontractor' ? `<br><input data-j="${j.id}" data-k="sub_cost" type="number" placeholder="sub bid $" value="${j.sub_cost ?? ''}" style="margin-top:4px">` : ''}</td>
+  <td><input type="date" data-j="${j.id}" data-k="start_date" value="${E(j.start_date || '')}"></td></tr>`).join('');
+  document.querySelectorAll('[data-j]').forEach(el => el.onchange = guard(async () => {
+    const k = el.dataset.k, b = {};
+    if (k === 'assign') { if (el.value === 'in_house') b.assigned_type = 'in_house'; else if (el.value === '') b.assigned_type = 'unassigned'; else { b.assigned_type = 'subcontractor'; b.subcontractor_id = +el.value; } }
+    else b[k] = k === 'sub_cost' ? +el.value : el.value;
+    try { await api('PATCH', '/api/admin/jobs/' + el.dataset.j, b); } finally { route(); }
+  }));
+}
+
+async function catalog() {
+  const c = await api('GET', '/api/admin/catalog');
+  v.innerHTML = `<div class="card"><h2>Price book</h2><p class="mute">Your real supplier cost per unit and crew hours per unit. Quotes copy these values, so changing them never alters sent quotes.</p><table id="ct"></table><h3>Add item</h3><div class="row">${['category', 'name', 'unit', 'material_unit_cost', 'labor_hours_per_unit', 'waste_pct'].map(k => `<div><label>${k}</label><input id="n_${k}"></div>`).join('')}<button id="na">Add</button></div></div>`;
+  document.getElementById('ct').innerHTML = '<tr><th>Category</th><th>Item</th><th>Unit</th><th>Material $</th><th>Labor h</th><th>Waste</th><th></th></tr>' + c.map(x => `<tr>${['category', 'name', 'unit', 'material_unit_cost', 'labor_hours_per_unit', 'waste_pct'].map(k => `<td><input data-id="${x.id}" data-k="${k}" value="${E(x[k])}"></td>`).join('')}<td><button class="ghost" data-del="${x.id}">✕</button></td></tr>`).join('');
+  document.querySelectorAll('#ct input').forEach(i => i.onchange = guard(async () => { const row = {}; document.querySelectorAll(`#ct input[data-id="${i.dataset.id}"]`).forEach(z => row[z.dataset.k] = z.value); await api('PUT', '/api/admin/catalog/' + i.dataset.id, row); }));
+  document.querySelectorAll('[data-del]').forEach(b => b.onclick = guard(async () => { await api('DELETE', '/api/admin/catalog/' + b.dataset.del); route(); }));
+  document.getElementById('na').onclick = guard(async () => { const b = {}; ['category', 'name', 'unit', 'material_unit_cost', 'labor_hours_per_unit', 'waste_pct'].forEach(k => b[k] = document.getElementById('n_' + k).value); await api('POST', '/api/admin/catalog', b); route(); });
+}
+
+async function subs() {
+  const s = await api('GET', '/api/admin/subs');
+  v.innerHTML = `<div class="card"><h2>Subcontractors</h2><table>${'<tr><th>Name</th><th>Trade</th><th>Phone</th><th>License</th><th>Insurance expires</th></tr>' + s.map(x => `<tr><td>${E(x.name)}</td><td>${E(x.trade)}</td><td>${E(x.phone)}</td><td>${E(x.license)}</td><td>${E(x.insurance_expires)}</td></tr>`).join('')}</table>
+  <h3>Add</h3><div class="row">${['name', 'trade', 'phone', 'email', 'license', 'insurance_expires'].map(k => `<div><label>${k}</label><input id="s_${k}"></div>`).join('')}<button id="sa">Add</button></div><p class="mute">Never assign a sub whose license or liability insurance you haven't verified.</p></div>`;
+  document.getElementById('sa').onclick = guard(async () => { const b = {}; ['name', 'trade', 'phone', 'email', 'license', 'insurance_expires'].forEach(k => b[k] = document.getElementById('s_' + k).value); await api('POST', '/api/admin/subs', b); route(); });
+}
+
+async function team() {
+  const s = await api('GET', '/api/admin/staff');
+  v.innerHTML = `<div class="card"><h2>Estimators</h2><p class="mute">Each estimator opens their personal link on their phone. Treat links like passwords.</p><table>${s.map(x => `<tr><td>${E(x.name)}</td><td><code>${E(location.origin)}/tech.html#${E(x.token)}</code></td></tr>`).join('')}</table>
+  <div class="row"><div><label>Name</label><input id="tn"></div><button id="ta">Add estimator</button></div></div>`;
+  document.getElementById('ta').onclick = guard(async () => { await api('POST', '/api/admin/staff', { name: document.getElementById('tn').value, role: 'tech' }); route(); });
+}
+
+async function outbox() {
+  const o = await api('GET', '/api/admin/outbox');
+  v.innerHTML = '<div class="card"><h2>Messages</h2><p class="mute">"logged_only" means provider keys are not set, so nothing was actually sent.</p><table>' + o.map(m => `<tr><td class="mute">${E(m.created_at)}</td><td>${E(m.channel)}</td><td>${E(m.to_addr)}</td><td>${E(m.body)}</td><td>${E(m.status)}</td></tr>`).join('') + '</table></div>';
+}
+route();
+</script></body></html>

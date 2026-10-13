@@ -4,7 +4,7 @@ window.SITE_CONFIG = {
   phone: "(000) 000-0000",
   serviceArea: "[City / County / State]",
   // Make.com / n8n / Zapier webhook that receives every lead as JSON.
-  leadWebhookUrl: "",
+  leadWebhookUrl: "/api/leads", // served by server/index.js
   // Calendly / Cal.com / GoHighLevel booking link, embedded after form submit.
   bookingUrl: "",
 };

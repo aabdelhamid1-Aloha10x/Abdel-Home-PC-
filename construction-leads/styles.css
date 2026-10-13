@@ -45,3 +45,7 @@ footer{border-top:1px solid var(--line);padding:28px 0;color:var(--mute);font-si
 .fine{font-size:12px;max-width:70em}
 @media(max-width:860px){.hero-grid{grid-template-columns:1fr}.grid,.steps{grid-template-columns:1fr 1fr}}
 @media(max-width:520px){.row,.grid,.steps{grid-template-columns:1fr}}
+.slots{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.slots button{background:#12161b;border:1px solid var(--line);color:var(--ink);padding:9px 12px;border-radius:8px;cursor:pointer;font:inherit}
+.slots button.on{background:var(--accent);border-color:var(--accent)}
+.call{white-space:nowrap;font-size:14px;padding:7px 10px}.brand{font-size:15px}

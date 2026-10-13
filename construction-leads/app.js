@@ -18,11 +18,13 @@
     return o;
   }
 
-  function showBooking(lead) {
+  function showBooking(lead, res) {
     document.getElementById("step1").hidden = true;
     document.getElementById("step2").hidden = false;
     var box = document.getElementById("booking");
-    if (cfg.bookingUrl) {
+    if (res && res.leadId && window.mountBooking) {
+      window.mountBooking(box, res.leadId, res.key);
+    } else if (cfg.bookingUrl) {
       var u = new URL(cfg.bookingUrl);
       if (lead.name) u.searchParams.set("name", lead.name);
       if (lead.email) u.searchParams.set("email", lead.email);
@@ -59,7 +61,9 @@
       : Promise.resolve({ ok: true });
     send.then(function (r) {
       if (!r.ok) throw new Error("bad status");
-      showBooking(lead);
+      return r.json ? r.json().catch(function () { return {}; }) : {};
+    }).then(function (res) {
+      showBooking(lead, res);
     }).catch(function () {
       err.textContent = "Something went wrong. Please call us at " + (cfg.phone || "") + ".";
       btn.disabled = false; btn.textContent = "Get my free estimate";

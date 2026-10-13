@@ -1,0 +1,45 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Your quote</title><link rel="stylesheet" href="/ui.css"></head>
+<body><div class="wrap narrow" id="app">Loading…</div>
+<script>
+const E = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const M = n => '$' + Number(n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const t = new URLSearchParams(location.search).get('t'), app = document.getElementById('app');
+fetch('/api/quote/' + encodeURIComponent(t)).then(r => r.ok ? r.json() : Promise.reject()).then(render).catch(() => app.innerHTML = '<div class="card"><h2>Quote not found</h2><p class="mute">This link may be wrong or expired. Please contact us.</p></div>');
+
+function render(q) {
+  const T = q.totals;
+  let h = `<div class="card"><p class="mute">${E(q.company.name)} · License ${E(q.company.license)} · ${E(q.company.phone)}</p><h2>${E(q.title)}</h2><p>Prepared for ${E(q.customer)}</p><p>${E(q.scope_summary)}</p>
+  <table><tr><th>Scope</th><th style="text-align:right">Price</th></tr>${q.lines.map(l => `<tr><td>${E(l.description)}${l.qty ? ` <span class="mute">(${E(l.qty)} ${E(l.unit)})</span>` : ''}</td><td style="text-align:right">${M(l.price)}</td></tr>`).join('')}</table>
+  <table class="tot"><tr><td>Subtotal</td><td style="text-align:right">${M(T.subtotal)}</td></tr>${T.permit ? `<tr><td>Permits</td><td style="text-align:right">${M(T.permit)}</td></tr>` : ''}${T.tax ? `<tr><td>Sales tax</td><td style="text-align:right">${M(T.tax)}</td></tr>` : ''}
+  <tr class="t"><td>Total</td><td style="text-align:right">${M(T.total)}</td></tr><tr><td>Deposit due at signing</td><td style="text-align:right">${M(T.deposit)}</td></tr><tr><td>Balance on completion</td><td style="text-align:right">${M(T.balance)}</td></tr></table></div>`;
+  if (q.contract) {
+    const c = q.contract;
+    h += `<div class="card"><h3>Signed ✓</h3><p>Signed by ${E(c.signer_name)} on ${E(new Date(c.signed_at).toLocaleString())}.</p>
+    <p>Deposit: <b class="${c.deposit_status === 'paid' ? 'ok' : 'warn'}">${E(c.deposit_status)}</b>. You may cancel without penalty until ${E(new Date(c.rescission_ends).toLocaleString())}.</p></div><div class="card"><h3>Contract</h3><pre id="ct"></pre></div>`;
+    app.innerHTML = h; document.getElementById('ct').textContent = c.text; return;
+  }
+  h += `<div class="card"><h3>Approve and sign</h3><details><summary>Read the contract</summary><pre id="ct" style="margin-top:10px"></pre></details>
+  <label>Type your full legal name</label><input id="nm" autocomplete="name"><label>Draw your signature</label><canvas id="cv" width="600" height="150"></canvas>
+  <button class="ghost" id="clr" type="button" style="margin:6px 0">Clear</button>
+  <label style="display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--ink)"><input type="checkbox" id="ag" style="width:auto;margin-top:4px"><span>I have read and agree to this contract and the ${M(T.total)} price, and I understand I may cancel within 3 business days of signing.</span></label>
+  <p class="err" id="er"></p><button class="big" id="go">Sign and pay ${M(T.deposit)} deposit</button></div>`;
+  app.innerHTML = h; document.getElementById('ct').textContent = q.contract_preview;
+  const cv = document.getElementById('cv'), ctx = cv.getContext('2d'); let down = false, ink = false;
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cv.width, cv.height); ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.strokeStyle = '#111';
+  const pos = e => { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) * cv.width / r.width, (e.clientY - r.top) * cv.height / r.height]; };
+  cv.onpointerdown = e => { down = true; ink = true; const [x, y] = pos(e); ctx.beginPath(); ctx.moveTo(x, y); cv.setPointerCapture(e.pointerId); };
+  cv.onpointermove = e => { if (!down) return; const [x, y] = pos(e); ctx.lineTo(x, y); ctx.stroke(); };
+  cv.onpointerup = () => down = false;
+  document.getElementById('clr').onclick = () => { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cv.width, cv.height); ink = false; };
+  document.getElementById('go').onclick = async () => {
+    const er = document.getElementById('er'); er.textContent = '';
+    if (!ink) { er.textContent = 'Please draw your signature.'; return; }
+    const b = document.getElementById('go'); b.disabled = true;
+    const r = await fetch('/api/quote/' + encodeURIComponent(t) + '/sign', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: document.getElementById('nm').value, agree: document.getElementById('ag').checked, signature: cv.toDataURL('image/png') }) });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) { er.textContent = j.error || 'Could not sign.'; b.disabled = false; return; }
+    if (j.checkoutUrl) location.href = j.checkoutUrl; else location.reload();
+  };
+}
+</script></body></html>

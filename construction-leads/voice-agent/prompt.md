@@ -46,10 +46,15 @@ the estimator will arrive with a written quote within {{quote_turnaround}}.
 - If they say stop / do not call: apologize, confirm, call `log_outcome("do_not_call")`.
 
 ## Tools to wire up
+Configured as ElevenLabs server tools. Exact URLs, bodies and the auth header are in the main README
+("Voice agent tools"). `lead_id` is passed in as a dynamic variable on every call.
+
 | Tool | Purpose |
 |---|---|
-| `check_availability` | Read open estimate slots from the calendar |
-| `book_appointment` | Create the event + send confirmation SMS/email |
-| `update_lead` | Write the answers above back to the CRM |
-| `log_outcome` | booked / callback / voicemail / not_interested / do_not_call |
-| `transfer_to_human` | Warm transfer to the office line |
+| `check_availability` | Open estimate slots (ISO times; read them out in the customer's local wording) |
+| `book_appointment` | Book the slot, save address/email, trigger the confirmation SMS/email (includes the recording notice) |
+| `update_lead` | Save scope, ownership, timeline, budget and other-quotes answers |
+| `log_outcome` | booked / callback / voicemail / not_interested / do_not_call (DNC is permanent) |
+
+Also tell the customer, when booking: "Our estimator will ask permission before recording the visit.
+You can say no." Never state that recording is mandatory.
