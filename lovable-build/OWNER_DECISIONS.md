@@ -10,3 +10,10 @@
 - Google: do the Limited Use wording and start the Gmail verification. Support email is support@masar10x.io (not billing@).
 - VAPI and Twilio keys are in Lovable Secrets. Stripe verification is complete.
 - Models: Anthropic stays default. Run an OpenAI cost/quality comparison; switch only if same quality (same pass rate and answers) and cheaper.
+
+## 2026-10-13 (later)
+- Sign-up mockup: removed the gray "Sign in" link from the top right; phone numbers auto-format to +1 (555) 123-4567 as typed. Renewal price on the card step stays.
+- Email plan approved: Masar inbox address quotes@ (per-company token, quotes+token@masar10x.io). Masar AI reads it. Every outgoing broker email BCCs it so the broker never sees it; replies tracked by thread. Sent to the app project.
+- Accessibility target: better than 95 (aim 100); performance, best practices, SEO at least 95 after publish.
+- Cancellation and refunds: cancel stops future charges, no refund for the current month; refunds case by case by management; approved refunds are net of card processing fees (not returned). Card fees are paid by Masar. Goes into Terms and cancel flow copy.
+- Models: Anthropic default, Lovable AI gateway as automatic fallback; OpenAI comparison only if the owner adds a key and quality is identical and cheaper.
