@@ -117,3 +117,16 @@ Findings:
 5. Real test used the A&H company mailbox (ahlogisticscorp@gmail.com); owner-directed.
 6. Still open: publish required for fixes to apply; Twilio token; Core/Growth test account; pending code review of token storage, revoke, RLS, audit, BCC-only and send gating.
 No rule violations seen in reports. No fix message sent; Lovable is already fixing with the owner.
+
+## 2026-10-13 22:35 UTC · Solo redesign Parts A and B, batch 2 · PASS WITH GAPS
+Last reviewed Lovable message ids: main:agent#00000000027117#don:APXEL7QF (22:07, redesign A+B) and main:agent#00000000026341#don:XKV7BUU7 (21:54, timings). Reviewed from Lovable's reports; code not read this cycle. Nothing published.
+Reported: Home dashboard (setup chip, goal ring, Needs you cards, On the road, last message line, pinned composer, full chat on its own page); keep ring on all lists using one shared cost calculation, green/amber/red vs the driver's floor, Est. tag; offer screen with map, dead/loaded/total tiles, keep ring, broker authority badge, editable counter, Counter/Book it/"..." menu, no email history, broker credit slot empty (nothing invented); map via server-side HERE truck routing (80,000 lb, 13'6", 53'), per-company cache, blue you / green pickup / red drop-off, falls back to "Estimated straight-line" until HERE_API_KEY exists; Loads tabs Offers/My loads/Find with dots, My loads step bar with one action, docs in viewer; Earnings (renamed), Truck (unchanged), More with six groups, Pause under Autopilot, theme under Appearance, red Sign out with confirm; Spanish (~100 strings). Signed-in test as Void Test Haul worked this time: screenshots at 390 px light/dark, no console errors; one temporary test offer added and deleted.
+Timings (4x CPU, slow 4G): Loads 933 ms cold / 166 warm; Earnings 1,393 / 146; Truck 879 / 164; More 868 / 119; Offer 2,489 / 129. Warm taps meet the 300 ms goal.
+Findings:
+1. Cold open misses the 1 s goal on Earnings (1.4 s) and Offer (2.5 to 2.9 s; it computes keep and route on the server at open). Fix: precompute keep and route when the offer arrives, cache, stream the screen with skeletons.
+2. HERE: could not read free allowance or price; HERE terms page indicates basic plans exclude "Asset Management", which includes route calculations for a vehicle, so truck routing for carriers may need a HERE contract. Owner now leaning to Google Maps or a free API; decision pending. Keep routing behind one provider interface.
+3. Not verified in testing: Authority active badge and enabled Book it (test offer showed unverified).
+4. Truck fuel chart heading still says "MPG"; mockup says "Fuel economy". Separate Find detail screen not touched (Find opens the offer screen).
+5. "Pays 30d" filter shown disabled (needs broker pay data). Broker credit grade waits on provider research (batch 2 item 3 result not yet seen in this review).
+6. Code-level review still pending for the mailbox connection, send gating, RLS and audit on new tables.
+No rule violations seen in the report (no per-action credit prices reported; pickup green/drop-off red; money record-only).
