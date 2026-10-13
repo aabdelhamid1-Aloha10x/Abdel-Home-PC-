@@ -1,0 +1,220 @@
+<title>Masar OS Free Trial Flow</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a flow picker on top, then one device frame (desktop or phone) running the sign-up, verify, card, setup and sign-in screens in the website's dark aurora style. */
+:root{--bg:#07090D;--s1:#10151D;--s2:#171E29;--bd:#212B38;--tx:#EEF2F6;--mu:#8D9AA9;--ac:#C8F25C;--acfg:#0A0E13;--at:#C8F25C;--acsoft:rgba(200,242,92,.12);--warn:#FFB020;--rd:#FF7A6B;--blue:#5AA9FF;--violet:#A78BFA;--teal:#2DD4BF;--glow:rgba(200,242,92,.22);--a1:rgba(200,242,92,.28);--a2:rgba(45,212,191,.20);--a3:rgba(167,139,250,.20);color-scheme:dark;--fd:'Space Grotesk',system-ui,sans-serif;--fm:'IBM Plex Mono',ui-monospace,monospace}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--tx);font-family:var(--fd);font-size:16px;line-height:1.5;margin:0;padding:18px 16px 60px}
+h1,h2,h3,p{margin:0}h1,h2,h3{letter-spacing:-.025em;text-wrap:balance}a{color:inherit}
+.pick{max-width:1180px;margin:0 auto 16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.pick .grp{display:flex;gap:6px;flex-wrap:wrap}
+.pick button{border:1px solid var(--bd);background:var(--s1);color:var(--mu);font:inherit;font-size:13.5px;font-weight:500;border-radius:99px;padding:8px 14px;cursor:pointer;min-height:38px}
+.pick button[aria-pressed="true"]{background:var(--ac);color:var(--acfg);border-color:var(--ac);font-weight:600}
+.pick button:focus-visible{outline:2px solid var(--at);outline-offset:2px}
+.dev{display:flex;gap:4px;border:1px solid var(--bd);border-radius:99px;padding:3px;background:var(--s1)}
+.dev button{border:0;background:none;padding:6px 14px;min-height:34px}
+.frame{margin:0 auto;max-width:1180px;transition:max-width .5s cubic-bezier(.2,.7,.2,1)}
+.frame[data-d="m"]{max-width:402px}
+.stage{container-type:inline-size;position:relative;border:1px solid var(--bd);border-radius:30px;overflow:hidden;background:var(--bg);min-height:760px}
+.frame[data-d="m"] .stage{border-radius:44px;min-height:780px}
+.aur{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.aur i{position:absolute;border-radius:50%;filter:blur(90px)}
+.aur i:nth-child(1){width:460px;height:460px;left:-6%;top:-120px;background:var(--a1);animation:f1 16s ease-in-out infinite}
+.aur i:nth-child(2){width:420px;height:420px;right:-4%;top:30%;background:var(--a2);animation:f2 19s ease-in-out infinite}
+.aur i:nth-child(3){width:380px;height:380px;left:30%;bottom:-160px;background:var(--a3);animation:f3 22s ease-in-out infinite}
+@keyframes f1{50%{transform:translate(100px,60px) scale(1.15)}}@keyframes f2{50%{transform:translate(-110px,40px) scale(.9)}}@keyframes f3{50%{transform:translate(-80px,-60px) scale(1.2)}}
+.shell{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);min-height:760px}
+@container (max-width:780px){.shell{grid-template-columns:minmax(0,1fr)}.side{display:none}.mbar{display:flex!important}}
+.side{padding:44px 48px;display:flex;flex-direction:column;justify-content:space-between;gap:30px;border-right:1px solid var(--bd);background:linear-gradient(180deg,transparent,color-mix(in srgb,var(--s1) 55%,transparent))}
+.lgo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px;text-decoration:none}
+.side h2{font-size:clamp(30px,4.2cqw,50px);line-height:1.03;letter-spacing:-.04em;margin:24px 0 14px}
+.side .sub{color:var(--mu);font-size:17px;max-width:24em}
+.chk{list-style:none;margin:26px 0 0;padding:0;display:flex;flex-direction:column;gap:13px}
+.chk li{display:flex;gap:12px;align-items:center;font-size:16px;opacity:0;transform:translateX(-14px);animation:cin .6s cubic-bezier(.2,.7,.2,1) forwards}
+.chk li i{width:24px;height:24px;border-radius:50%;background:var(--acsoft);color:var(--at);display:grid;place-items:center;font-style:normal;font-size:13px;flex:none}
+@keyframes cin{to{opacity:1;transform:none}}
+.feed{position:relative;height:132px}
+.fc{position:absolute;left:0;right:0;display:flex;gap:12px;align-items:center;background:color-mix(in srgb,var(--s1) 85%,transparent);border:1px solid var(--bd);border-radius:20px;padding:12px 16px;font-size:14.5px;backdrop-filter:blur(8px);opacity:0;transform:translateY(16px) scale(.98);transition:opacity .6s,transform .6s}
+.fc.a{opacity:1;transform:none}.fc.b{opacity:.55;transform:translateY(-4px) scale(.97)}
+.fc .ic{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;flex:none;color:#0A0E13}
+.fc .ic svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;display:block}
+.fc small{display:block;color:var(--mu);font-family:var(--fm);font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+.main{padding:40px 48px;display:flex;flex-direction:column;justify-content:center;position:relative}
+@container (max-width:780px){.main{padding:24px 20px 28px;justify-content:flex-start}}
+.mbar{display:none;align-items:center;justify-content:space-between;padding:18px 20px 0;position:relative;z-index:2}
+.card{width:100%;max-width:460px;margin:0 auto;background:color-mix(in srgb,var(--s1) 88%,transparent);border:1px solid var(--bd);border-radius:28px;padding:30px;backdrop-filter:blur(10px);box-shadow:0 30px 90px -40px var(--glow)}
+@container (max-width:780px){.card{padding:22px 18px;border-radius:26px}}
+.prog{display:flex;gap:6px;margin-bottom:22px}.prog i{flex:1;height:5px;border-radius:99px;background:var(--s2);overflow:hidden;position:relative}
+.prog i:after{content:"";position:absolute;inset:0;background:var(--ac);border-radius:99px;transform:scaleX(0);transform-origin:left;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.prog i.on:after{transform:scaleX(1)}
+.stp{font-family:var(--fm);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--at);margin-bottom:8px}
+.card h1{font-size:30px;line-height:1.08;margin-bottom:8px}.card .sub{color:var(--mu);font-size:15.5px;margin-bottom:20px}
+.view{animation:vin .5s cubic-bezier(.2,.7,.2,1) both}.view.out{animation:vout .22s ease-in both}
+@keyframes vin{from{opacity:0;transform:translateY(14px)}}@keyframes vout{to{opacity:0;transform:translateX(-18px)}}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;border:0;border-radius:16px;padding:0 22px;min-height:54px;font:inherit;font-weight:600;font-size:16px;cursor:pointer;width:100%;transition:transform .2s,box-shadow .25s,background .2s;position:relative}
+.btn.p{background:var(--ac);color:var(--acfg)}.btn.p:hover{transform:translateY(-2px);box-shadow:0 12px 40px -10px var(--glow),0 0 0 5px var(--glow)}
+.btn.g{background:color-mix(in srgb,var(--s2) 80%,transparent);color:var(--tx);border:1px solid var(--bd)}.btn.g:hover{background:var(--s2);transform:translateY(-1px)}
+.btn.ld{pointer-events:none}.btn.ld>span{opacity:0}.btn.ld:after{content:"";position:absolute;width:20px;height:20px;border-radius:50%;border:3px solid rgba(10,14,19,.25);border-top-color:var(--acfg);animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.btn:focus-visible,.fi input:focus-visible,select:focus-visible,.pl button:focus-visible,.tl:focus-visible,.link:focus-visible,.ob:focus-visible{outline:2px solid var(--at);outline-offset:2px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fi{display:flex;flex-direction:column;gap:7px;margin-bottom:14px;position:relative}
+.fi label{font-size:13.5px;color:var(--mu);font-weight:500}
+.fi input,select{background:var(--bg);border:1px solid var(--bd);border-radius:16px;padding:0 16px;min-height:54px;color:var(--tx);font:inherit;font-size:16px;width:100%;transition:border-color .2s,box-shadow .2s}
+.fi input:focus{outline:none;border-color:var(--at);box-shadow:0 0 0 4px var(--glow)}
+.fi.err input{border-color:var(--rd);animation:shk .35s}.fi .em{color:var(--rd);font-size:13px;min-height:0;display:none}.fi.err .em{display:block}
+@keyframes shk{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.eye{position:absolute;right:8px;top:36px;background:none;border:0;color:var(--mu);cursor:pointer;font:inherit;font-size:13px;padding:10px;border-radius:12px}
+.str{display:flex;gap:5px;margin-top:2px}.str i{flex:1;height:5px;border-radius:99px;background:var(--s2);transition:background .3s}
+.sep{display:flex;align-items:center;gap:12px;color:var(--mu);font-size:13px;margin:16px 0}.sep:before,.sep:after{content:"";flex:1;height:1px;background:var(--bd)}
+.pl{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px}
+.pl button{border:1px solid var(--bd);background:var(--bg);color:var(--tx);font:inherit;border-radius:18px;padding:12px 8px;cursor:pointer;text-align:center;transition:all .25s;position:relative}
+.pl button b{display:block;font-size:15px}.pl button span{font-family:var(--fm);font-size:13px;color:var(--mu)}
+.pl button[aria-pressed="true"]{border-color:var(--at);background:var(--acsoft);box-shadow:0 0 0 3px var(--glow)}
+.pl .pop{position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:var(--ac);color:var(--acfg);font-family:var(--fm);font-size:9.5px;letter-spacing:.08em;border-radius:99px;padding:2px 8px;text-transform:uppercase;white-space:nowrap}
+.ph{color:var(--mu);font-size:14px;min-height:22px;margin-bottom:14px;transition:opacity .25s}
+.ck{display:flex;gap:12px;align-items:flex-start;font-size:14px;color:var(--mu);margin:4px 0 18px;cursor:pointer}
+.ck input{width:22px;height:22px;accent-color:var(--ac);flex:none;margin:0;border-radius:8px}
+.ck a{color:var(--tx);text-decoration:underline}
+.fine{font-size:13.5px;color:var(--mu);text-align:center;margin-top:16px}.fine a,.link{color:var(--at);text-decoration:none;font-weight:600;background:none;border:0;font:inherit;font-weight:600;cursor:pointer;padding:0}
+.tl{background:none;border:0;color:var(--mu);font:inherit;font-size:14px;cursor:pointer;margin-top:12px;width:100%;padding:10px;border-radius:14px}.tl:hover{color:var(--tx)}
+.otp{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin:6px 0 16px}
+.otp input{min-height:56px;padding:0;text-align:center;font-family:var(--fm);font-size:22px;border-radius:14px;background:var(--bg);border:1px solid var(--bd);color:var(--tx);width:100%}
+.otp input:focus{outline:none;border-color:var(--at);box-shadow:0 0 0 4px var(--glow)}
+@container (max-width:460px){.otp{gap:4px}.otp input{min-height:50px;font-size:19px;border-radius:12px}}
+.sum{background:var(--bg);border:1px solid var(--bd);border-radius:20px;padding:16px;margin-bottom:16px;display:flex;flex-direction:column;gap:9px}
+.sum .r{display:flex;justify-content:space-between;gap:10px;font-size:15px;color:var(--mu)}.sum .r b{color:var(--tx);font-family:var(--fm);font-weight:500}
+.sum .t{border-top:1px dashed var(--bd);padding-top:10px}.sum .t b{font-size:18px}
+.lock{display:flex;gap:8px;align-items:center;justify-content:center;color:var(--mu);font-size:13px;margin-top:14px}
+.fm{background:var(--bg);border:1px solid var(--bd);border-radius:16px;min-height:54px;display:flex;align-items:center;padding:0 16px;color:var(--mu);justify-content:space-between;margin-bottom:10px;font-family:var(--fm);font-size:15px}
+.fmg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fcard{border:1px solid var(--bd);background:var(--bg);border-radius:20px;padding:16px;margin-bottom:16px;position:relative;overflow:hidden}
+.sk{height:14px;border-radius:8px;background:linear-gradient(90deg,var(--s2),var(--bd),var(--s2));background-size:200% 100%;animation:skm 1.2s linear infinite;margin-bottom:10px}
+@keyframes skm{to{background-position:-200% 0}}
+.badge{font-family:var(--fm);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;border:1px solid currentColor;border-radius:99px;padding:2px 9px;white-space:nowrap}
+.kv{display:flex;justify-content:space-between;gap:10px;font-size:14.5px;padding:7px 0;border-bottom:1px dashed var(--bd)}.kv:last-child{border:0}.kv span{color:var(--mu)}.kv b{font-weight:500;font-family:var(--fm);font-size:14px}
+.opt{display:flex;gap:14px;align-items:center;border:1px solid var(--bd);background:var(--bg);border-radius:20px;padding:14px 16px;margin-bottom:10px;cursor:pointer;width:100%;color:var(--tx);font:inherit;text-align:left;transition:all .25s}
+.opt:hover{border-color:var(--at);transform:translateY(-1px)}.opt[aria-pressed="true"]{border-color:var(--at);background:var(--acsoft)}
+.opt .oi{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-weight:700;color:#fff;flex:none}.opt small{display:block;color:var(--mu);font-size:13px}
+.hero{text-align:center}.lgbig{width:104px;height:104px;margin:6px auto 14px;display:block;overflow:visible}
+.lgbig .lp{stroke:var(--at);stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:100;stroke-dashoffset:100;animation:lgp 2.2s .2s cubic-bezier(.6,0,.2,1) forwards;fill:none}
+.lgbig .lr{fill:var(--bg);stroke:var(--at);stroke-width:2.4;opacity:0;animation:lgr .2s .5s forwards}
+.lgbig .le{fill:var(--at);transform-box:fill-box;transform-origin:center;transform:scale(0);animation:lge .5s 2.2s forwards}
+@keyframes lgp{to{stroke-dashoffset:0}}@keyframes lgr{to{opacity:1}}@keyframes lge{60%{transform:scale(1.4)}to{transform:scale(1)}}
+.staffrow{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:18px 0 22px}
+.sp{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--bd);background:var(--bg);border-radius:99px;padding:8px 14px 8px 8px;font-size:14px;opacity:0;transform:scale(.8) translateY(8px);animation:pop .5s cubic-bezier(.2,1.4,.4,1) forwards}
+.sp i{width:26px;height:26px;border-radius:9px;display:inline-block}
+@keyframes pop{to{opacity:1;transform:none}}
+.note{background:var(--acsoft);border-radius:16px;padding:12px 14px;font-size:14px;color:var(--tx);margin-bottom:14px}
+.back{background:none;border:0;color:var(--mu);font:inherit;font-size:14px;cursor:pointer;padding:6px 8px;margin:-8px 0 8px -8px;border-radius:12px}.back:hover{color:var(--tx)}
+.pass{height:5px}
+@container (max-width:780px){.shell{grid-template-columns:minmax(0,1fr)}.side{display:none}.mbar{display:flex}.main{padding:22px 16px 28px;justify-content:flex-start}.card{padding:22px 18px;border-radius:26px}}
+@container (max-width:460px){.otp{gap:4px}.otp input{min-height:50px;font-size:19px;border-radius:12px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-delay:0s!important;transition-duration:.01ms!important}.chk li,.sp{opacity:1;transform:none}.lgbig .lp{stroke-dashoffset:0}.lgbig .lr{opacity:1}.lgbig .le{transform:none}}
+</style>
+
+<div class="pick">
+  <div class="grp" id="pk" role="group" aria-label="Flow screens"></div>
+  <div class="dev" role="group" aria-label="Device"><button id="dD" aria-pressed="true">Desktop</button><button id="dM" aria-pressed="false">Phone</button></div>
+</div>
+<div class="frame" id="frame" data-d="d"><div class="stage"><div class="aur" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="mbar" id="mbar"><a class="lgo" href="#" onclick="return false"><svg width="28" height="28" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M9 38V14.5c0-1.3 1.6-2 2.5-1L24 26.5l12.5-13c.9-1 2.5-.3 2.5 1V30" stroke="var(--at)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="39" r="3.2" fill="var(--bg)" stroke="var(--at)" stroke-width="2.4"/><circle cx="39" cy="37" r="4" fill="var(--at)"/></svg>Masar OS</a><span class="fine" style="margin:0">Sign in</span></div>
+  <div class="shell">
+    <aside class="side" aria-hidden="false"><div>
+      <a class="lgo" href="#" onclick="return false"><svg width="32" height="32" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M9 38V14.5c0-1.3 1.6-2 2.5-1L24 26.5l12.5-13c.9-1 2.5-.3 2.5 1V30" stroke="var(--at)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="39" r="3.2" fill="var(--bg)" stroke="var(--at)" stroke-width="2.4"/><circle cx="39" cy="37" r="4" fill="var(--at)"/></svg>Masar OS</a>
+      <h2 id="sh2">Your staff is ready when you are.</h2><p class="sub" id="ssub">Dispatch, maintenance, safety, accounting and recruiting in one system.</p>
+      <ul class="chk"><li style="animation-delay:.2s"><i>✓</i>14 days free</li><li style="animation-delay:.4s"><i>✓</i>Set up in an afternoon</li><li style="animation-delay:.6s"><i>✓</i>Cancel anytime</li></ul></div>
+      <div class="feed" id="feed" aria-hidden="true"></div>
+    </aside>
+    <main class="main"><div class="card" id="card"></div></main>
+  </div>
+</div></div>
+
+<script>
+(function(){
+var $=function(s,r){return (r||document).querySelector(s)},$$=function(s,r){return [].slice.call((r||document).querySelectorAll(s))};
+var st={plan:'core',name:'',email:'',id:'',kind:'email',mode:'signup',screen:'signup',dev:'d'};
+var PL={solo:['Solo',39,'Owner-operators. Your back office in your pocket.'],core:['Core',97,'Small fleets. A staff member for every department.'],growth:['Growth',249,'Growing fleets. Voice, teams and recruiting included.']};
+var SCR=[['signup','Sign up'],['verify','Verify'],['about','About you'],['card','Card'],['dot','Setup 1'],['costs','Setup 2'],['mail','Setup 3'],['done','Done'],['signin','Sign in']];
+var PROG={signup:1,verify:2,about:3,card:4,dot:5,costs:5,mail:5,done:5};
+var IC={d:'<path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="17" r="1.6"/><circle cx="17" cy="17" r="1.6"/>',m:'<path d="M14.5 6a4 4 0 00-5 5L4 16.5 7.5 20 13 14.5a4 4 0 005-5l-2.5 2.5-2.5-.5-.5-2.5z"/>',s:'<path d="M12 3l8 3v6c0 4.500-3.200 7.500-8 9-4.800-1.500-8-4.500-8-9V6z"/><path d="M9 12l2 2 4-4"/>',a:'<path d="M4 18V9m6 9V5m6 13v-7m4 7H3"/>',r:'<circle cx="9" cy="8" r="3.500"/><path d="M3 20c0-3.500 2.700-6 6-6s6 2.500 6 6M17 5v6m3-3h-6"/>'};
+var FE=[['d','var(--blue)','Dispatch','Booked Dallas to Atlanta, you keep $1,470'],['m','var(--teal)','Maintenance','Called 3 shops, quote in $1,180'],['s','var(--violet)','Safety','Medical card renewal reminder sent'],['a','var(--ac)','Accounting','Invoice #1042 sent with POD'],['r','var(--warn)','Recruiting','Screened 14 applicants, 3 qualify']];
+
+function kindOf(v){v=(v||'').trim();if(v.indexOf('@')>-1)return 'email';if(/^[+\d(][\d\s().-]*$/.test(v)&&v.replace(/\D/g,'').length>=1)return 'phone';return v?'email':'email'}
+function fmtPhone(v){var d=v.replace(/\D/g,'');if(d.length&&d[0]==='1')d=d.slice(1);d=d.slice(0,10);var o='';if(d.length>0)o='('+d.slice(0,3);if(d.length>=3)o+=') ';if(d.length>3)o+=d.slice(3,6);if(d.length>6)o+='-'+d.slice(6);return o}
+function idOk(v){var k=kindOf(v);return k==='email'?/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v.trim()):v.replace(/\D/g,'').replace(/^1/,'').length===10}
+function mask(v,k){if(k==='email'){var p=v.split('@');return p[0].slice(0,2)+'•••@'+(p[1]||'')}var d=v.replace(/\D/g,'').replace(/^1/,'');return '(•••) •••-'+d.slice(-4)}
+function otpHtml(n){var h='';for(var i=1;i<=n;i++)h+='<input inputmode="numeric" maxlength="1" aria-label="Digit '+i+'"'+(i===1?' autocomplete="one-time-code"':'')+'>';return '<div class="otp" id="otp" style="grid-template-columns:repeat('+n+',1fr)">'+h+'</div>'}
+function idField(id,label,val,ph){return '<div class="fi" id="f_'+id+'"><label for="'+id+'">'+label+'</label><input id="'+id+'" autocomplete="username" inputmode="email" placeholder="'+ph+'" value="'+esc(val)+'"><span class="em">Enter a valid email or a 10-digit mobile number.</span></div>'}
+function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+/* picker */
+$('#pk').innerHTML=SCR.map(function(s){return '<button data-s="'+s[0]+'" aria-pressed="'+(s[0]===st.screen)+'">'+s[1]+'</button>'}).join('');
+$$('#pk button').forEach(function(b){b.onclick=function(){go(b.dataset.s,true)}});
+function dev(d){st.dev=d;$('#frame').setAttribute('data-d',d);$('#dD').setAttribute('aria-pressed',d==='d');$('#dM').setAttribute('aria-pressed',d==='m')}
+$('#dD').onclick=function(){dev('d')};$('#dM').onclick=function(){dev('m')};
+/* feed */
+var fi=0;function feed(){var f=$('#feed');if(!f)return;var d=FE[fi%5];fi++;var el=document.createElement('div');el.className='fc';el.innerHTML='<span class="ic" style="background:'+d[1]+'"><svg viewBox="0 0 24 24">'+IC[d[0]]+'</svg></span><span><small>'+d[2]+'</small>'+d[3]+'</span>';f.appendChild(el);
+ $$('.fc',f).forEach(function(c){if(c.classList.contains('b'))c.remove();else if(c.classList.contains('a')){c.classList.remove('a');c.classList.add('b')}});requestAnimationFrame(function(){el.classList.add('a')});}
+feed();setInterval(feed,3200);
+/* progress */
+function prog(){var n=PROG[st.screen]||0;return '<div class="prog" aria-label="Step '+n+' of 5">'+[1,2,3,4,5].map(function(i){return '<i class="'+(i<=n?'on':'')+'"></i>'}).join('')+'</div>'}
+var LOGO='<svg class="lgbig" viewBox="0 0 48 48" aria-label="Masar"><path class="lp" pathLength="100" d="M9 38V14.5c0-1.3 1.6-2 2.5-1L24 26.5l12.5-13c.9-1 2.5-.3 2.5 1V30"/><circle class="lr" cx="9" cy="39" r="3.2"/><circle class="le" cx="39" cy="37" r="4"/></svg>';
+function social(){return '<button class="btn g" type="button" data-sc="g"><svg width="20" height="20" viewBox="0 0 24 24"><path fill="#EA4335" d="M12 10.200v3.900h5.500c-.2 1.400-1.600 4.100-5.500 4.100-3.300 0-6-2.700-6-6.100s2.700-6.100 6-6.100c1.900 0 3.100.8 3.800 1.500l2.600-2.500C16.700 3.400 14.600 2.400 12 2.400 6.700 2.400 2.400 6.700 2.400 12S6.700 21.600 12 21.600c5.500 0 9.200-3.900 9.200-9.400 0-.6-.1-1.100-.2-1.600z"/></svg><span>Continue with Google</span></button><div style="height:10px"></div><button class="btn g" type="button" data-sc="a"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M16.400 12.600c0-2.300 1.900-3.400 2-3.500-1.100-1.600-2.800-1.800-3.400-1.800-1.400-.1-2.800.9-3.500.9-.7 0-1.800-.8-3-.8-1.500 0-3 .9-3.800 2.300-1.600 2.800-.4 7 1.200 9.300.8 1.100 1.700 2.400 2.900 2.300 1.200 0 1.600-.7 3-.7s1.800.7 3 .7c1.300 0 2.100-1.100 2.800-2.200.9-1.300 1.300-2.500 1.300-2.600-.1 0-2.500-1-2.500-3.900zM14.200 5.800c.6-.8 1.100-1.900.9-3-.9 0-2.100.6-2.700 1.400-.6.700-1.100 1.800-1 2.900 1 .1 2.100-.5 2.800-1.300z"/></svg><span>Continue with Apple</span></button>'}
+function tpl(s){
+if(s==='signup'){var p=PL[st.plan];return prog()+'<div class="stp">Step 1 of 5 · Account</div><h1>Start your 14‑day free trial</h1><p class="sub">Card required. Cancel anytime.</p>'+
+  '<div class="pl" role="group" aria-label="Plan">'+Object.keys(PL).map(function(k){return '<button type="button" data-p="'+k+'" aria-pressed="'+(k===st.plan)+'">'+(k==='core'?'<span class="pop">Popular</span>':'')+'<b>'+PL[k][0]+'</b><span>$'+PL[k][1]+'/mo</span></button>'}).join('')+'</div><p class="ph" id="phl">'+p[2]+' <a class="link" href="#" onclick="return false" style="font-weight:500;color:var(--mu);text-decoration:underline">Larger fleet? Talk to us</a></p>'+
+  social()+'<div class="sep">or</div>'+
+  '<form id="fm" novalidate>'+idField('idf','Email or mobile number',st.id,'you@company.com or (555) 123-4567')+
+  '<button class="btn p" id="go" type="submit"><span>Continue</span></button><p class="fine" id="cons" style="margin-top:12px;font-size:12.5px;line-height:1.5">By continuing you agree to the <a href="#" onclick="return false" style="font-weight:500;color:var(--tx);text-decoration:underline">Terms</a> and <a href="#" onclick="return false" style="font-weight:500;color:var(--tx);text-decoration:underline">Privacy Policy</a>.<span id="smsn"></span></p></form><p class="fine">Already have an account? <button class="link" data-go="signin">Sign in</button></p>'}
+ 
+if(s==='verify'){var n=st.kind==='email'?8:6,signin=st.mode==='signin';return (signin?'':prog())+'<button class="back" data-go="'+(signin?'signin':'signup')+'">← Back</button>'+(signin?'':'<div class="stp">Step 2 of 5 · Verify</div>')+'<h1>'+(st.kind==='email'?'Check your email':'Check your texts')+'</h1><p class="sub">We '+(st.kind==='email'?'sent an 8-digit code to':'texted a 6-digit code to')+' <b style="color:var(--tx)">'+esc(mask(st.id||'omar@hartwellhaul.com',st.kind))+'</b>. It expires in 10 minutes.</p>'+otpHtml(n)+'<p class="fine" style="margin:-4px 0 16px;text-align:left" id="otph">Demo: type any '+n+' digits.</p><button class="btn p" id="vg"><span>'+(signin?'Sign in':'Verify and continue')+'</span></button><p class="fine"><span id="rs">Send a new code in <b id="rt">30</b>s</span> · <button class="link" data-go="'+(signin?'signin':'signup')+'">Change '+(st.kind==='email'?'email':'number')+'</button></p>'+(signin&&st.kind==='email'?'<button class="tl" id="usepw">Use a password instead</button>':'')}
+ if(s==='about'){var other=st.kind==='email';return prog()+'<div class="stp">Step 3 of 5 · About you</div><h1>Tell us who you are</h1><p class="sub">Just the basics. You can change them later.</p><div class="fi" id="f_n"><label for="n">Full name</label><input id="n" autocomplete="name" placeholder="Omar Hartwell" value="'+esc(st.name)+'"><span class="em">Enter your name.</span></div><div class="fi" id="f_o"><label for="o">'+(other?'Mobile number':'Email')+' <span style="color:var(--mu)">'+(other?'(optional, for texts)':'(for invoices and receipts)')+'</span></label><input id="o" '+(other?'inputmode="tel" autocomplete="tel" placeholder="(555) 123-4567"':'type="email" autocomplete="email" placeholder="you@company.com"')+'><span class="em">'+(other?'Enter a 10-digit number or leave it empty.':'Enter a valid email address.')+'</span></div><div class="fi" id="f_p"><label for="pw">Password <span style="color:var(--mu)">(optional)</span></label><input id="pw" type="password" autocomplete="new-password" placeholder="Skip to sign in with a code instead"><button class="eye" type="button" id="eye" aria-label="Show password" style="top:36px">Show</button><div class="str" id="str"><i></i><i></i><i></i><i></i></div><span class="em">Use at least 10 characters or leave it empty.</span></div><button class="btn p" id="ag"><span>Continue</span></button>'}
+ 
+ if(s==='card'){var p2=PL[st.plan];return prog()+'<button class="back" data-go="about">← Back</button><div class="stp">Step 4 of 5 · Card</div><h1>Add a card to start</h1><p class="sub">Your trial starts now. You will not pay anything today.</p><div class="sum"><div class="r"><span>Plan</span><b>'+p2[0]+'</b></div><div class="r"><span>Free trial</span><b>14 days</b></div><div class="r t"><span>Due today</span><b>$0</b></div><div class="r" style="font-size:13px"><span>After the trial</span><b>$'+p2[1]+'/month</b></div></div><div class="fm"><span>Card number</span><span>•••• •••• •••• ••••</span></div><div class="fmg"><div class="fm"><span>MM / YY</span></div><div class="fm"><span>CVC</span></div></div><button class="btn p" id="cg"><span>Start my trial</span></button><div class="lock"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>Card details are entered on Stripe\'s secure form. Cancel anytime.</div>'}
+ if(s==='dot'){return prog()+'<div class="stp">Step 5 of 5 · Hire Masar · 1 of 3</div><h1>Who are you?</h1><p class="sub">Type your DOT or MC number. We will fill in the rest.</p><div class="fi"><label for="dt">DOT or MC number</label><input id="dt" inputmode="numeric" value="3318842"></div><div id="lk"></div><button class="btn p" id="dg"><span>Look me up</span></button>'}
+ if(s==='costs'){return prog()+'<button class="back" data-go="dot">← Back</button><div class="stp">Step 5 of 5 · Hire Masar · 2 of 3</div><h1>Your costs and goal</h1><p class="sub">Rough numbers are fine. Masar learns the real ones from your receipts.</p><div class="row2"><div class="fi"><label for="c1">Truck payment / month</label><input id="c1" value="$1,420"></div><div class="fi"><label for="c2">Insurance / month</label><input id="c2" value="$1,150"></div></div><div class="fi"><label for="c3">Monthly net profit goal</label><input id="c3" value="$3,000"></div><div class="note">Starting costs are marked <b>Estimated</b> until your own receipts replace them.</div><button class="btn p" id="kg"><span>Looks right</span></button>'}
+ if(s==='mail'){return prog()+'<button class="back" data-go="costs">← Back</button><div class="stp">Step 5 of 5 · Hire Masar · 3 of 3</div><h1>Connect your email</h1><p class="sub">So Masar can read broker offers and draft replies. You approve before anything is sent.</p><button class="opt" data-mail><span class="oi" style="background:#4C8BF5">G</span><span><b>Continue with Google</b><small>One tap. You sign in on Google\'s page.</small></span></button><button class="opt" data-mail><span class="oi" style="background:#2E7BD6">M</span><span><b>Continue with Microsoft</b><small>Outlook and Microsoft 365.</small></span></button><button class="opt" data-mail><span class="oi" style="background:var(--s2)">@</span><span><b>Other email</b><small>Yahoo, Hostinger, GoDaddy and more. Guided setup.</small></span></button><button class="tl" data-go="done">Skip for now</button>'}
+ if(s==='done'){return '<div class="hero">'+LOGO+'<div class="stp" style="margin-bottom:6px">You are in</div><h1>Your staff is ready.</h1><p class="sub" style="margin-bottom:0">Your 14-day trial of '+PL[st.plan][0]+' has started.</p><div class="staffrow">'+FE.map(function(f,i){return '<span class="sp" style="animation-delay:'+(1.0+i*.18)+'s"><i style="background:'+f[1]+'"></i>'+f[2]+'</span>'}).join('')+'</div><button class="btn p" id="og"><span>Open Masar</span></button><button class="tl" data-go="signup">Get the phone app</button></div>'}
+if(s==='signin'){return '<div class="stp">Welcome back</div><h1>Sign in to Masar OS</h1><p class="sub">Pick up where your staff left off.</p>'+social()+'<div class="sep">or</div><form id="sf" novalidate>'+idField('sid','Email or mobile number',st.id,'you@company.com or (555) 123-4567')+'<div class="fi" id="s_p" style="display:none"><label for="sp">Password</label><input id="sp" type="password" autocomplete="current-password" placeholder="Your password"><button class="eye" type="button" id="eye2" aria-label="Show password">Show</button><span class="em">Enter your password.</span></div><div id="rst"></div><button class="btn p" id="sg" type="submit"><span>Continue</span></button><div style="display:flex;justify-content:space-between;margin-top:12px"><button class="link" type="button" id="pwt" style="font-size:14px;color:var(--mu);font-weight:500">Use a password</button><button class="link" type="button" id="fg" style="font-size:14px;color:var(--mu);font-weight:500">Forgot password?</button></div></form><p class="fine">New to Masar OS? <button class="link" data-go="signup">Start your free trial</button></p>'}
+}
+var side={about:['A little about you.','So your staff knows who to report to.'],signup:['Your staff is ready when you are.','Dispatch, maintenance, safety, accounting and recruiting in one system.'],verify:['Almost there.','One quick check that it is really you.'],card:['Start free. Stay in control.','Your trial starts now and you can cancel anytime.'],dot:['Let us meet your company.','We pull your details from the public FMCSA record.'],costs:['Know what a load really pays you.','Your costs power every offer you see.'],mail:['Offers, found for you.','Masar reads broker emails and drafts the replies.'],done:['Welcome aboard.','Your back office just got a staff.'],signin:['Welcome back.','Your staff has been working while you were away.']};
+function ld(btn,fn,ms){btn.classList.add('ld');setTimeout(function(){btn.classList.remove('ld');fn()},ms||700)}
+function go(s,jump){var c=$('#card'),cur=$('.view',c);function show(){st.screen=s;$$('#pk button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.s===s)});
+  $('#sh2').textContent=side[s][0];$('#ssub').textContent=side[s][1];c.innerHTML='<div class="view">'+tpl(s)+'</div>';bind(s);c.scrollIntoView&&0}
+ if(cur&&!jump){cur.classList.add('out');setTimeout(show,200)}else show()}
+function bind(s){
+ $$('[data-go]').forEach(function(b){b.onclick=function(){go(b.dataset.go)}});
+ $$('[data-sc]').forEach(function(b){b.onclick=function(){var n=$('span',b),t=n.textContent;n.textContent='Opening…';setTimeout(function(){n.textContent=t;go(s==='signin'?'done':'verify')},650)}});
+if(s==='signup'){
+  $$('.pl button').forEach(function(b){b.onclick=function(){st.plan=b.dataset.p;$$('.pl button').forEach(function(x){x.setAttribute('aria-pressed',x===b)});var ph=$('#phl');ph.style.opacity=0;setTimeout(function(){ph.firstChild.textContent=PL[st.plan][2]+' ';ph.style.opacity=1},160)}});
+  var idf=$('#idf');idf.addEventListener('input',function(){var k=kindOf(idf.value);if(k==='phone'){var f=fmtPhone(idf.value);if(f!==idf.value)idf.value=f;idf.setAttribute('inputmode','tel');$('#smsn').textContent=' We will text you a one-time code. Message and data rates may apply.'}else{idf.setAttribute('inputmode','email');$('#smsn').textContent=''}$('#f_idf').classList.remove('err')});
+  $('#fm').onsubmit=function(e){e.preventDefault();var v=idf.value.trim(),ok=idOk(v);$('#f_idf').classList.toggle('err',!ok);if(!ok)return;st.id=v;st.kind=kindOf(v);if(st.kind==='email')st.email=v;st.mode='signup';ld($('#go'),function(){go('verify')},750)}}
+ 
+if(s==='verify'){var ins=$$('#otp input'),n=ins.length;ins.forEach(function(i,k){i.addEventListener('input',function(){i.value=i.value.replace(/\D/g,'').slice(0,1);i.style.borderColor='';if(i.value&&ins[k+1])ins[k+1].focus()});i.addEventListener('keydown',function(e){if(e.key==='Backspace'&&!i.value&&ins[k-1])ins[k-1].focus()});i.addEventListener('paste',function(e){var t=(e.clipboardData.getData('text')||'').replace(/\D/g,'').slice(0,n);if(!t)return;e.preventDefault();ins.forEach(function(x,j){x.value=t[j]||''});(ins[Math.min(t.length,n-1)]).focus()})});ins[0].focus();
+  $('#vg').onclick=function(){var v=ins.map(function(i){return i.value}).join('');if(v.length<n){ins.forEach(function(i){if(!i.value)i.style.borderColor='var(--rd)'});$('#otph').textContent='Enter all '+n+' digits.';$('#otph').style.color='var(--rd)';return}ld($('#vg'),function(){go(st.mode==='signin'?'done':'about')},750)};
+  var up=$('#usepw');if(up)up.onclick=function(){go('signin');setTimeout(function(){var b=$('#pwt');if(b)b.click()},300)};
+  var t=30,iv=setInterval(function(){var r=$('#rt');if(!r){clearInterval(iv);return}t--;if(t<=0){clearInterval(iv);$('#rs').innerHTML='<button class="link" id="rsb">Send a new code</button>';$('#rsb').onclick=function(){$('#rs').textContent='New code sent.'}}else r.textContent=t},1000)}
+ if(s==='about'){var pw=$('#pw'),oo=$('#o');
+  if(st.kind==='email'){oo.addEventListener('input',function(){var f=fmtPhone(oo.value);if(f!==oo.value)oo.value=f})}
+  pw.addEventListener('input',function(){var v=pw.value,sc=0;if(v.length>=10)sc++;if(/[A-Z]/.test(v)&&/[a-z]/.test(v))sc++;if(/\d/.test(v))sc++;if(/[^A-Za-z0-9]/.test(v)||v.length>=14)sc++;$$('#str i').forEach(function(i,k){i.style.background=k<sc?(sc<2?'var(--rd)':sc<3?'var(--warn)':'var(--at)'):'var(--s2)'})});
+  $('#eye').onclick=function(){var h=pw.type==='password';pw.type=h?'text':'password';this.textContent=h?'Hide':'Show'};
+  $('#ag').onclick=function(){var ok=true,nm=$('#n').value.trim(),ov=oo.value.trim();function bad(id,b){$(id).classList.toggle('err',b);if(b)ok=false}
+   bad('#f_n',!nm);
+   if(st.kind==='email'){bad('#f_o',ov&&ov.replace(/\D/g,'').length!==10)}else{bad('#f_o',!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(ov))}
+   bad('#f_p',pw.value&&pw.value.length<10);if(!ok)return;st.name=nm;if(st.kind==='phone')st.email=ov;ld($('#ag'),function(){go('card')},700)}}
+ 
+ if(s==='card'){$('#cg').onclick=function(){ld($('#cg'),function(){go('dot')},900)}}
+ if(s==='dot'){$('#dg').onclick=function(){var b=$('#dg');if(b.dataset.ok){go('costs');return}var l=$('#lk');l.innerHTML='<div class="fcard"><div class="sk" style="width:55%"></div><div class="sk" style="width:80%"></div><div class="sk" style="width:40%;margin:0"></div></div>';b.classList.add('ld');
+   setTimeout(function(){b.classList.remove('ld');l.innerHTML='<div class="fcard view"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px"><b style="font-size:18px">Hartwell Haul LLC</b><span class="badge" style="color:var(--at)">Active</span></div><div class="kv"><span>Location</span><b>Fort Worth, TX</b></div><div class="kv"><span>Authority</span><b>Common · Active</b></div><div class="kv"><span>MC number</span><b>MC-918274</b></div><div class="kv"><span>Insurance on file</span><b>Yes</b></div></div>';b.querySelector('span').textContent='Yes, that is me';b.dataset.ok=1},1100)}}
+ if(s==='costs'){$('#kg').onclick=function(){ld($('#kg'),function(){go('mail')},600)}}
+ if(s==='mail'){$$('[data-mail]').forEach(function(b){b.onclick=function(){$$('[data-mail]').forEach(function(x){x.setAttribute('aria-pressed',x===b)});setTimeout(function(){go('done')},550)}})}
+ if(s==='done'){$('#og').onclick=function(){ld($('#og'),function(){$('#og span').textContent='Opening the app…';$('#og span').style.opacity=1},500)}}
+if(s==='signin'){var sid=$('#sid'),pwOn=false;sid.addEventListener('input',function(){var k=kindOf(sid.value);if(k==='phone'){var f=fmtPhone(sid.value);if(f!==sid.value)sid.value=f}$('#f_sid').classList.remove('err')});
+  $('#eye2').onclick=function(){var p=$('#sp'),h=p.type==='password';p.type=h?'text':'password';this.textContent=h?'Hide':'Show'};
+  $('#pwt').onclick=function(){pwOn=!pwOn;$('#s_p').style.display=pwOn?'flex':'none';$('#sg span').textContent=pwOn?'Sign in':'Continue';this.textContent=pwOn?'Use a code instead':'Use a password';if(pwOn)$('#sp').focus()};
+  $('#fg').onclick=function(){$('#rst').innerHTML='<div class="note view">Enter your email or number above and we will send a reset link or code. <button class="link" type="button" id="snd">Send</button></div>';$('#snd').onclick=function(){$('#rst').innerHTML='<div class="note view">If that account exists, help is on its way.</div>'}};
+  $('#sf').onsubmit=function(e){e.preventDefault();var v=sid.value.trim(),ok=idOk(v);$('#f_sid').classList.toggle('err',!ok);if(pwOn){var bp=!$('#sp').value;$('#s_p').classList.toggle('err',bp);if(bp)ok=false}if(!ok)return;st.id=v;st.kind=kindOf(v);st.mode='signin';ld($('#sg'),function(){go(pwOn?'done':'verify')},700)}}
+}
+go('signup',true);
+})();
+</script>
