@@ -29,13 +29,16 @@ npm test           # 32 tests: quote and phase planning, fee/schedule math, the 
                                      ▼
         transcribe (ElevenLabs STT) ─► AI drafts scope + suggested price-book lines (Claude)
                                      ▼
-   /admin.html QUOTE BUILDER: price-book lines × measurements ─► cost ─► margin ─► price (live preview)
+   /admin.html QUOTE BUILDER: price-book lines × measurements ─► budget ceiling + SHORT-PHASE PLAN (live preview)
                                      ▼
-   customer link /quote.html?t=…: sees scope + price only ─► signs ─► contract (hash stored) ─► deposit (Stripe)
+   customer link /quote.html?t=…: reviews the plan + budget ─► approves ─► AUCTION opens (24-96h, anti-sniping)
                                      ▼
-   JOB (deposit paid) ─► auto-posted to the SUBCONTRACTOR BOARD ─► eligible sub claims it ─► customer details unlock
-   JOB: awaiting_deposit ─► rescission_period (3 business days) ─► ready ─► scheduled ─► in progress ─► complete
-        assigned in-house OR to a subcontractor (with sub bid, margin re-computed)
+   /sub.html: vetted subs BID at or below the budget ─► best eligible bid is OFFERED to the customer
+                                     ▼
+   customer accepts + signs WITH THE WINNING SUB ─► pays phase 1 (<= 10%) ─► cleared ─► sub CONFIRMED, details unlock
+                                     ▼
+   per phase: customer funds ─► sub starts ─► photos + lien waiver ─► customer approves ─► platform pays sub (fee withheld)
+   JOB: bidding ─► awaiting_deposit ─► rescission_period (3 business days) ─► ready ─► in progress ─► complete
 ```
 
 ## Pages
