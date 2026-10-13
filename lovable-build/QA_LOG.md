@@ -95,3 +95,12 @@ Findings:
 4. Publish needed for email replies and the 6 pm summary to run live; owner publishes.
 5. Earlier open items: quotes@ owner steps (Resend Receiving, webhook + RESEND_WEBHOOK_SECRET, Hostinger forwarder), Twilio token, OpenAI key, forwarded offers use no credits.
 No rule violations seen in the files read. No fix message sent.
+
+## 2026-10-13 14:30 UTC · mailbox connections (Google/Microsoft OAuth) started · NOT YET REVIEWED
+Last seen Lovable message id: aimsg_01m4ts2jcvfqda1gek8rbzhp99 (14:07, completed, no summary text; final action was a secure-form request for GOOGLE_MAIL_CLIENT_ID, GOOGLE_MAIL_CLIENT_SECRET, MS_MAIL_CLIENT_ID, MS_MAIL_CLIENT_SECRET).
+Context: the owner told Lovable in the editor at 14:01 "you can start working meanwhile I am working on the verification process", so Lovable built without sending the pre-build facts report I asked for.
+Seen from its tool log only (code not read): new mail connection code under src/lib/mail, supabase/tests/mail_connections_isolation.sql, a GoogleCapCard on /app/admin/funnel (used of 100, warn at 80, stop at 95, "Connect by forwarding instead"), owner-forward edit in src/lib/masar/inbound.server.ts; tsgo showed no errors.
+Findings:
+1. Needs the owner: four secrets via the editor's secure form (client IDs and secrets for Google and Microsoft). Not approvable by the PM; not asked in chat.
+2. Still owed by Lovable: the verified Google unverified-app facts (cap lifetime, refresh token expiry, restricted scope while unverified) and the console steps; confirm it posted them.
+3. Code review pending: token encryption, revoke on disconnect, BCC-only quotes@, class C send approval, no personal mail read, RLS and audit on new tables, isolation test result.
