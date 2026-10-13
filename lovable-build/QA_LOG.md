@@ -104,3 +104,16 @@ Findings:
 1. Needs the owner: four secrets via the editor's secure form (client IDs and secrets for Google and Microsoft). Not approvable by the PM; not asked in chat.
 2. Still owed by Lovable: the verified Google unverified-app facts (cap lifetime, refresh token expiry, restricted scope while unverified) and the console steps; confirm it posted them.
 3. Code review pending: token encryption, revoke on disconnect, BCC-only quotes@, class C send approval, no personal mail read, RLS and audit on new tables, isolation test result.
+
+## 2026-10-13 17:30 UTC · Gmail connected, live end-to-end test with owner · PASS WITH GAPS
+Last reviewed Lovable message ids: main:agent#00000000024808#don:SMGGP5EC (17:05), main:agent#00000000024763#don:7HXYFGGL (16:34), main:agent#00000000024704#don:5IB4BVMY (16:11), main:agent#00000000024458#don:IMWBIUGM (15:58). Owner is working directly with Lovable in the editor; reviewed from Lovable's reports and tool logs, code not read this cycle. Nothing published.
+Reported and seen in tool log: Google mailbox for ahlogisticscorp@gmail.com connected via OAuth (read, send, email), tokens stored encrypted, connect and read logged, first check opened none of 40 mails; counted as 1 of 100 unverified-app slots. Fake broker email read end to end: Masar looked at sender and subject of 40, opened 1, created an offer (Apex Freight, MC 123456, Atlanta to Dallas, $2,850, 780 mi). Owner pressed Send on a counter; it went from his Gmail with quotes@ BCC to broker@masar10x.io.
+Bugs found and fixed by Lovable: (a) offer parser failed on fenced or annotated AI JSON, now takes outermost {...} (offer-read.server.ts parseJsonObject); (b) own sent mail returning via the quotes@ BCC was treated as a broker reply and forwarded to the owner, now ignored in inbound.server.ts (not yet tested; needs a reply-from-another-account test and a publish).
+Findings:
+1. Product gap: Masar opens only mail from known brokers or load boards, mail with a Masar ref line, and replies to Masar-sent threads. A first email from an unknown broker is ignored unless forwarded to quotes@. Owner decision whether to widen (e.g. AI classification of subject and sender) with the privacy trade-off.
+2. Pickup date without a year is not saved from the offer text.
+3. Scale: connected mailboxes are swept hourly in a sequential loop; will time out near 1,000 users. Lovable proposes Gmail/Graph push notifications plus parallel workers later; not needed yet.
+4. Test method note: Lovable's test script used the service-role key in its sandbox and edited mail_connections.last_read_at on a live row to force a re-read. Not session minting, but keep tests off real company rows where possible.
+5. Real test used the A&H company mailbox (ahlogisticscorp@gmail.com); owner-directed.
+6. Still open: publish required for fixes to apply; Twilio token; Core/Growth test account; pending code review of token storage, revoke, RLS, audit, BCC-only and send gating.
+No rule violations seen in reports. No fix message sent; Lovable is already fixing with the owner.
