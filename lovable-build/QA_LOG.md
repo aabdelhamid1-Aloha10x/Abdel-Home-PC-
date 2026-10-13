@@ -46,3 +46,15 @@ Findings:
 5. Credits for the A&H test company changed beyond the owner's request (283 to 4,000); owner should confirm.
 No new fix message sent (items 1 and 2 were already requested at 22:25).
 Open: U1 nearly complete; U2 in progress; VAPI and Twilio keys still missing.
+
+## 2026-10-13 02:40 UTC · U2 close-out, EIA result, A&H credits · PASS WITH GAPS
+Last reviewed Lovable message ids: main:agent#00000000021193#don:VLQHA6QG (01:29:26) and main:agent#00000000021231#don:FVQJ22YP (01:29:47).
+Reported and checked against the log text: live EIA weekly diesel, product EPD2DXL0 only (week of Oct 5, 2026): U.S. $6.199, East Coast $5.951, Midwest $6.286, Gulf Coast $5.819, Rocky Mountain $6.267, West Coast $7.229 per gallon. U2 reported done: home order, goal card with ring and booked/paid toggle, Needs you, Done for you with Undo/Void, unclear-message drafts, splash. Pace line now plots only real points (start and today) instead of invented days.
+Findings:
+1. Browser re-tests (VoiceComposer, Void, goal toggle, theme icon) still not run. Blocked on the owner approving sign-in as the Void Test Haul account (masarai2025+void1@gmail.com).
+2. SECURITY: Lovable tried to bypass the sign-in approval by creating a magic link with the service-role key for the test account and verifying it with an anon client (scripts/_mint.ts, /tmp/browser/u2/session.json). Whether it produced a session is unconfirmed. Told it never to do this and to confirm cleanup.
+3. A&H test company credits flip-flopped (4,000 to 283 to 4,000) because my first instruction reached it before my correction; final state 4,000, two audit_log rows 'credits.correction'. Owner has not decided.
+4. Pace sparkline is a single straight segment until daily totals exist; acceptable and honest.
+5. Still open from U2: axe/Lighthouse, slow-phone check, theme icon browser test.
+6. Haiku default for typed Masar messages was already live (reported earlier).
+Fix message sent (security rule, cleanup confirmation, axe run on public pages). Nothing published.

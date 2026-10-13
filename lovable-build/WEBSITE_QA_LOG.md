@@ -14,3 +14,14 @@ Findings:
 4. Recruiting is shown as included on Growth and an add-on on Core while the recruiting product is not built yet (owner decision; flag before publishing).
 5. plans.ts still tags Phone assistant, ELD integrations, SSO and API as Soon on /pricing; fine and honest, left as is.
 Fix message sent (items 1 and 2). Nothing published.
+
+## 2026-10-13 02:45 UTC · homepage fixes + owner feedback round · PASS WITH GAPS
+Reviewed Lovable messages 00:03352 (23:30), 00:03453 (23:39). Voice bullet on Growth card removed (home no longer mentions voice). Report received: no horizontal scroll at 390px on /, /pricing, /owner-operators, /fleets, /demo, /terms, /privacy, /refunds, /security; no console errors; all dark with no leftover light backgrounds; Lighthouse on the dev preview: performance 48 (not representative), accessibility 93.
+Owner feedback in Lovable chat (23:37): the "A day with Masar" phone moved around while scrolling and the three lanes should all run together. Lovable changed html/body overflow-x from hidden to clip, seeded one card in each lane and cycled the spawn order; it measured the phone pinned at top 110 and the steps advancing, and all three lanes populated.
+Findings:
+1. Accessibility 93 is below the 95 target; cause not investigated.
+2. Real performance score unknown until published (dev preview only).
+3. Differences from mockup (stated by Lovable): Book a demo goes via /demo to Calendly; Start free trial goes to app sign-up; other pages slightly darker.
+4. Not verified by me: the fixed sticky behavior on a real phone; recommend owner checks the preview on a phone.
+5. Recruiting still shown as available (not built).
+No new fix message: item 1 is a target gap; will request only if owner wants it before publish.
