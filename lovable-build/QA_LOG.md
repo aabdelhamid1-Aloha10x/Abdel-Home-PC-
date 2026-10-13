@@ -82,3 +82,16 @@ Findings:
 5. Gmail forwarding-confirmation code only reaches the user if it arrives from their own sign-in address; unconfirmed.
 6. No end-to-end test with a real email yet. Twilio/Vapi skipped per owner.
 No rule violations seen. No fix message sent (items are owner actions or later features).
+
+## 2026-10-13 12:30 UTC · U4, U5, U6 built · PASS WITH GAPS (partly verified)
+Last reviewed Lovable message ids: aimsg_01m4th6emef4b8c1gfwhz562tg (11:56, commit ff2a085 "Connected U4-U6 and full sweep") and main:agent#00000000023511#don:CCVVIH2B (12:16, notes trim only).
+Context: Lovable asked the owner questions in the editor; the owner answered at 11:43 (email login: build fallback now; password path: hold; order U4, U5, U6; testing: yes, will approve). So U4 to U6 started on the owner's direct go. The sign-in approval worked this time and Lovable ran signed-in browser tests as the Void Test account on Solo (phone size, dark and light, no errors reported).
+Reported: U4 Hire Masar 4 steps, Connect email (Google/Microsoft greyed out with reason; sends "company via Masar"), 6 pm end-of-day summary, goal reached with one-time confetti and tax set-aside estimate (switchable), month recap, growth moment on Upgrade, quick-pay card at 15+ days late. U5 Counter/Other/Book it draft emails with preview and Send (nothing sent without Send), reply sorting, rate-con check with mismatches and tracking requirement, 8-step timeline, "Loaded, leaving now" status. U6 /app/masar (Today, staff cards, company thread) and /app/masar/$dept (live case, Take over, Add note, results, Autopilot/Ask first, Pause); owner-only Autopilot rules; 132 tests pass.
+Verified in code (read_file at HEAD): src/routes/s.upgrade.tsx shows plan that fits, carry-over text, one "Masar help used" bar with transform-only scaleX, no per-action prices; src/config/staff.ts maps four departments to tools. The main U4-U6 diff could not be pulled (get_diff returned "Message has no associated edit" for the 11:56 message), so send gating, RLS and audit on new tables, role visibility and the voice composer were not code-verified this cycle.
+Findings:
+1. Not code-verified: broker email send gating (class C), rate-con check, inbound matching changes, role-based visibility on /app/masar, any new tables' RLS and audit log. Schedule a targeted read of those files.
+2. Fleet screens untested in a browser: needs a Core or Growth test account (Void Test is Solo and gets redirected).
+3. Still blocked and flagged: Google/Microsoft mail apps (Google security review), password path on hold, stop coordinates for the "You're here. Check in?" prompt, ETA data for late warning, phone check calls (later phase).
+4. Publish needed for email replies and the 6 pm summary to run live; owner publishes.
+5. Earlier open items: quotes@ owner steps (Resend Receiving, webhook + RESEND_WEBHOOK_SECRET, Hostinger forwarder), Twilio token, OpenAI key, forwarded offers use no credits.
+No rule violations seen in the files read. No fix message sent.
