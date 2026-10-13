@@ -25,3 +25,15 @@ Findings:
 4. Not verified by me: the fixed sticky behavior on a real phone; recommend owner checks the preview on a phone.
 5. Recruiting still shown as available (not built).
 No new fix message: item 1 is a target gap; will request only if owner wants it before publish.
+
+## 2026-10-13 10:30 UTC · owner answers + accessibility + refund terms · PASS WITH GAPS
+Last reviewed Lovable message ids: main:agent#00000000003597#don:RGTMGZFM (03:24) and main:agent#00000000003715#don:QGWRKAE5 (03:56). Checked against Lovable's report; nothing published.
+Reported: Growth is Most popular (home, /pricing cards and table); every Book a demo goes to Calendly, /demo redirects, removed from sitemap; contact page shows support@masar10x.io, no billing@ left; Privacy has Google user data (Limited Use) section and names Anthropic; Terms has "Plans, Masar help and changes" and cancel/refund wording (no refund for current month, case-by-case, net of card fees) in Terms and Refund policy; Recruiting shown available. Lighthouse (unpublished preview): accessibility 100 desktop and phone on all main pages, best practices 100, SEO 100; performance 39 to 61 phone, 54 to 82 desktop (below 95, cannot be judged before publish).
+Findings:
+1. Performance target 95 not met in preview; re-measure after owner publishes, then fix.
+2. Terms still has an older "Credits" section overlapping the new "Plans, Masar help and changes" section; risk of contradicting the credits rule. Lovable asked whether to remove or reword. Owner decision needed.
+3. Contrast on the sign-in pages not checked (they live in the app project).
+4. Book a demo to Calendly not testable from preview.
+5. Spanish refund wording applies only if the site has Spanish pages; none reported.
+6. Free trial and sign-in flow not started (waiting for the mockup prompt).
+No rule violations seen on the marketing site (no credits on marketing pages reported). No fix message sent.
