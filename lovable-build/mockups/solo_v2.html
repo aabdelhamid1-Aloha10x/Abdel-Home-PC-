@@ -1,0 +1,238 @@
+<title>Masar Solo Screens v2</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Sora:wght@600;700&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: four phone frames in a wrapping row (Home, Offer, Earnings, small sheets), one short notes block each. Dark-first, lime accent. */
+:root{
+  --bg:#0A0E13;--s1:#121821;--s2:#18202B;--bd:#1E2733;--tx:#E8EDF2;--mu:#8A97A5;
+  --ac:#C8F25C;--acfg:#0A0E13;--acsoft:rgba(200,242,92,.14);
+  --coral:#FF6B6B;--amber:#F5B84B;--blue:#5AA9FF;--green:#4ADE80;--map:#0F1620;--road:#243142;
+  --shadow:0 18px 50px rgba(0,0,0,.45);color-scheme:dark;
+  --fd:'Sora',system-ui,sans-serif;--fb:'DM Sans',system-ui,sans-serif;--fm:'DM Mono',ui-monospace,monospace;
+}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){
+  --bg:#EEF1E6;--s1:#FFFFFF;--s2:#F2F5EA;--bd:#DEE3D3;--tx:#10151B;--mu:#56616D;
+  --ac:#3A7300;--acfg:#FFFFFF;--acsoft:rgba(58,115,0,.12);
+  --coral:#D9423F;--amber:#B87800;--blue:#1F6FCC;--green:#1E8A44;--map:#E4EAD8;--road:#C9D2BA;
+  --shadow:0 18px 40px rgba(30,40,20,.16);color-scheme:light}}
+:root[data-theme="light"]{
+  --bg:#EEF1E6;--s1:#FFFFFF;--s2:#F2F5EA;--bd:#DEE3D3;--tx:#10151B;--mu:#56616D;
+  --ac:#3A7300;--acfg:#FFFFFF;--acsoft:rgba(58,115,0,.12);
+  --coral:#D9423F;--amber:#B87800;--blue:#1F6FCC;--green:#1E8A44;--map:#E4EAD8;--road:#C9D2BA;
+  --shadow:0 18px 40px rgba(30,40,20,.16);color-scheme:light}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--tx);font-family:var(--fb);font-size:14px;line-height:1.45;padding-inline:16px;padding-block:24px 56px;margin:0}
+h1,h2,h3,p{margin:0}
+h1,h2,h3{font-family:var(--fd);text-wrap:balance}
+.intro{max-width:760px;margin:0 auto 24px}
+.intro h1{font-size:26px;margin-bottom:6px}
+.intro p{color:var(--mu)}
+.row{display:flex;flex-wrap:wrap;gap:28px;justify-content:center;align-items:flex-start;max-width:1500px;margin:0 auto}
+.col{width:min(390px,100%);display:flex;flex-direction:column;gap:12px}
+.note{color:var(--mu);font-size:13px}
+.note b{color:var(--tx)}
+.tag{font-family:var(--fm);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mu)}
+/* phone */
+.ph{width:100%;aspect-ratio:390/800;background:var(--bg);border:1px solid var(--bd);border-radius:34px;box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;position:relative}
+.bar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px}
+.logo{display:flex;align-items:center;gap:8px;font-family:var(--fd);font-weight:700;font-size:15px}
+.right{display:flex;align-items:center;gap:12px}
+.ring36{width:34px;height:34px;position:relative}
+.ring36 svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring36 span{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--fm);font-size:9px;color:var(--mu)}
+.bell{position:relative;width:34px;height:34px;display:grid;place-items:center;color:var(--mu)}
+.bell i{position:absolute;top:5px;right:6px;width:9px;height:9px;border-radius:50%;background:var(--coral);border:2px solid var(--bg)}
+.body{flex:1;overflow:hidden;padding:4px 16px 0;display:flex;flex-direction:column;gap:12px}
+.hello{display:flex;align-items:center;justify-content:space-between}
+.hello h2{font-size:20px}
+.chip{font-size:12px;border:1px solid var(--bd);color:var(--mu);border-radius:99px;padding:4px 10px;white-space:nowrap}
+.chip.ok{color:var(--ac);border-color:var(--ac)}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:18px;padding:14px}
+.goal{display:flex;gap:14px;align-items:center}
+.goal .big{font-family:var(--fd);font-size:22px;font-weight:700}
+.goal .sub{color:var(--mu);font-size:13px}
+.sec{display:flex;justify-content:space-between;align-items:baseline;margin-top:2px}
+.sec h3{font-size:14px}
+.sec span{color:var(--mu);font-size:12px}
+.need{display:flex;gap:12px;align-items:center}
+.need .t{flex:1;min-width:0}
+.need .t b{display:block;font-size:14px}
+.need .t small{color:var(--mu);font-size:12px}
+.mini{width:46px;height:46px;position:relative;flex:none}
+.mini svg{width:100%;height:100%;transform:rotate(-90deg)}
+.mini span{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--fm);font-size:11px;font-weight:500}
+.btn{border:0;border-radius:12px;padding:9px 14px;font:inherit;font-weight:700;background:var(--ac);color:var(--acfg)}
+.btn.g{background:var(--s2);color:var(--tx);font-weight:500;border:1px solid var(--bd)}
+.msg{display:flex;gap:10px;align-items:flex-start;color:var(--mu);font-size:13px}
+.msg b{color:var(--tx);font-weight:500}
+.comp{display:flex;gap:8px;align-items:center;padding:8px 16px 10px;border-top:1px solid var(--bd);background:var(--bg)}
+.comp .in{flex:1;background:var(--s1);border:1px solid var(--bd);border-radius:22px;padding:10px 14px;color:var(--mu)}
+.mic{width:40px;height:40px;border-radius:50%;background:var(--ac);color:var(--acfg);display:grid;place-items:center;flex:none}
+.round{width:36px;height:36px;border-radius:50%;border:1px solid var(--bd);display:grid;place-items:center;color:var(--mu);flex:none}
+.tabs{display:flex;border-top:1px solid var(--bd);background:var(--s1);padding:8px 6px 14px}
+.tabs div{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--mu);font-size:11px;position:relative}
+.tabs div.on{color:var(--ac)}
+.tabs i{position:absolute;top:-2px;right:calc(50% - 16px);width:8px;height:8px;border-radius:50%;background:var(--coral)}
+svg{display:block}
+/* offer */
+.map{background:var(--map);border:1px solid var(--bd);border-radius:18px;overflow:hidden}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:10px}
+.stat small{display:block;color:var(--mu);font-size:11px;margin-bottom:2px}
+.stat b{font-family:var(--fm);font-size:15px;font-weight:500}
+.keep{display:flex;gap:14px;align-items:center}
+.keep .big{font-family:var(--fd);font-size:24px;font-weight:700;color:var(--ac)}
+.badge{display:inline-flex;gap:6px;align-items:center;border-radius:99px;padding:4px 10px;font-size:12px;font-weight:700}
+.b-g{background:rgba(74,222,128,.14);color:var(--green)}
+.b-a{background:rgba(245,184,75,.16);color:var(--amber)}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.act{display:flex;gap:8px;padding:10px 16px 14px;border-top:1px solid var(--bd);background:var(--bg)}
+.act .btn{flex:1;padding:12px}
+/* earnings */
+.seg{display:flex;background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:4px}
+.seg div{flex:1;text-align:center;padding:7px;border-radius:10px;color:var(--mu)}
+.seg .on{background:var(--ac);color:var(--acfg);font-weight:700}
+.bars{display:flex;align-items:flex-end;gap:7px;height:74px}
+.bars i{flex:1;background:var(--acsoft);border-radius:6px 6px 2px 2px;display:block}
+.bars i.cur{background:var(--ac)}
+.aging{display:flex;height:9px;border-radius:9px;overflow:hidden;gap:2px;margin-block:8px 6px}
+.aging i{display:block}
+.quick{display:flex;gap:8px;flex-wrap:wrap}
+.quick span{border:1px solid var(--bd);background:var(--s1);border-radius:99px;padding:8px 12px;font-size:13px}
+.sheet{position:absolute;inset:auto 0 0 0;background:var(--s1);border-top:1px solid var(--bd);border-radius:24px 24px 0 0;padding:16px 16px 22px;display:flex;flex-direction:column;gap:12px;box-shadow:0 -12px 40px rgba(0,0,0,.35)}
+.sheet .grab{width:38px;height:4px;border-radius:4px;background:var(--bd);margin:0 auto}
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,.45)}
+.sample{font-size:11px;color:var(--amber);font-family:var(--fm);letter-spacing:.04em}
+@media (prefers-reduced-motion:no-preference){.ring-a{transition:stroke-dasharray .6s cubic-bezier(.2,0,0,1)}}
+</style>
+
+<div class="intro">
+  <h1>Masar Solo screens, version 2</h1>
+  <p>Home as a dashboard, the offer screen with a map, and the Earnings tab. All numbers are sample data. Pause, the theme button and the credits text are gone from the top bar: credits are a ring, the rest lives in Settings.</p>
+</div>
+
+<div class="row">
+
+<!-- HOME -->
+<div class="col">
+  <span class="tag">1 · Masar (home)</span>
+  <div class="ph">
+    <div class="bar">
+      <div class="logo"><svg width="26" height="26" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M9 38V14.5c0-1.3 1.6-2 2.5-1L24 26.5l12.5-13c.9-1 2.5-.3 2.5 1V30" stroke="var(--ac)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="39" cy="37" r="4" fill="var(--ac)"/></svg>Masar</div>
+      <div class="right">
+        <div class="ring36" aria-label="Masar help: 92 percent left"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.5" fill="none" stroke="var(--bd)" stroke-width="3.5"/><circle class="ring-a" cx="18" cy="18" r="15.5" fill="none" stroke="var(--ac)" stroke-width="3.5" stroke-linecap="round" pathLength="100" stroke-dasharray="92 100"/></svg><span>92</span></div>
+        <div class="bell"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg><i></i></div>
+      </div>
+    </div>
+    <div class="body">
+      <div class="hello"><h2>Good afternoon, Omar</h2><span class="chip ok">Autopilot on</span></div>
+      <div class="card goal">
+        <div class="mini" style="width:64px;height:64px"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.5" fill="none" stroke="var(--bd)" stroke-width="3.5"/><circle cx="18" cy="18" r="15.5" fill="none" stroke="var(--ac)" stroke-width="3.5" stroke-linecap="round" pathLength="100" stroke-dasharray="61 100"/></svg><span style="font-size:13px">61%</span></div>
+        <div><div class="big">$1,840 <span class="sub" style="font-weight:400">of $3,000</span></div><div class="sub">This week · 3 days left · <span style="color:var(--green)">On pace</span></div></div>
+      </div>
+      <div class="sec"><h3>Needs you</h3><span>2</span></div>
+      <div class="card need">
+        <div class="mini"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.5" fill="none" stroke="var(--bd)" stroke-width="4"/><circle cx="18" cy="18" r="15.5" fill="none" stroke="var(--ac)" stroke-width="4" stroke-linecap="round" pathLength="100" stroke-dasharray="55 100"/></svg><span>55%</span></div>
+        <div class="t"><b>Atlanta → Dallas</b><small>$2,850 · you keep $1,554</small></div>
+        <span class="btn">Open</span>
+      </div>
+      <div class="card need">
+        <div class="mini"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.5" fill="none" stroke="var(--bd)" stroke-width="4"/><circle cx="18" cy="18" r="15.5" fill="none" stroke="var(--amber)" stroke-width="4" stroke-linecap="round" pathLength="100" stroke-dasharray="48 100"/></svg><span>48%</span></div>
+        <div class="t"><b>Apex countered $2,700</b><small>Memphis → Chicago · you keep $1,310</small></div>
+        <span class="btn g">Review</span>
+      </div>
+      <div class="sec"><h3>On the road</h3><span>0 active</span></div>
+      <div class="card" style="color:var(--mu)">No active load. Book an offer and it shows here with a live status line.</div>
+      <div class="msg"><svg width="22" height="22" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M9 38V14.5c0-1.3 1.6-2 2.5-1L24 26.5l12.5-13c.9-1 2.5-.3 2.5 1V30" stroke="var(--ac)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg><div><b>Apex came back at $2,700.</b> That is $150 under your ask. Open it to counter or accept. <span style="text-decoration:underline">Open chat</span></div></div>
+    </div>
+    <div class="comp"><div class="round"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></div><div class="in">Message Masar</div><div class="mic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></div></div>
+    <div class="tabs"><div class="on"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7v9H4z"/></svg>Masar</div><div><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6h12v10H2zM14 9h4l3 3v4h-7"/><circle cx="7" cy="17" r="1.6"/><circle cx="17" cy="17" r="1.6"/></svg>Loads<i></i></div><div><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8M15 7h6v6"/></svg>Earnings</div><div><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6l4 4-9 9H5v-4zM13 7l4 4"/></svg>Truck</div><div><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>More</div></div>
+  </div>
+  <p class="note"><b>What changed.</b> One screen, one job: what needs you today. The goal is one line with a ring. Offers and broker replies are cards with the keep percent as a ring. The long chat is gone from this screen: the last Masar message is one line, and the full chat opens from the composer. "Hire Masar" becomes a small setup chip until it is done.</p>
+</div>
+
+<!-- OFFER -->
+<div class="col">
+  <span class="tag">2 · Offer</span>
+  <div class="ph">
+    <div class="bar"><div class="logo" style="font-size:16px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--mu)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>Atlanta → Dallas</div><span class="badge b-g"><i class="dot" style="background:var(--green)"></i>Authority active</span></div>
+    <div class="body">
+      <div class="map">
+        <svg viewBox="0 0 358 200" role="img" aria-label="Map: you near Macon, pickup in Atlanta in green, drop-off in Dallas in red">
+          <rect width="358" height="200" fill="var(--map)"/>
+          <g stroke="var(--road)" stroke-width="1" fill="none"><path d="M0 150 C80 120 140 160 230 110 S320 70 358 40"/><path d="M40 0 C70 60 60 120 110 200"/><path d="M200 0 C190 50 230 120 300 200"/><path d="M0 60 C90 80 170 40 358 120"/></g>
+                                                                      <!-- loaded leg Atlanta (top right) to Dallas (bottom left) -->
+          <path d="M290 58 C250 70 120 100 62 150" stroke="var(--ac)" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+          <!-- dead leg: you to pickup -->
+          <path d="M318 120 C312 95 300 75 290 58" stroke="var(--blue)" stroke-width="2.5" stroke-dasharray="3 6" stroke-linecap="round" fill="none"/>
+          <circle cx="318" cy="120" r="7" fill="var(--blue)"/><circle cx="318" cy="120" r="12" fill="var(--blue)" opacity=".2"/>
+          <circle cx="290" cy="58" r="8" fill="var(--green)" stroke="var(--map)" stroke-width="3"/>
+          <circle cx="62" cy="150" r="8" fill="var(--coral)" stroke="var(--map)" stroke-width="3"/>
+          <g font-family="DM Sans,sans-serif" font-size="11" font-weight="700" fill="var(--tx)"><text x="262" y="44" >Pickup · Atlanta</text><text x="30" y="176">Drop · Dallas</text><text x="250" y="140">You</text></g>
+        </svg>
+      </div>
+      <div class="stats">
+        <div class="stat"><small>Dead miles</small><b>42 mi</b></div>
+        <div class="stat"><small>Loaded</small><b>780 mi</b></div>
+        <div class="stat"><small>Total</small><b>822 mi</b></div>
+      </div>
+      <div class="card keep">
+        <div class="mini" style="width:78px;height:78px"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.5" fill="none" stroke="var(--bd)" stroke-width="4"/><circle cx="18" cy="18" r="15.5" fill="none" stroke="var(--ac)" stroke-width="4" stroke-linecap="round" pathLength="100" stroke-dasharray="55 100"/></svg><span style="font-size:14px;font-weight:700">55%</span></div>
+        <div><div class="tag">You keep</div><div class="big">$1,554</div><div class="note">of $2,850 · $3.65 per mile · <span class="badge b-g" style="padding:1px 8px">Estimated</span></div></div>
+      </div>
+      <div class="card" style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+        <div><div class="tag">Broker</div><b>Apex Freight Solutions</b><div class="note">Pays in about 28 days</div></div>
+        <div style="text-align:right"><span class="badge b-g">Credit A−</span><div class="sample" style="margin-top:4px">SAMPLE · needs data partner</div></div>
+      </div>
+    </div>
+    <div class="act"><span class="btn g">Counter</span><span class="btn">Book it</span><span class="btn g" style="flex:none;padding-inline:14px">⋯</span></div>
+  </div>
+  <p class="note"><b>What changed.</b> A map instead of paragraphs: you in blue, pickup in green, drop-off in red, the dead miles dashed. One ring says how much you keep. The broker is one row with a credit grade. Three buttons only; Other, Check authority, Pass and Block sit under the three dots. The email history is gone from this screen. Tapping a number opens the mini calculator right here, so Settings no longer needs one.</p>
+</div>
+
+<!-- EARNINGS -->
+<div class="col">
+  <span class="tag">3 · Earnings</span>
+  <div class="ph">
+    <div class="bar"><div class="logo"><svg width="26" height="26" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M9 38V14.5c0-1.3 1.6-2 2.5-1L24 26.5l12.5-13c.9-1 2.5-.3 2.5 1V30" stroke="var(--ac)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="39" cy="37" r="4" fill="var(--ac)"/></svg>Earnings</div>
+      <div class="right"><div class="ring36"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.5" fill="none" stroke="var(--bd)" stroke-width="3.5"/><circle cx="18" cy="18" r="15.5" fill="none" stroke="var(--ac)" stroke-width="3.5" stroke-linecap="round" pathLength="100" stroke-dasharray="92 100"/></svg><span>92</span></div><div class="bell"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg></div></div></div>
+    <div class="body">
+      <div class="seg"><div class="on">Week</div><div>Month</div><div>Year</div></div>
+      <div class="card">
+        <div class="tag">You kept this week</div>
+        <div style="display:flex;align-items:baseline;gap:8px"><span style="font-family:var(--fd);font-size:30px;font-weight:700">$1,840</span><span class="note">of $3,000 goal</span></div>
+        <div class="bars" style="margin-top:10px"><i style="height:38%"></i><i style="height:55%"></i><i style="height:44%"></i><i style="height:70%"></i><i style="height:52%"></i><i style="height:80%"></i><i class="cur" style="height:61%"></i></div>
+      </div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between"><b>Owed to you</b><b style="font-family:var(--fm)">$2,850</b></div>
+        <div class="aging"><i style="flex:70;background:var(--green)"></i><i style="flex:20;background:var(--amber)"></i><i style="flex:10;background:var(--coral)"></i></div>
+        <div class="note">1 invoice · 6 days late · <span style="text-decoration:underline">Ask Masar to chase</span></div>
+      </div>
+      <div class="sec"><h3>Tell Masar</h3><span>no forms</span></div>
+      <div class="quick"><span>Add today's fuel</span><span>Log an expense</span><span>Send IFTA numbers</span><span>Who owes me?</span></div>
+    </div>
+    <div class="comp"><div class="round"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></div><div class="in">Message Masar</div><div class="mic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></div></div>
+    <div class="tabs"><div><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7v9H4z"/></svg>Masar</div><div><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6h12v10H2zM14 9h4l3 3v4h-7"/><circle cx="7" cy="17" r="1.6"/><circle cx="17" cy="17" r="1.6"/></svg>Loads</div><div class="on"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8M15 7h6v6"/></svg>Earnings</div><div><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6l4 4-9 9H5v-4zM13 7l4 4"/></svg>Truck</div><div><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>More</div></div>
+  </div>
+  <p class="note"><b>What changed.</b> Three blocks: what you kept, who owes you, and chips that hand the work to Masar in chat. No expense, factoring or IFTA forms. Only the numbers a driver checks daily stay.</p>
+</div>
+
+<!-- SHEETS -->
+<div class="col">
+  <span class="tag">4 · Credits ring and bell</span>
+  <div class="ph">
+    <div class="bar"><div class="logo"><svg width="26" height="26" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M9 38V14.5c0-1.3 1.6-2 2.5-1L24 26.5l12.5-13c.9-1 2.5-.3 2.5 1V30" stroke="var(--ac)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="39" cy="37" r="4" fill="var(--ac)"/></svg>Masar</div><div class="right"><div class="ring36"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.5" fill="none" stroke="var(--bd)" stroke-width="3.5"/><circle cx="18" cy="18" r="15.5" fill="none" stroke="var(--ac)" stroke-width="3.5" stroke-linecap="round" pathLength="100" stroke-dasharray="92 100"/></svg><span>92</span></div><div class="bell"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg><i></i></div></div></div>
+    <div class="body"><div class="hello"><h2>Good afternoon, Omar</h2></div><div class="card goal"><div class="sub">Home sits behind the sheet.</div></div></div>
+    <div class="scrim"></div>
+    <div class="sheet">
+      <div class="grab"></div>
+      <div style="display:flex;gap:14px;align-items:center"><div class="mini" style="width:64px;height:64px"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.5" fill="none" stroke="var(--bd)" stroke-width="3.5"/><circle cx="18" cy="18" r="15.5" fill="none" stroke="var(--ac)" stroke-width="3.5" stroke-linecap="round" pathLength="100" stroke-dasharray="92 100"/></svg><span style="font-size:13px">92%</span></div><div><b style="font-size:16px">Masar help left</b><div class="note">3,986 of 4,300 · resets Nov 25</div></div></div>
+      <span class="btn" style="text-align:center">Add more Masar help</span>
+      <div class="tag" style="margin-top:4px">Notifications</div>
+      <div class="card need" style="padding:10px"><i class="dot" style="background:var(--coral)"></i><div class="t"><b>Apex countered $2,700</b><small>Tap to open that offer</small></div></div>
+      <div class="card need" style="padding:10px"><i class="dot" style="background:var(--ac)"></i><div class="t"><b>New offer: Atlanta → Dallas</b><small>Tap to open that offer</small></div></div>
+    </div>
+  </div>
+  <p class="note"><b>What changed.</b> Tap the ring to see the exact amount and add more help; the ring drains as Masar works. Every notification opens the exact offer, load or invoice. The Loads tab shows the same dot when something is new.</p>
+</div>
+
+</div>
