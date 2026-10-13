@@ -64,7 +64,7 @@ async function createDepositCheckout(quote, contract, lead) {
     mode: 'payment', 'payment_method_types[0]': 'us_bank_account', 'payment_method_types[1]': 'card',
     'line_items[0][price_data][currency]': 'usd',
     'line_items[0][price_data][unit_amount]': String(amount),
-    'line_items[0][price_data][product_data][name]': `Deposit: ${quote.title || 'Renovation'}`,
+    'line_items[0][price_data][product_data][name]': `Phase 1: ${quote.title || 'Renovation'}`,
     'line_items[0][quantity]': '1',
     success_url: `${cfg.publicUrl}/quote.html?t=${quote.token}&paid=1`, cancel_url: `${cfg.publicUrl}/quote.html?t=${quote.token}`,
     client_reference_id: String(contract.id), 'metadata[contract_id]': String(contract.id),
@@ -91,9 +91,9 @@ function markDepositPaid(contractId, via) {
   run('UPDATE jobs SET status=? WHERE quote_id=? AND status=\'awaiting_deposit\'', status, c.quote_id);
   run("UPDATE leads SET status='won' WHERE id=?", quote.lead_id);
   event(quote.lead_id, 'deposit_paid', { contract: contractId, amount: c.deposit_amount, via });
-  // Deposit cleared: put the job on the subcontractor board automatically.
+  // Phase 1 has CLEARED: only now is the winning subcontractor committed to the job.
   const job = get('SELECT id FROM jobs WHERE quote_id=?', c.quote_id);
-  if (job) require('./marketplace').autoPost(job.id);
+  if (job) require('./marketplace').confirmAward(job.id);
   return get('SELECT * FROM contracts WHERE id=?', contractId);
 }
 
@@ -102,7 +102,6 @@ function releaseRescissionTick() {
                    WHERE j.status='rescission_period' AND c.rescission_ends <= ?`, new Date().toISOString());
   for (const x of due) {
     run("UPDATE jobs SET status='ready' WHERE id=?", x.id); event(x.lead_id, 'job_ready', {});
-    const m2 = get('SELECT * FROM milestones WHERE job_id=? AND seq=2', x.id); if (m2) require('./milestones').invoice(m2);
   }
 }
 

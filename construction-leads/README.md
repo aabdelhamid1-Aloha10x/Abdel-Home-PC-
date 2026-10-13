@@ -1,13 +1,15 @@
-# Construction lead-to-contract pipeline + subcontractor marketplace
+# Construction lead-to-contract pipeline + subcontractor auction marketplace
 
-Meta/Google ads → lead → booked free estimate → recorded site visit → internal quote
-(materials + labor + margin) → customer signs + pays deposit → in-house or subcontractor job.
+Meta/Google ads → lead → booked free estimate → recorded site visit → **estimate with a short-phase plan** (the budget ceiling) →
+customer approves the plan → **reverse auction among vetted subs** → customer accepts the best bid and signs **with the winning sub** →
+pays phase 1 → sub confirmed → phase-by-phase: customer funds, sub works, customer approves, platform pays the sub (fee withheld).
+The platform is the marketplace and payment administrator, not the contractor. See `docs/bond-and-structure.md`.
 
 Zero dependencies. Needs Node 22.5+ (uses the built-in SQLite).
 
 ```
 npm start          # http://localhost:3000   (seeds a starter price book + 2 estimators)
-npm test           # 30 tests: quote math, payout/milestone math, the whole funnel, the marketplace and the payment gates
+npm test           # 32 tests: quote and phase planning, fee/schedule math, the whole funnel, the auction rules and the payment gates
 ```
 
 ## The pipeline
@@ -90,35 +92,47 @@ deposit     = total × deposit %            (capped by state law, see below)
 `do_not_call` permanently flags the lead and blocks all calls and texts.
 
 
-## Subcontractor marketplace (`/sub.html`)
+## Subcontractor auction marketplace (`/sub.html`)
 
 Service area is **New York and New Jersey** (ZIP-routed; out-of-area leads are saved but never booked or called).
 
-**Flow:** sub applies (license, insurance, trades, ZIP coverage) → you review and **approve** → they **subscribe**
-($50-60/mo via Stripe) → when a customer signs and the deposit clears, the job is **auto-posted** →
-an eligible sub **claims** it (first come, atomic: two subs racing gives exactly one winner) →
-customer name, phone and address unlock for that sub only.
+**Flow:** sub applies (license, insurance, trades, ZIP coverage) → you review and **approve** → they **subscribe** ($50-60/mo via Stripe) →
+the customer approves a project plan → an **auction** opens on the board → eligible subs **bid** → the lowest eligible bid is **offered** to the customer →
+the customer **accepts and signs the contract with that sub** and pays phase 1 → the sub is **confirmed** and the customer's details unlock → phases run.
 
-**Revenue model:** monthly subscription + a **percentage of the award price, withheld from payouts** (default 5%, `SUB_FEE_PCT`, adjustable 0-30% per job in Admin → Marketplace before it's claimed).
+**The estimate becomes a phase plan.** Every quote is split into short phases automatically (`server/phases.js`): lines are ordered by construction stage
+(demo, rough-in, main install, finishes), packed into phases of at most N crew-days and M% of the price (defaults 5 days, 25%), a large line is split across
+phases, the **first payment is capped (default 10%)** and 10% is held as final retainage. The customer funds each phase before it starts, so cash flows continuously.
+The quote's price is the **budget ceiling**: no bid can exceed it.
 
-**What subs see before claiming:** trade, ZIP3 area ("105xx"), scope lines and quantities, room measurements, customer wishes, award price, fee, net.
-**Never:** customer name/phone/address, the contract price, your margin (tested). The award price defaults to your direct cost + contingency; edit it per job.
+**Auction rules** (`marketplace.placeBid`): bids at or below the ceiling and at or above a floor (default 60%, stops "too good to be true" lowballs);
+open auction (best bid visible, other bidders anonymous; `AUCTION_SEALED=1` hides it); a new bid must beat the best by a minimum decrement (default 1%);
+a sub can only lower their own bid; a bid in the last 15 minutes extends the clock (max 4 times); bids are binding; default window 48h (customer picks 24-96h).
+If the customer declines, or lets the offer lapse (72h), the **runner-up** gets the offer. You can re-open, extend, change ceiling/floor/fees, or offer a specific bidder.
 
-**Who can claim** (enforced server-side): account approved · subscription active · liability insurance not expired · covers the state and ZIP prefixes · trade matches
-(or the sub has "general"). A sub can't be assigned or start work until the deposit is paid **and** the customer's cancellation window has closed.
+**Revenue:** a **sub fee** (default 5% of the winning bid, `SUB_FEE_PCT`, withheld from payouts, never invoiced) plus an optional **customer fee**
+(`CUSTOMER_FEE_PCT`, itemized in the contract). Both adjustable per auction until awarded. **At 5% alone the model loses money per job at typical lead costs; read
+`docs/bond-and-structure.md` section 5** (break-even take is roughly 12-19% for $17-28K jobs at $165/lead). The admin screen flags auctions whose fees cannot cover `ACQ_COST_ESTIMATE`.
 
-### Money flow: platform collects, fee withheld, sub paid per phase
-The customer pays **the platform** in milestones (deposit, then four phases, last 10% as retainage), only through platform payment links
-(ACH preferred: $5 vs ~$290 by card on $10K). The sub is paid by the platform after each **approved** phase, with the fee withheld:
+**What subs see before bidding:** trade, ZIP3 area, scope, phases with durations and shares, measurements, customer wishes, the budget, the best bid and bid count.
+**Never:** customer name/phone/address until the job is confirmed (they win AND the customer funded phase 1).
 
-1. Customer signs; deposit clears (card, or ACH after the bank debit settles) → job is posted. **A sub cannot claim until the deposit has cleared.**
-2. Cancellation window closes → phase 1 is invoiced. Customer funds it → **only now may the sub start** (no pay, no work).
-3. Sub uploads photos + signs a lien waiver → submits. The next phase is invoiced; the customer approves or reports a problem (silence = approved after 72h).
-4. Approval → payout = phase gross minus **fee % (default 5% of the award, adjustable per job)**, via Stripe Connect transfer or recorded as due in the ledger.
-Example: $20,000 job, $1,000 deposit, $14,000 sub award, 5% → sub nets $13,300, platform keeps the $700 fee plus the $6,000 margin. Payouts never exceed what the customer has already paid.
+**Who can bid** (enforced server-side): approved · subscription active · liability insurance current · covers the state and ZIP prefixes · trade matches (or "general").
+No work starts until phase 1 has cleared **and** the customer's 3-business-day cancellation window has closed.
 
-See **[docs/payment-enforcement.md](docs/payment-enforcement.md)** (how this is enforced on customer and sub, where the money sits in NY, abuse cases) and
-**[docs/feasibility-study.md](docs/feasibility-study.md)** (competitors, exact structures, unit economics, risks, sources). `node docs/unit-economics.js` reproduces the numbers.
+### Money flow: phases, funded first, platform pays per approved phase
+Example: winning bid $40,000, 5% sub fee, 3% customer fee, 5 phases. The customer pays $41,200 in total through the platform (ACH preferred: $5 vs ~$290 per $10K by card):
+1. Customer accepts, signs with the winning sub, pays **phase 1** (<= 10%). It clears (card, or ACH after the bank debit settles) → **only now is the sub committed.**
+2. Cancellation window closes. The sub starts phase 1; uploads photos + a lien waiver; submits. The next phase is invoiced to the customer.
+3. The customer approves (silence = approved after 72h; a dispute freezes just that phase). Payout = phase gross minus the 5% fee, via Stripe Connect transfer or recorded as due in the ledger.
+4. Repeat. **No phase starts unfunded, and the sub is never paid more than the customer has already paid in** (checked in code).
+
+See **[docs/payment-enforcement.md](docs/payment-enforcement.md)** (enforcement on customer and sub, abuse cases),
+**[docs/bond-and-structure.md](docs/bond-and-structure.md)** (bond costs, who sells them, the licensing and fund-holding questions of "not being the contractor", fee economics) and
+**[docs/feasibility-study.md](docs/feasibility-study.md)** (competitors, structures, risks, sources). `node docs/unit-economics.js` reproduces the economics.
+
+Config keys: `SUB_MONTHLY_PRICE`, `SUB_FEE_PCT`, `CUSTOMER_FEE_PCT`, `ACQ_COST_ESTIMATE`, `AUCTION_HOURS`, `ACCEPT_HOURS`, `AUCTION_SEALED`, `AUTO_APPROVE_HOURS`.
+Stripe needs webhook events `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed`, `customer.subscription.deleted`, `invoice.payment_failed`, `invoice.paid`, and Stripe Connect (Express) for sub payouts.
 
 ### NY / NJ: confirm with an attorney before launch
 Not legal advice. These are the issues to put in front of a NY/NJ construction lawyer:
@@ -147,9 +161,11 @@ These are the things that can actually get a contractor sued or fined. The code 
 ## Known limits (v1)
 
 - Recording is uploaded when the estimator taps Stop, so record the conversation in one segment. A phone crash mid-recording loses it.
-- Single company (not yet multi-tenant: other construction companies can't run their own pipeline on it), single timezone, admin is one shared token.
-- One sub per job. A multi-trade job (e.g. kitchen + roof) goes to a single claimer; splitting a job by trade is a next step.
-- No sub ratings, reviews, bidding or messaging yet. Jobs are first-come at a fixed award price.
+- Single company (not yet multi-tenant), single timezone, admin is one shared token.
+- One sub per job: a multi-trade job (e.g. kitchen + roof) goes to a single winner; splitting an auction by trade is a next step.
+- No sub ratings/reviews or messaging yet; the winner is the lowest eligible bid unless you override it (rating-weighted selection is a natural next step).
+- The platform currently collects into its own Stripe balance and transfers to subs; the lower-risk 'funds held in the sub's connected account' architecture is documented but not built.
+- If a customer accepts but never pays phase 1, the contract stays pending (no automatic expiry yet).
 - Sub password reset and email verification aren't built yet.
 - No change-order or progress-billing flow yet; milestone invoices are the natural next module.
 - The availability model is estimator-based with fixed 90-minute slots (Mon-Sat 8-6); edit `booking` in `server/config.js`.

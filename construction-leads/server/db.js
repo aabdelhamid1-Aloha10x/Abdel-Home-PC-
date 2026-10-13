@@ -101,6 +101,21 @@ CREATE TABLE IF NOT EXISTS ledger (
 `);
 
 addCol('job_posts', 'fee_pct', 'REAL NOT NULL DEFAULT 5');
+// Auction columns: a post is now a reverse auction with a budget ceiling.
+[['ceiling', 'REAL'], ['opens_at', 'TEXT'], ['closes_at', 'TEXT'], ['extensions', 'INTEGER NOT NULL DEFAULT 0'], ['min_decrement_pct', 'REAL NOT NULL DEFAULT 1'],
+ ['floor_pct', 'REAL NOT NULL DEFAULT 60'], ['customer_fee_pct', 'REAL NOT NULL DEFAULT 0'], ['winning_bid_id', 'INTEGER'], ['accept_deadline', 'TEXT'], ['sealed', 'INTEGER NOT NULL DEFAULT 0']]
+  .forEach(([c, d]) => addCol('job_posts', c, d));
+addCol('quotes', 'phases', 'TEXT');
+addCol('contracts', 'sub_id', 'INTEGER');
+db.exec(`
+CREATE TABLE IF NOT EXISTS bids (
+  id INTEGER PRIMARY KEY, post_id INTEGER NOT NULL REFERENCES job_posts(id), sub_id INTEGER NOT NULL REFERENCES subcontractors(id),
+  amount REAL NOT NULL, days INTEGER NOT NULL, note TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')), updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+  status TEXT NOT NULL DEFAULT 'active',   -- active | offered (selected, awaiting customer) | won | lost | declined | expired
+  UNIQUE (post_id, sub_id)
+);
+`);
 addCol('subcontractors', 'stripe_account_id', 'TEXT');
 db.exec(`
 CREATE TABLE IF NOT EXISTS milestones (

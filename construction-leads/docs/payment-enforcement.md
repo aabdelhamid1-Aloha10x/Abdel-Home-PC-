@@ -3,33 +3,33 @@
 **The problem you described:** the sub is on site, the customer is standing next to them. Why wouldn't they settle in cash and skip us?
 **The honest answer:** you cannot physically stop two adults paying each other. You make the platform path *clearly better* for both, make the off-platform path *costly and unprotected*, and make sure **you are never exposed** if they try it. Four layers, strongest first.
 
-## Layer 1: Structure. Make the customer's obligation run to YOU, not to the sub
-- The customer signs **one contract with the platform** (contractor of record). The sub is *your* subcontractor. The sub has no contract with the customer and no right to be paid by them.
+## Layer 1: Structure. All money flows through the platform's payment administration
+- **Updated design:** the customer signs the contract with the **winning subcontractor** (the contractor of record); the platform is named as marketplace and **payment administrator** and the sub authorizes it to collect and release payments. The platform fee is withheld from the sub's payout, and an optional customer fee is itemized. See `bond-and-structure.md` for the legal implications.
 - The signed contract (clause 2A, in `server/contract.js`) says: pay only through our links; crew and subs are **not authorized** to take payment; a payment made to anyone else **does not count** toward the price and is **not covered by the warranty**; we may suspend work while a payment is overdue.
-- So if a customer slips the crew $2,000 cash, the customer still owes you the milestone. The only way "cash on site" saves the customer money is if you never find out, which the next layers address.
+- So if a customer slips the crew $2,000 cash, the customer still owes the phase payment (the contract says off-platform payments do not count). The only way "cash on site" saves the customer money is if you never find out, which the next layers address.
 
 ## Layer 2: Money mechanics. The platform is the only way anyone gets paid
 ```
- Customer ──ACH/card (platform link only)──► PLATFORM  ──per approved phase, fee withheld──► SUB
-        milestone invoiced ▲                     │                                        (instant payout rail)
-                           │                     └─ holds the money; NEVER pays ahead of what it collected
- Gate 0  sign contract  ->  3-business-day cancellation window
- Gate 1  deposit CLEARED ->  job posted; a sub may CLAIM it      (funded before committed)
- Gate 2  phase N funded  ->  sub may START phase N               (no pay, no work)
- Gate 3  sub submits photos + lien waiver  ->  customer approves (or silence for 72h)  ->  payout for phase N
- Gate 4  dispute freezes that phase's payout only
+ Plan approved ─► AUCTION (subs bid at or below the budget; open, anti-sniping) ─► lowest eligible bid is OFFERED to the customer
+ Customer accepts + signs with the winner ─► pays phase 1 (small, <= 10%)
+ Gate 1  phase 1 CLEARED  ->  the winner is CONFIRMED and sees the customer's details   (funded before committed)
+ Gate 2  phase N funded   ->  sub may START phase N                                    (no pay, no work)
+ Gate 3  sub submits photos + lien waiver -> customer approves (or silence for 72h) -> payout for phase N
+ Gate 4  a dispute freezes that phase's payout only
+ Customer ──ACH/card (platform link only)──► PLATFORM ADMINISTRATION ──per approved phase, fee withheld──► SUB
 ```
+Phases are short (planned automatically from the quote: default max 5 crew-days and 25% of the price each; the first payment is capped at 10%), so the customer never has more than about one phase of money at risk and cash flows continuously.
 Implemented in `server/milestones.js`, `server/marketplace.js` and tested (`test/pipeline.test.js`):
 
 | Rule | Where enforced |
 |---|---|
-| A sub cannot **claim** a job until the customer's deposit has cleared | `marketplace.claim` re-checks inside the transaction |
+| A sub is not **committed** to a job (and cannot see the customer) until phase 1 has cleared | `marketplace.confirmAward`, called only from the funding handler |
 | A sub cannot **start** a phase until the customer funded it, the cancellation window closed, and the previous phase was approved | `milestones.startPhase` |
 | A sub cannot **submit** without at least one photo and a signed lien waiver | `milestones.submitPhase` |
 | Payout happens only if funded + waiver + approved + not disputed; created atomically; double-approval cannot double-pay | `milestones.release` |
 | Sub payouts can never exceed what the customer has paid in (deposit funds nothing for the sub; schedule is cash-checked) | `milestones.allocatePayout` / `cashSafe` (unit tested) |
 | **The fee is withheld from each payout**, so you never invoice or chase a sub | `milestones.release` writes `platform_fee` + `sub_payout` |
-| Fee % is per job and adjustable (0-30%, default 5% of the award), locked once awarded | `PATCH /api/admin/posts/:id` |
+| Fee % (sub) and customer fee % are per auction and adjustable (0-30%), locked once awarded; bids are bounded by a budget ceiling and a floor | `PATCH /api/admin/posts/:id`, `marketplace.placeBid` |
 | ACH counts as funded only after the bank debit settles (card: when paid) | Stripe webhook `async_payment_succeeded` |
 | Customer silence is approval after 72h; a dispute can't be auto-approved | `milestones.autoApproveTick` |
 

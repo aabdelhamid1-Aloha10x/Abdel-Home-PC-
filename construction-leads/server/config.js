@@ -45,6 +45,12 @@ module.exports = {
     monthlyPrice: Number(e.SUB_MONTHLY_PRICE || 55),       // subscription, $/month
     feePct: Number(e.SUB_FEE_PCT || 5),                    // % of the sub's award price, withheld from each payout; adjustable per job
     autoApproveHours: Number(e.AUTO_APPROVE_HOURS || 72),  // customer silence after a submitted phase = approval
+    customerFeePct: Number(e.CUSTOMER_FEE_PCT || 0),       // optional fee ADDED to the customer's price (itemized as platform + payment protection)
+    acqCostEstimate: Number(e.ACQ_COST_ESTIMATE || 3000),  // PLACEHOLDER: your real ad + estimator cost per signed job; used only to flag unprofitable fee settings
+    auctionHours: Number(e.AUCTION_HOURS || 48),           // default bidding window
+    acceptHours: Number(e.ACCEPT_HOURS || 72),             // customer time to accept the winning bid before it moves to the next bidder
+    antiSnipeMinutes: 15, maxExtensions: 4,                // a bid in the last 15 minutes extends the auction, up to 4 times
+    sealed: e.AUCTION_SEALED === '1',                      // sealed = bidders can't see the current best bid
     autoPublish: e.AUTO_PUBLISH_JOBS !== '0',              // post to the board as soon as the deposit clears
   },
   stripe: { secretKey: e.STRIPE_SECRET_KEY || '', webhookSecret: e.STRIPE_WEBHOOK_SECRET || '' },

@@ -3,7 +3,18 @@
 Prepared October 2026. **Facts** below come from sources linked at the end; **assumptions** are labeled and are mine, not data.
 Where I could not verify something I say so in section 8 rather than guess.
 
-## 1. Verdict
+## 0. Revision 2 (October 2026): the marketplace model changes the verdict
+
+The design changed from "platform is the general contractor" to **"platform runs a reverse auction among subcontractors, the customer contracts with the winning sub, the platform manages short phases and the payments"** (see `bond-and-structure.md`). The sections below were written for the general-contractor design. What changes:
+
+- **Revenue is now only fees**, not the price-minus-cost spread. The earlier verdict (about $3-7K contribution per job) **no longer applies**; those numbers came from the earlier version of `unit-economics.js` (git commit 835c747) and cannot be reproduced with the current code.
+- **At 5% from the sub, the business loses $1,800-$2,700 on every signed job at $165 per lead.** Break-even total take (sub fee + customer fee) at $165/lead is about **37% on an $8K job, 19% on $17K, 12% on $28K**; at $100/lead, 25% / 13% / 8%; at $40/lead, 14% / 7.5% / 4.8%. Run `node docs/unit-economics.js`.
+- **It is feasible only if** you (a) take roughly 12-18% in total, or (b) get leads for about $40-$100 instead of $165+, and (c) focus on jobs of $20K+. Otherwise paid-ad acquisition cost exceeds the fee on every job.
+- **The upside:** no general-contractor license to do the work, no workmanship liability on you, no capital tied to subcontractor payments beyond one short phase at a time.
+- **New risks:** (1) the platform may still need an NYC/NJ license because it solicits/obtains contracts, (2) holding customer funds can pull in money-transmitter law, (3) reverse auctions pressure quality and margins, (4) subs can disintermediate you after the first job.
+- **Recommendation:** treat this as a *transaction-fee marketplace for high-ticket jobs*: lead with kitchens, full baths and exteriors above $20K, lower acquisition cost with referrals and qualification, take 12-18% total, and get a NY/NJ construction attorney's written opinion on licensing and fund-holding **before** spending on ads.
+
+## 1. Verdict (general-contractor design, superseded by section 0 for the marketplace model)
 
 **Feasible, but it is a general-contractor business, not a software marketplace, and it only works above a minimum job size.**
 
@@ -81,7 +92,7 @@ Your plan is the managed-GC model plus a subscription and a fee on the supply si
 ## 4. Acquisition cost
 Reported cost per lead for remodeling on Google ranges **$90-$250** (kitchens), with Google Local Services call leads $49-$112 (a 2026 vendor report across 15 US markets, not NY-specific). No New York-specific benchmark was found: **pull real CPC and conversion data from a small test campaign before trusting any model.**
 
-## 5. Unit economics (reproducible: `node docs/unit-economics.js`)
+## 5. Unit economics of the earlier general-contractor design (SUPERSEDED; not reproducible with the current script)
 Inputs that are sourced: cost per lead, Stripe fees. **Assumptions (mine):** lead to booked 35%, booked to visit held 75%, visit to signed 25% (so ~15 leads per signed job), $120 estimator cost per visit, 2% warranty reserve, the app's default pricing (25% margin, 10% overhead, 5% contingency), sub award = direct cost + contingency (about 68% of price), 5% fee on the award.
 
 | Customer price | Sub award | Platform margin + fee | Cost per lead | Ad cost per sale | Estimator cost | **Contribution per signed job** |
