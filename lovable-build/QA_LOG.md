@@ -70,3 +70,15 @@ Findings:
 5. New cancel/refund wording needs Spanish; website Terms and /refunds update sent to website project.
 6. Gateway model price is unverified (verified:false) in router pricing table.
 No rule violations seen (no credit prices, nothing published, no ANH data). No new fix message sent; open items need owner actions.
+
+## 2026-10-13 05:30 UTC · quotes@ inbox, Spanish refund text, goal label · PASS WITH GAPS
+Last reviewed Lovable message id: main:agent#00000000022612#don:2Y6KZST5 (05:05:23). Checked against Lovable's report only (no new diff pull this cycle); nothing published.
+Reported: quotes@masar10x.io built (Resend inbound + Hostinger forwarder of that one address; info@, sales@, support@ untouched). Matching order: Message-ID reply, "Masar ref" line, forward from a member's own email; uncertain mail goes to "Needs matching" (company) or a staff-only list; rate limit 30/hour/sender. quotes@ only in BCC, app refuses To. Two-company isolation test passed (rolled back); 8 new matching tests. Spanish refund text in billing footer, cancel dialog, checkout and Terms. Goal label moved above chart. Offer reading now Anthropic first.
+Findings:
+1. Test sign-in refused again ("requires user approval, unavailable in this context"); no approval pause reaches the PM, so signed-in tests (voice, Void, goal toggle, theme icon, Money/Offer/Truck) are still unrun. Needs an owner-side route (owner signs in or starts it from the editor).
+2. Owner steps for quotes@: Resend Receiving on and copy address; add webhook https://app.masar10x.io/api/public/hooks/inbound-email (email.received) and save RESEND_WEBHOOK_SECRET in Secrets; Hostinger forwarder quotes@ to the Resend address; requires a publish first. Not receiving mail until then. Resend plan inclusion unconfirmed.
+3. Design gap vs owner intent: outgoing mail is "Company via Masar" with Reply-To quotes@, so the broker can see the quotes address; users cannot connect their own Gmail/Outlook yet. Owner wanted BCC-only invisibility. Acceptable as the no-mailbox fallback; connected-mailbox sending is still to build.
+4. Forwarded offers consume no credits (no signed-in user to charge). Flag for owner.
+5. Gmail forwarding-confirmation code only reaches the user if it arrives from their own sign-in address; unconfirmed.
+6. No end-to-end test with a real email yet. Twilio/Vapi skipped per owner.
+No rule violations seen. No fix message sent (items are owner actions or later features).
