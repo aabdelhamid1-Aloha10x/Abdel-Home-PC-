@@ -17,3 +17,8 @@
 - Accessibility target: better than 95 (aim 100); performance, best practices, SEO at least 95 after publish.
 - Cancellation and refunds: cancel stops future charges, no refund for the current month; refunds case by case by management; approved refunds are net of card processing fees (not returned). Card fees are paid by Masar. Goes into Terms and cancel flow copy.
 - Models: Anthropic default, Lovable AI gateway as automatic fallback; OpenAI comparison only if the owner adds a key and quality is identical and cheaper.
+
+## 2026-10-13 (evening)
+- quotes@masar10x.io: Hostinger forwarder created to quotes@miefenieg.resend.app; Resend webhook and RESEND_WEBHOOK_SECRET added by the owner. Needs a publish, then a two-email test.
+- Mailbox connection: build official Google and Microsoft OAuth now; run Google as an unverified app (about 100 users, warning screen) until verification completes. No password capture or lookalike login pages. Password path stays on hold. Sending from the user's own address with quotes@ in BCC, replies read from the mailbox.
+- Google cap guard: counter with warning at 80 and stop at 95 users, fall back to forwarding. Lovable to verify Google's unverified-app rules from Google's docs before building.
