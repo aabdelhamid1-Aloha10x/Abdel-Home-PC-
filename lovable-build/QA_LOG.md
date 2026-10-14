@@ -214,3 +214,12 @@ DOES NOT MATCH
 5. Loads cards: still the old card (status chip, step bars, doc buttons, status buttons). Mock has keep ring %, Arrive time, amount, "Rolling/Booked" and short Done rows ("Delivered · invoice sent").
 6. EldRings and the Needs-you "Invoice" chip hide/route wrongly: rings only show with a connected ELD AND logs, so a demo account sees no rings at all.
 NOT CHECKED: VoiceComposer (big "Tap and talk" button), dark/light colors vs mock tokens, the live preview itself.
+
+## 2026-10-14 13:30 — QA monitor: 5 new Lovable edits (not from this session)
+Last edit 87fa270 "Fixed load screen UI to match" (13:19Z). Earlier: 2107e38 Replaced Miles with Expenses, 1066006 Updated UI and chat flows, a8ea705 stale cache reload, 6483f88 Hero tap & next card. Checked /s/loads/$id at 87fa270 by code.
+Verdict: PASS WITH GAPS (still the screen the owner called too busy).
+1. src/routes/s.loads.$id.tsx: Rate / Expenses / You keep tiles added (good). Everything else unchanged: stops as cards, LoadTimeline card, status button grid, Accept by email / Update the broker, RateConCheck, "Get rate con from my email" button, Navigate / Broker chat / Add POD / Cancel, and the long Documents list with separate photo and file upload.
+2. No document tiles row (Rate con / BOL / POD) that opens the file; no single add-document sheet.
+3. No automatic rate con from email; no automatic broker status updates.
+4. Mock screens 7 (ELD), 8 (offer reply), 9 (late invoice) still not built.
+No rule violations seen (no credit prices, money untouched). No fix sent to Lovable: owner has not said go and still owes the broker-update decision. Spec ready: lovable-build/LOAD_SCREEN_FIX.md.
