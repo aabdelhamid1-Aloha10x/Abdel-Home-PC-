@@ -244,3 +244,6 @@ Verdict: PASS WITH GAPS (minor). Code read, tests not run. Items 1-8 from the 14
 New edit ee27963 (not requested by this session): BOL goes with the Loaded update, POD with Delivered, only to the load's customer email, owner tap or ask-once consent, company_id filters, audit rows. Clean.
 Minor gaps to batch into the next round: (a) loadDocAttachment has no size cap (reject over about 10 MB); (b) manual path inserts a new draft on every tap, reuse the existing draft; (c) dedupe counts only sent rows, two rapid auto calls could both send; (d) attachments are raw base64, not signed expiring links.
 No fix sent (not rule violations). Held for next round: SOLO_AUDIT_2026-10-14.md; weather-from-location + ask_web lookup; carrier setup step. Awaiting owner go on those.
+
+## 2026-10-14 16:05 — Round sent to Lovable (msg umsg_01m4xhv8zqff4vp3wr89n7xg8a)
+Owner said go. 21 numbered items: A Home greeting (1); B location-aware weather + device location (2-4); C ask_web lookup, Perplexity Sonar first, key via secure form only (5-8); D minor gaps from the last review (9-12); E Solo audit fixes (13-21). Not included: carrier setup step (owner paused it). Lovable must reply with a DONE/NOT DONE checklist. Follow-up check scheduled about 25 minutes out; only unfinished items get re-sent.
