@@ -161,3 +161,9 @@ Verdict: PASS WITH GAPS (code-checked: lookup.server.ts, driver-phrases.md, samp
 7. NOT VERIFIED by me: load-rules save fix (/s/prefs), forward-loop fix, 44px targets/contrast, axe results, titles. Lovable reports pass; needs a live check on the published app.
 8. Not published (Lovable says so). Publish pending owner go.
 Owner corrections: payment method verified, no red banner; HERE key already added -- earlier status lists were stale.
+
+## 2026-10-14 07:30 — Lovable message main:agent#00000000031596 (cost analysis, no code change)
+Verdict: PASS (analysis only; nothing to verify in code, nothing published).
+- AI spend so far ~$0.02 (88 requests). Busy-driver model (20 chats, 10 voice, 25 AI emails, 50 inbound/day) ~ $1.50/month AI cost per driver, ~4% of $39 Solo. Estimates, not bills; excludes hosting, email, HERE; booking/follow-up email AI calls may not be logged.
+- Credits are the real constraint: same driver would use ~3,060 credits/month vs 300 included (AI emails 1,500, chat 1,200, voice 300). Lovable offers to turn booking and follow-up emails into fixed templates (like the counter email), cutting use to ~1,500.
+- Owner decision needed: credit allowance per plan and whether templated emails are free. No per-action credit prices in customer UI.
