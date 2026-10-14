@@ -167,3 +167,8 @@ Verdict: PASS (analysis only; nothing to verify in code, nothing published).
 - AI spend so far ~$0.02 (88 requests). Busy-driver model (20 chats, 10 voice, 25 AI emails, 50 inbound/day) ~ $1.50/month AI cost per driver, ~4% of $39 Solo. Estimates, not bills; excludes hosting, email, HERE; booking/follow-up email AI calls may not be logged.
 - Credits are the real constraint: same driver would use ~3,060 credits/month vs 300 included (AI emails 1,500, chat 1,200, voice 300). Lovable offers to turn booking and follow-up emails into fixed templates (like the counter email), cutting use to ~1,500.
 - Owner decision needed: credit allowance per plan and whether templated emails are free. No per-action credit prices in customer UI.
+
+## 2026-10-14 08:00 — Sent to Lovable: Solo v3 redesign + chat AI plan with 10 safety requirements (owner approved)
+- Message umsg_01m4wp54haf239yktmqhd8854s, attached lovable-build/mockups/solo_v3.html. Steps: 1 nav+Home (+bell cleanup, revenue next to kept, booked moment), 2 chat tasks/archive + AI plan with S1-S10 safety tests, 3 polish. Not to publish.
+- My review checklist when it finishes: S1 untrusted-text handling and fixed recipient/BCC; S2 RLS client not service key, driver vs owner; S3 memory opt-in, forget really deletes; S4 Gmail data limited use; S5 city-level weather, HERE only on active load, rate limits; S6 no real data to OpenAI path; S7 self-harm/tired/no-excuse; S8 small talk free, caps; S9 advice limits; S10 audit log + eval pass rate; no regression on 44 phrases.
+- Owner note for later: company-driver contests/perks (Q4 prize progress ring) as a later phase, not in this build.
