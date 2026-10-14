@@ -238,3 +238,9 @@ Verdict: PASS WITH GAPS. Code review only (not clicked). A load screen DONE, B r
 7. inbound.server.ts: rate con not in a Masar thread is held, not filed.
 8. Dead code RateConCheck.tsx, LoadTimeline.tsx.
 Sent Lovable one consolidated fix message for 1-8. Solo audit list (SOLO_AUDIT_2026-10-14.md) still held. Owner has not yet chosen the broker setup packet option.
+
+## 2026-10-14 15:40 — Fix verification (commit ee27963; edits 27da8ce "Fixed 6 solo gaps", ee27963 "Added BOL/POD to broker email")
+Verdict: PASS WITH GAPS (minor). Code read, tests not run. Items 1-8 from the 14:40 message all FIXED: cancel confirm; status guard + dedupe; ask path no draft and recipient only from load; hosFrom log_date check; status_updates owner-only (RLS ms_rw from 0042 + isOwner in auto branch, SQL test); Mark paid records at once, Undo via undo_payment RPC (0065, 10-minute window, audited); rate con by ref with needs_confirm; RateConCheck and LoadTimeline deleted.
+New edit ee27963 (not requested by this session): BOL goes with the Loaded update, POD with Delivered, only to the load's customer email, owner tap or ask-once consent, company_id filters, audit rows. Clean.
+Minor gaps to batch into the next round: (a) loadDocAttachment has no size cap (reject over about 10 MB); (b) manual path inserts a new draft on every tap, reuse the existing draft; (c) dedupe counts only sent rows, two rapid auto calls could both send; (d) attachments are raw base64, not signed expiring links.
+No fix sent (not rule violations). Held for next round: SOLO_AUDIT_2026-10-14.md; weather-from-location + ask_web lookup; carrier setup step. Awaiting owner go on those.
