@@ -2,165 +2,269 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=DM+Mono:wght@500&family=DM+Sans:wght@400;500;700&display=swap">
 <style>
-/* Layout: five 9:16 ad players in a wrapping row. Single committed look: ink black, lime, coral, electric blue. Each scene 2 to 3.5 s, auto-looping. */
-:root{--ink:#0B0F0C;--ink2:#18201A;--lime:#C8F25C;--coral:#FF6A4D;--blue:#3D7BFF;--paper:#F5F7EF;--fd:'Bricolage Grotesque',system-ui,sans-serif;--fb:'DM Sans',system-ui,sans-serif;--fm:'DM Mono',ui-monospace,monospace;color-scheme:dark}
-*{box-sizing:border-box}body{margin:0;background:#070A08;color:#F1F5EC;font-family:var(--fb);padding-block:28px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-h1{font:800 30px/1.05 var(--fd);margin:0 0 8px;text-wrap:balance}.lead{color:#9DAA9E;max-width:64ch;line-height:1.5;margin:0 0 22px}
-.row{display:flex;flex-wrap:wrap;gap:26px;align-items:flex-start}.unit{width:288px;max-width:100%}
+/* Layout: six 9:16 players in a wrapping row. Each ad has its own transition, palette and hero device. Single committed dark look. */
+:root{--ink:#0B0F0C;--ink2:#18201A;--lime:#C8F25C;--coral:#FF6A4D;--blue:#3D7BFF;--amber:#FFB020;--paper:#F3EFE6;--fd:'Bricolage Grotesque',system-ui,sans-serif;--fb:'DM Sans',system-ui,sans-serif;--fm:'DM Mono',ui-monospace,monospace;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:#070A08;color:#F1F5EC;font-family:var(--fb);padding-block:28px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font:800 30px/1.05 var(--fd);margin:0 0 8px;text-wrap:balance}
+.lead{color:#9DAA9E;max-width:66ch;line-height:1.5;margin:0 0 24px}
+.row{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}
+.unit{width:290px;max-width:100%}
 .tag{font:500 11px var(--fm);letter-spacing:.08em;text-transform:uppercase;color:#9DAA9E;display:block;margin-bottom:6px}
-.hook{font:700 16px/1.2 var(--fd);margin:0 0 8px}
-.ad{position:relative;width:288px;max-width:100%;aspect-ratio:9/16;border-radius:22px;overflow:hidden;background:var(--ink);border:1px solid #2A372D}
-.prog{position:absolute;top:8px;left:10px;right:10px;display:flex;gap:4px;z-index:5}.prog i{flex:1;height:3px;border-radius:3px;background:rgba(255,255,255,.28);overflow:hidden;position:relative}.prog i b{position:absolute;inset:0;background:#fff;transform:scaleX(0);transform-origin:left}.prog i.done b{transform:scaleX(1)}
-.sc{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;gap:12px;padding:34px 22px 28px}
-.bg-ink{background:var(--ink);color:#F1F5EC}.bg-lime{background:var(--lime);color:#10200A}.bg-coral{background:var(--coral);color:#1A0904}.bg-blue{background:var(--blue);color:#fff}
-.sc *{margin:0}.t1{font:800 44px/.95 var(--fd);letter-spacing:-.02em;text-wrap:balance}.t2{font:800 30px/1 var(--fd);letter-spacing:-.01em;text-wrap:balance}.t3{font:700 17px/1.25 var(--fb)}.sm{font:500 11px var(--fm);letter-spacing:.08em;text-transform:uppercase;opacity:.75}
-.huge{font:800 64px/.9 var(--fd);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
-.hl{background:var(--lime);color:#10200A;padding:0 .2em;border-radius:6px;box-decoration-break:clone;-webkit-box-decoration-break:clone}.bg-lime .hl{background:var(--ink);color:var(--lime)}
-.a{opacity:0;animation:up .5s cubic-bezier(.2,1,.3,1) forwards}.a1{animation-delay:.05s}.a2{animation-delay:.35s}.a3{animation-delay:.7s}.a4{animation-delay:1.05s}.a5{animation-delay:1.4s}
-@keyframes up{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
-.slam{opacity:0;animation:slam .45s cubic-bezier(.2,1.5,.4,1) forwards}@keyframes slam{from{opacity:0;transform:scale(2.2) rotate(-6deg)}to{opacity:1;transform:none}}
-.slide{opacity:0;animation:sl .5s cubic-bezier(.2,1,.3,1) forwards}@keyframes sl{from{opacity:0;transform:translateX(60px)}to{opacity:1;transform:none}}
-.pulse{animation:pl 1.2s ease-in-out infinite}@keyframes pl{50%{transform:scale(1.07)}}
-.ring{width:150px;height:150px;position:relative}.ring svg{width:100%;height:100%;transform:rotate(-90deg)}.ring span{position:absolute;inset:0;display:grid;place-items:center;font:800 34px var(--fd)}
-.ring circle.v{animation:dr 1.1s .2s cubic-bezier(.2,1,.3,1) both}@keyframes dr{from{stroke-dashoffset:var(--full)}}
-.card{background:var(--ink2);color:#F1F5EC;border-radius:16px;padding:12px 14px;font-size:13px;line-height:1.35}
-.btn{display:inline-block;background:var(--ink);color:var(--lime);font:700 15px var(--fb);padding:13px 20px;border-radius:99px;align-self:flex-start}.btn.l{background:var(--lime);color:#10200A}
-.wave{display:flex;gap:4px;align-items:center;height:70px}.wave i{width:7px;border-radius:5px;background:#fff;height:20px;animation:wv .7s ease-in-out infinite alternate;transform-origin:center}@keyframes wv{to{transform:scaleY(3)}}.wave i:nth-child(2n){animation-duration:.5s}.wave i:nth-child(3n){animation-duration:.9s}
-.chk{width:110px;height:110px;border-radius:50%;background:var(--ink);color:var(--lime);display:grid;place-items:center;animation:slam .5s cubic-bezier(.2,1.5,.4,1) both}
-.cf{position:absolute;width:10px;height:10px;border-radius:3px;opacity:0;animation:cf 1.4s ease-out forwards}@keyframes cf{0%{opacity:1;transform:translate(0,0) rotate(0)}100%{opacity:0;transform:translate(var(--x),var(--y)) rotate(300deg)}}
-.ln{display:flex;justify-content:space-between;font:700 22px var(--fd);border-bottom:2px solid rgba(255,255,255,.18);padding-bottom:8px}.ln span:last-child{color:var(--coral);font-family:var(--fm)}
-.chp{display:inline-block;background:var(--ink);color:var(--lime);font:700 15px var(--fb);padding:10px 16px;border-radius:99px;margin:3px 4px 3px 0}
-.logo{display:flex;align-items:center;gap:8px;font:800 20px var(--fd)}
-.ctl{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.ctl button{white-space:nowrap;padding:9px 12px;background:#18201A;color:#F1F5EC;border:1px solid #2A372D;border-radius:99px;font:500 13px var(--fb);cursor:pointer;min-height:40px}.ctl button:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
-.why{font-size:12.5px;color:#9DAA9E;line-height:1.45;margin:8px 2px 0}.why b{color:#F1F5EC}
-.fine{font-size:11.5px;color:#7E8B80;margin-top:26px;max-width:70ch;line-height:1.5}
-@media (prefers-reduced-motion:reduce){.a,.slam,.slide,.cf,.chk,.ring circle.v{animation:none;opacity:1}.pulse,.wave i{animation:none}.cf{display:none}}
-
-.top{justify-content:flex-start;gap:8px;padding-bottom:0}
-.stamp{font:500 11px var(--fm);letter-spacing:.08em;text-transform:uppercase;opacity:.8}
-.phn{width:216px;height:330px;margin:auto auto 0;border:5px solid #2A372D;border-bottom:0;border-radius:26px 26px 0 0;background:#0F1511;color:#F1F5EC;padding:10px;overflow:hidden;display:flex;flex-direction:column;gap:7px;font-size:11px;line-height:1.3;animation:rise .7s cubic-bezier(.2,1,.3,1) both;position:relative}
-@keyframes rise{from{transform:translateY(140px);opacity:.2}to{transform:none;opacity:1}}
+.hook{font:700 16px/1.2 var(--fd);margin:0 0 10px;min-height:2.4em}
+.ad{position:relative;width:290px;max-width:100%;aspect-ratio:9/16;border-radius:24px;overflow:hidden;background:var(--ink);border:1px solid #2A372D;isolation:isolate}
+.prog{position:absolute;top:9px;left:10px;right:10px;display:flex;gap:4px;z-index:20}
+.prog i{flex:1;height:3px;border-radius:3px;background:rgba(255,255,255,.3);overflow:hidden;position:relative}
+.prog i b{position:absolute;inset:0;background:#fff;transform:scaleX(0);transform-origin:left}
+.stage{position:absolute;inset:0}
+.sc{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;gap:12px;padding:36px 22px 26px;overflow:hidden}
+.sc *{margin:0}
+.top{justify-content:flex-start}
+/* backgrounds */
+.bg-ink{background:var(--ink);color:#F1F5EC}.bg-lime{background:var(--lime);color:#10200A}.bg-coral{background:var(--coral);color:#1A0904}.bg-blue{background:var(--blue);color:#fff}.bg-amber{background:var(--amber);color:#1C1200}.bg-paper{background:var(--paper);color:#151A14}
+.bg-chat{background:#0E1310;color:#F1F5EC}
+.bg-dawn{background:linear-gradient(180deg,#2B1E4D 0%,#B4466B 55%,#FFB36B 100%);color:#fff}
+.bg-morn{background:linear-gradient(180deg,#5AB2FF 0%,#3D7BFF 100%);color:#fff}
+.bg-noon{background:linear-gradient(180deg,#FFE58A 0%,#C8F25C 100%);color:#10200A}
+.bg-dusk{background:linear-gradient(180deg,#5A2BB8 0%,#FF6A4D 100%);color:#fff}
+.bg-night{background:linear-gradient(180deg,#060912 0%,#17213D 100%);color:#fff}
+/* scene transitions, one per ad */
+.in-up{animation:inUp .65s cubic-bezier(.75,0,.2,1) both;z-index:2}.out-up{animation:outUp .65s cubic-bezier(.75,0,.2,1) both;z-index:1}
+@keyframes inUp{from{transform:translateY(100%)}}@keyframes outUp{to{transform:translateY(-30%) scale(.94);opacity:.25}}
+.in-wipe{animation:inWipe .7s cubic-bezier(.75,0,.2,1) both;z-index:2}.out-wipe{z-index:1}
+@keyframes inWipe{from{clip-path:inset(100% 0 0 0)}to{clip-path:inset(0)}}
+.in-iris{animation:iris .7s cubic-bezier(.7,0,.25,1) both;z-index:2}.out-iris{z-index:1;animation:dim .7s both}
+@keyframes iris{from{clip-path:circle(0% at 50% 55%)}to{clip-path:circle(140% at 50% 55%)}}@keyframes dim{to{transform:scale(1.08);opacity:.4}}
+.in-whip{animation:whipIn .45s cubic-bezier(.6,0,.2,1) both;z-index:2}.out-whip{animation:whipOut .45s cubic-bezier(.6,0,.2,1) both;z-index:1}
+@keyframes whipIn{from{transform:translateX(105%) skewX(-10deg);filter:blur(10px)}to{transform:none;filter:none}}@keyframes whipOut{to{transform:translateX(-105%) skewX(10deg);filter:blur(10px)}}
+.in-flip{animation:flipIn .75s cubic-bezier(.45,0,.2,1) both;transform-origin:50% 0;z-index:2}.out-flip{z-index:1;animation:dim .75s both}
+@keyframes flipIn{from{transform:perspective(1000px) rotateX(-100deg);opacity:.6}to{transform:perspective(1000px) rotateX(0)}}
+.in-stack{animation:stIn .7s cubic-bezier(.2,.9,.2,1) both;z-index:2;border-radius:24px}.out-stack{animation:stOut .7s cubic-bezier(.2,.9,.2,1) both;z-index:1}
+@keyframes stIn{from{transform:translateX(100%) rotate(6deg) scale(.9)}}@keyframes stOut{to{transform:translateX(-25%) scale(.86);opacity:0}}
+/* type */
+.t1{font:800 44px/.95 var(--fd);letter-spacing:-.025em}.t2{font:800 29px/1 var(--fd);letter-spacing:-.015em}.t3{font:700 16px/1.3 var(--fb)}
+.sm{font:500 11px var(--fm);letter-spacing:.08em;text-transform:uppercase;opacity:.8}
+.huge{font:800 66px/.9 var(--fd);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.w{display:inline-block;animation:wd .55s cubic-bezier(.2,1.4,.4,1) both;white-space:pre}
+@keyframes wd{from{transform:translateY(70%) rotate(5deg);opacity:0}}
+.hl{background:var(--lime);color:#10200A;padding:0 .14em;border-radius:7px}
+.bg-lime .hl,.bg-noon .hl{background:var(--ink);color:var(--lime)}
+.bg-paper .hl{background:var(--ink);color:var(--lime)}
+.bg-coral .hl{background:var(--ink);color:var(--coral)}
+.bg-amber .hl{background:var(--ink);color:var(--amber)}
+.pop{animation:pop .55s cubic-bezier(.2,1.5,.4,1) both}@keyframes pop{from{transform:scale(.3);opacity:0}}
+.rise{animation:rise .6s cubic-bezier(.2,1,.3,1) both}@keyframes rise{from{transform:translateY(30px);opacity:0}}
+/* device */
+.dev{position:relative;width:216px;height:430px;margin:8px auto 0;border-radius:34px;background:#0F1511;border:6px solid #263028;box-shadow:0 30px 60px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.06) inset;padding:26px 10px 10px;display:flex;flex-direction:column;gap:7px;font-size:11px;line-height:1.3;color:#F1F5EC;animation:devIn .9s cubic-bezier(.2,1,.3,1) both;transform:perspective(1000px) rotateY(-12deg) rotateX(5deg);flex:0 0 auto}
+.dev.r{transform:perspective(1000px) rotateY(12deg) rotateX(5deg);animation-name:devInR}
+.dev::before{content:"";position:absolute;top:8px;left:50%;width:62px;height:16px;border-radius:10px;background:#000;transform:translateX(-50%)}
+@keyframes devIn{from{transform:perspective(1000px) translateY(160px) rotateY(-32deg) rotateX(14deg);opacity:0}}
+@keyframes devInR{from{transform:perspective(1000px) translateY(160px) rotateY(32deg) rotateX(14deg);opacity:0}}
 .pc{background:#18201A;border:1px solid #2A372D;border-radius:14px;padding:8px 10px}
 .pb{display:flex;align-items:center;justify-content:space-between;font:800 13px var(--fd)}
-.pr{display:flex;align-items:center;gap:8px}.pr svg{width:40px;height:40px;transform:rotate(-90deg);flex:0 0 auto}
+.pr{display:flex;align-items:center;gap:8px}
+.mut{color:#9DAA9E;font-size:10px}
+.pbig{font:800 22px/1 var(--fd);font-variant-numeric:tabular-nums}
 .pbn{background:#C8F25C;color:#10200A;font-weight:700;text-align:center;border-radius:12px;padding:9px;font-size:12px}
 .pbn.g{background:#1F2A21;color:#F1F5EC}
-.mut{color:#9DAA9E;font-size:10px}.pbig{font:800 22px/1 var(--fd);font-variant-numeric:tabular-nums}
-.tap{position:absolute;right:12px;bottom:70px;width:34px;height:34px;border-radius:50%;background:rgba(200,242,92,.35);border:2px solid #C8F25C;animation:tp 1.2s ease-out .9s both infinite}@keyframes tp{0%{transform:scale(.5);opacity:1}100%{transform:scale(1.5);opacity:0}}
-@media (prefers-reduced-motion:reduce){.phn,.tap{animation:none}}
-
-.sgn{align-self:flex-start;background:#0E6B3A;color:#fff;border:3px solid #fff;outline:3px solid #0E6B3A;border-radius:10px;padding:10px 14px;font:800 34px/1 var(--fd);text-transform:uppercase;letter-spacing:.01em}
-.ysg{align-self:flex-start;background:#FFC72C;color:#111;border:4px solid #111;border-radius:8px;padding:10px 14px;font:800 30px/1 var(--fd);text-transform:uppercase}
-.sgn small,.ysg small{display:block;font:700 13px var(--fb);text-transform:none;margin-top:6px;opacity:.9}
-.trk{width:150px;opacity:0;color:#F1F5EC;animation:drv 2s linear forwards}.trk svg{width:100%;display:block}@keyframes drv{from{transform:translateX(-170px);opacity:1}to{transform:translateX(170px);opacity:1}}
-.bub{align-self:flex-start;max-width:88%;background:#26322A;color:#F1F5EC;border-radius:16px 16px 16px 4px;padding:10px 13px;font-size:14px;line-height:1.3}
-.bub.r{align-self:flex-end;background:var(--lime);color:#10200A;border-radius:16px 16px 4px 16px}
-.pchip{display:inline-block;padding:5px 9px;border-radius:99px;background:#1F2A21;font-size:10px;margin-right:4px}.pchip.on{background:#C8F25C;color:#10200A;font-weight:700}
-.tg{font:500 9px var(--fm);padding:2px 6px;border-radius:99px;background:rgba(91,217,139,.2);color:#5BD98B}
-.snd{background:var(--lime)!important;color:#10200A!important;font-weight:700}
-@media (prefers-reduced-motion:reduce){.trk{animation:none}}
+.mr{width:40px;height:40px;position:relative;flex:0 0 auto}.mr svg{width:100%;height:100%;transform:rotate(-90deg)}.mr b{position:absolute;inset:0;display:grid;place-items:center;font:500 9px var(--fm)}
+.pchip{display:inline-block;padding:5px 9px;border-radius:99px;background:#1F2A21;font-size:10px;margin:0 4px 4px 0}.pchip.on{background:#C8F25C;color:#10200A;font-weight:700}
+.tg{font:500 9px var(--fm);padding:2px 6px;border-radius:99px;background:rgba(91,217,139,.2);color:#5BD98B;white-space:nowrap}
+.call{position:absolute;z-index:5;background:#fff;color:#10200A;font:700 12.5px/1.2 var(--fb);padding:8px 11px;border-radius:12px;box-shadow:0 10px 24px rgba(0,0,0,.3);max-width:150px;animation:pop .5s cubic-bezier(.2,1.5,.4,1) .9s both}
+.call::after{content:"";position:absolute;width:10px;height:10px;background:#fff;transform:rotate(45deg);bottom:-5px;left:22px}
+/* ad 1: chat thread */
+.mc{align-self:flex-start;font:500 11px var(--fm);border:1px solid rgba(255,255,255,.25);border-radius:99px;padding:6px 11px}
+.mc b{color:var(--coral)}
+.thr{display:flex;flex-direction:column;gap:9px}
+.bub{position:relative;align-self:flex-start;max-width:86%;background:#222C25;border-radius:18px 18px 18px 6px;padding:10px 13px;font-size:14.5px;line-height:1.3;animation:bub .45s cubic-bezier(.2,1.4,.4,1) both}
+.bub small{display:block;font:500 10px var(--fm);color:#9DAA9E;margin-bottom:3px}
+.bub .x{position:absolute;right:-10px;top:-10px;width:24px;height:24px;border-radius:50%;background:var(--coral);color:#1A0904;display:grid;place-items:center;font:800 13px var(--fd);animation:pop .4s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes bub{from{transform:translateY(16px) scale(.9);opacity:0}}
+.typing{align-self:flex-start;background:#222C25;border-radius:18px;padding:12px 14px;display:flex;gap:4px}.typing i{width:6px;height:6px;border-radius:50%;background:#9DAA9E;animation:ty 1s infinite}.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}@keyframes ty{50%{transform:translateY(-4px);opacity:.4}}
+/* ad 2: odometer, receipt, gauge */
+.odo{display:flex;gap:3px;align-self:flex-start;background:#000;padding:8px;border-radius:10px;border:2px solid #333}
+.odo span{width:30px;height:44px;overflow:hidden;background:#151515;border-radius:4px;position:relative}
+.odo span i{position:absolute;left:0;right:0;top:0;display:flex;flex-direction:column;font:500 34px/44px var(--fm);text-align:center;color:#F1F5EC;animation:roll 1.6s cubic-bezier(.3,0,.1,1) both}
+.odo span:last-child{background:#F1F5EC}.odo span:last-child i{color:#000}
+@keyframes roll{from{transform:translateY(0)}}
+.rcpt{background:#fff;color:#111;font:500 13px/1.6 var(--fm);padding:16px 16px 22px;border-radius:4px;box-shadow:0 18px 40px rgba(0,0,0,.18);animation:print 1.8s steps(12,end) both;-webkit-mask:linear-gradient(#000,#000) top/100% calc(100% - 8px) no-repeat,radial-gradient(circle 6px at 8px 100%,transparent 6px,#000 6.5px) bottom/16px 8px repeat-x}
+@keyframes print{from{clip-path:inset(0 0 100% 0)}to{clip-path:inset(0)}}
+.rcpt .l{display:flex;justify-content:space-between}.rcpt .l.m span:last-child{color:#C23A27}.rcpt hr{border:0;border-top:2px dashed #999;margin:6px 0}
+.rcpt .tot{font:800 22px var(--fd);display:flex;justify-content:space-between}
+.gauge{width:230px;align-self:center;position:relative}
+.gauge svg{width:100%;display:block}
+.needle{transform-origin:115px 115px;animation:swing 1.6s cubic-bezier(.2,1.4,.3,1) .2s both}@keyframes swing{from{transform:rotate(-88deg)}to{transform:rotate(18deg)}}
+/* ad 3: pump */
+.pump{background:#1A1A16;border:3px solid #3a3a30;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:0 20px 40px rgba(0,0,0,.4)}
+.lcd{background:#9FB06A;color:#1F2A10;border-radius:6px;padding:6px 10px;display:flex;justify-content:space-between;align-items:baseline;font:500 12px var(--fm);box-shadow:inset 0 2px 6px rgba(0,0,0,.35)}
+.lcd b{font:500 30px var(--fm);letter-spacing:.04em;font-variant-numeric:tabular-nums}
+.pump .lab{font:800 13px var(--fd);color:var(--amber);letter-spacing:.12em}
+/* ad 4: voice */
+.bars{display:flex;align-items:center;gap:5px;height:120px;justify-content:center}
+.bars i{width:8px;border-radius:6px;background:#fff;height:24px;animation:bar .5s ease-in-out infinite alternate}
+@keyframes bar{to{transform:scaleY(3.4)}}
+.mic{width:96px;height:96px;border-radius:50%;background:var(--lime);color:#10200A;display:grid;place-items:center;align-self:center;position:relative}
+.mic::before,.mic::after{content:"";position:absolute;inset:0;border-radius:50%;border:3px solid var(--lime);animation:ring 1.6s ease-out infinite}.mic::after{animation-delay:.8s}
+@keyframes ring{from{transform:scale(1);opacity:.9}to{transform:scale(1.9);opacity:0}}
+.tw .w{animation-name:tw}@keyframes tw{from{opacity:0;transform:translateY(10px)}}
+/* ad 5: calendar + stamp */
+.cal{align-self:center;width:180px;background:#fff;color:#111;border-radius:16px;overflow:hidden;box-shadow:0 20px 40px rgba(0,0,0,.25);text-align:center}
+.cal .mo{background:var(--coral);color:#fff;font:800 15px var(--fd);letter-spacing:.14em;padding:8px}
+.cal .dy{font:800 86px/1 var(--fd);padding:12px 0 2px;font-variant-numeric:tabular-nums}
+.cal .lt{font:700 13px var(--fb);color:var(--coral);padding-bottom:12px}
+.inv{position:relative;align-self:center;width:220px;background:#fff;color:#111;border-radius:14px;padding:16px 16px 70px;box-shadow:0 20px 40px rgba(0,0,0,.2);animation:shake .5s 1s both}
+@keyframes shake{20%{transform:translateX(-6px) rotate(-1deg)}40%{transform:translateX(6px) rotate(1deg)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
+.stamp{position:absolute;inset:auto 12px 12px auto;font-size:30px!important;border:5px solid #16794A;color:#16794A;font:800 40px/1 var(--fd);padding:4px 12px;border-radius:10px;transform:rotate(-14deg);animation:stamp .45s cubic-bezier(.2,1.6,.4,1) .9s both;background:rgba(255,255,255,.85)}
+@keyframes stamp{from{transform:rotate(-14deg) scale(3);opacity:0}}
+.cf{position:absolute;width:10px;height:10px;border-radius:3px;opacity:0;animation:cf 1.5s ease-out 1.1s forwards;z-index:4}
+@keyframes cf{0%{opacity:1;transform:translate(0,0) rotate(0)}100%{opacity:0;transform:translate(var(--x),var(--y)) rotate(320deg)}}
+/* ad 6: day */
+.clock{font:800 60px/1 var(--fd);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.sun{position:absolute;width:74px;height:74px;border-radius:50%;background:radial-gradient(circle,#FFF4C2 0%,#FFD25A 55%,rgba(255,210,90,0) 72%);animation:sun 2.4s ease-out both;z-index:0}
+@keyframes sun{from{transform:translate(-40px,60px) scale(.7);opacity:0}}
+.ts{align-self:flex-start;font:500 12px var(--fm);background:rgba(0,0,0,.28);padding:5px 10px;border-radius:99px;letter-spacing:.06em}
+/* cta */
+.logo{display:flex;align-items:center;gap:8px;font:800 20px var(--fd)}
+.btn{display:inline-block;align-self:flex-start;background:var(--ink);color:var(--lime);font:700 15px var(--fb);padding:13px 20px;border-radius:99px}
+.bg-ink .btn,.bg-night .btn,.bg-blue .btn{background:var(--lime);color:#10200A}
+/* controls */
+.ctl{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.ctl button{background:#18201A;color:#F1F5EC;border:1px solid #2A372D;border-radius:99px;padding:9px 12px;font:500 13px var(--fb);cursor:pointer;min-height:40px;white-space:nowrap}
+.ctl button:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+.ctl button.on{background:var(--lime);color:#10200A;font-weight:700}
+.why{font-size:12.5px;color:#9DAA9E;line-height:1.45;margin:8px 2px 0}.why b{color:#F1F5EC}.why .hold{color:#FFC72C}
+.fine{font-size:11.5px;color:#7E8B80;margin-top:26px;max-width:72ch;line-height:1.5}
+@media (prefers-reduced-motion:reduce){.sc,.w,.pop,.rise,.dev,.bub,.call,.rcpt,.needle,.odo span i,.inv,.stamp,.sun,.bars i,.mic::before,.mic::after,.typing i{animation:none!important}.cf{display:none}}
 </style>
 <h1>Six ads for Masar Solo</h1>
-<p class="lead">Each ad opens on a road sign and a truck so a driver stops scrolling, then names the problem. About 17 seconds, a new scene every 2 to 3 seconds, real app screens inside. Press Sound on under one ad to hear a synthesized beat and effects (one ad at a time). The final videos get real music and a voiceover.</p>
+<p class="lead">Each ad has its own look and its own transition: a broker text thread, a printed receipt, a fuel pump, a voice wave, a calendar, and a day from sunrise to night. The app screens come from the Solo v3 design. Each one opens on the driver's problem in the first second. Press Sound on under one ad to hear its beat (one at a time). The final videos get real music and a voiceover.</p>
 <div class="row" id="row"></div>
 <p class="fine">Example numbers are for illustration only. Results depend on each driver's loads and costs. Trial: 14 days, card required, cancel anytime.</p>
 <script>
-const ring=(p,col,txt,full=94)=>`<div class="ring"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="4"/><circle class="v" cx="18" cy="18" r="15" fill="none" stroke="${col}" stroke-width="4" stroke-linecap="round" pathLength="100" stroke-dasharray="${p} 100" style="--full:${p}"/></svg><span>${txt}</span></div>`;
-const mark=`<svg width="26" height="26" viewBox="0 0 48 48" fill="none"><path d="M9 38V14.5c0-1.3 1.6-2 2.5-1L24 26.5l12.5-13c.9-1 2.5-.3 2.5 1V30" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-const cta=(line)=>({bg:'lime',d:3600,h:`<div class="logo a a1">${mark}Masar Solo</div><div class="t1 a a2">${line}</div><div class="t3 a a3">Start your 14-day trial.<br>Cancel anytime.</div><span class="btn a a4">masar10x.io</span>`});
-const conf=(n)=>Array.from({length:n},(_,i)=>{const a=i/n*6.28,r=70+((i*37)%60);const c=['#C8F25C','#FF6A4D','#3D7BFF','#fff'][i%4];return `<i class="cf" style="left:50%;top:44%;background:${c};--x:${Math.cos(a)*r}px;--y:${Math.sin(a)*r-20}px;animation-delay:${(i%5)*.06}s"></i>`}).join('');
-
-const rg=(p,c,t)=>`<svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" fill="none" stroke="#2A372D" stroke-width="4"/><circle cx="18" cy="18" r="15" fill="none" stroke="${c}" stroke-width="4" stroke-linecap="round" pathLength="100" stroke-dasharray="${p} 100"/></svg>`;
-const hdr=(t)=>`<div class="pb"><span>${t}</span><span class="mut">92%</span></div>`;
-const phone=(inner,cap,time,cls='top',bg='ink')=>({bg,d:2700,cls,h:`${time?`<div class="stamp a a1">${time}</div>`:''}<div class="t2 a a1" style="font-size:25px">${cap}</div><div class="phn">${inner}<i class="tap"></i></div>`});
+const W=(txt,base=0,step=85)=>txt.split(' ').map((w,i)=>{const h=w.startsWith('*');const c=w.replace(/\*/g,'');return `<span class="w" style="animation-delay:${base+i*step}ms">${h?`<span class="hl">${c}</span>`:c}</span>`}).join(' ');
+const rg=(p,c)=>`<svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" fill="none" stroke="#2A372D" stroke-width="4"/><circle cx="18" cy="18" r="15" fill="none" stroke="${c}" stroke-width="4" stroke-linecap="round" pathLength="100" stroke-dasharray="${p} 100"/></svg>`;
+const mr=(p,c,t,s=40)=>`<div class="mr" style="width:${s}px;height:${s}px">${rg(p,c)}<b>${t}</b></div>`;
+const hdr=t=>`<div class="pb"><span>${t}</span><span class="mut">92%</span></div>`;
 const P={
-offer:()=>hdr('Loads')+`<div class="pc"><div class="pr"><div style="width:40px;height:40px;position:relative">${rg(48,'#F2B84B')}<b style="position:absolute;inset:0;display:grid;place-items:center;font:500 9px var(--fm)">48%</b></div><div><b>Atlanta → Dallas</b><div class="mut">$2,850 · 780 mi</div></div></div></div><div class="pc" style="text-align:center"><div class="mut">You keep</div><div class="pbig" style="color:#F2B84B">$1,310</div><div class="mut">after fuel, tolls, truck</div></div><div class="pc mut">Why this number ›</div><div class="pbn">Counter</div>`,
-counter:()=>hdr('Counter')+`<div class="pc" style="text-align:center"><div class="mut">Ask</div><div class="pbig">$3,150</div></div><div class="pr" style="justify-content:center"><span class="pbn g" style="padding:8px 14px">−$50</span><span class="pbn" style="padding:8px 14px">+$50</span></div><div class="pc" style="text-align:center"><div class="mut">You keep</div><div class="pbig" style="color:#C8F25C">$1,610</div><div class="mut">51% of pay</div></div><div class="pbn">Preview email</div>`,
+offer:()=>hdr('Offer')+`<div class="pc"><div class="pr">${mr(48,'#F2B84B','48%')}<div><b>Atlanta → Dallas</b><div class="mut">$2,850 · 780 mi · Apex</div></div></div></div><div class="pc" style="text-align:center"><div class="mut">You keep</div><div class="pbig" style="color:#F2B84B">$1,310</div><div class="mut">after fuel, tolls, truck</div></div><div class="pc mut">Why this number ›</div><div class="pbn">Counter</div><div class="pbn g">Book</div>`,
+counter:()=>hdr('Counter')+`<div class="pc" style="text-align:center"><div class="mut">Your ask</div><div class="pbig">$3,150</div></div><div class="pr" style="justify-content:center"><span class="pbn g" style="padding:8px 14px">−$50</span><span class="pbn" style="padding:8px 14px">+$50</span></div><div class="pc" style="text-align:center"><div class="mut">You would keep</div><div class="pbig" style="color:#C8F25C">$1,610</div><div class="mut">51% of pay</div></div><div class="pbn">Preview email</div>`,
 email:()=>hdr('Email')+`<div class="pc"><b>To</b> Apex Freight<br><b>Subject</b> Counter $3,150<br><br>Thanks for the load. Can we do $3,150?</div><div class="pc mut">BCC quotes@masar10x.io</div><div class="pbn">Send</div><div class="pbn g">Edit</div>`,
-home:()=>hdr('Masar')+`<div class="pc"><div class="mut">On the road</div><b style="font-size:13px">Atlanta → Dallas</b><div style="height:5px;border-radius:5px;background:#1F2A21;margin:6px 0"><i style="display:block;width:62%;height:100%;background:#C8F25C;border-radius:5px"></i></div><div class="mut">Arrive 11:30 · 312 mi left</div></div><div class="pc"><div class="pr" style="justify-content:space-around;text-align:center"><div>${rg(61,'#5BD98B')}<div class="mut">Drive 6:42</div></div><div>${rg(34,'#F2B84B')}<div class="mut">Shift 9:10</div></div><div>${rg(58,'#5BD98B')}<div class="mut">Cycle 41:20</div></div></div></div><div class="pbn">Navigate</div>`,
-money:()=>hdr('This week')+`<div class="pc"><div class="pr"><div style="width:58px;height:58px;position:relative">${rg(68,'#C8F25C')}<b style="position:absolute;inset:0;display:grid;place-items:center;font:500 11px var(--fm)">68%</b></div><div style="flex:1"><div class="mut">You kept</div><div class="pbig" style="color:#C8F25C">$2,720</div></div></div><div style="display:flex;justify-content:space-between;margin-top:8px;border-top:1px solid #2A372D;padding-top:6px"><span class="mut">Revenue</span><b>$4,000</b></div></div><div class="pc mut">Fuel −$890 · Tolls −$140 · Repairs −$250</div>`,
-chat:()=>hdr('Masar')+`<div class="pc">Morning, Abdel. Load is rolling. You arrive 11:30.</div><div style="margin-top:auto" class="pbn" >🎙 Tap and talk</div><div class="mut" style="text-align:center">or type a message</div>`,
-invoice:()=>hdr('Invoice 1012')+`<div class="pc"><div class="pr"><div style="width:52px;height:52px;position:relative">${rg(80,'#FF6A4D')}<b style="position:absolute;inset:0;display:grid;place-items:center;font:500 12px var(--fm)">8d</b></div><div><div class="mut">Coyote owes you</div><div class="pbig">$2,450</div></div></div></div><div class="pc mut">Sent Oct 1 · Due Oct 6 · No reminders yet</div><div class="pbn">Send a reminder</div><div class="pbn g">Mark paid</div>`,
-paid:()=>hdr('Invoice 1012')+`<div class="pc" style="text-align:center;padding:16px 8px"><div style="font:800 34px var(--fd);color:#C8F25C">PAID</div><div class="pbig">$2,450</div><div class="mut">Coyote Logistics · today</div></div><div class="pc mut">Recorded. Undo for 8 seconds.</div>`,
-late:()=>hdr('Running late')+`<div class="pc"><b>To</b> Apex Freight<br><br>Traffic put me about 40 minutes behind. I'll arrive around 2:40.</div><div class="pc mut">Estimate from the map · BCC quotes@</div><div class="pbn">Send</div><div class="pbn g">Edit</div>`
+chat:()=>hdr('Masar')+`<div class="pc">Morning. Load is rolling. You arrive 11:30.</div><div class="pc mut">Open: Apex waiting · Chase 1012</div><div style="margin-top:auto" class="pbn">🎙 Tap and talk</div><div class="mut" style="text-align:center">or type a message</div>`,
+home:()=>hdr('Masar')+`<div class="pc"><div class="mut">On the road</div><b style="font-size:13px">Atlanta → Dallas</b><div style="height:5px;border-radius:5px;background:#1F2A21;margin:6px 0"><i style="display:block;width:62%;height:100%;background:#C8F25C;border-radius:5px"></i></div><div class="mut">Arrive 11:30 · 312 mi left</div></div><div class="pc"><div class="pr" style="justify-content:space-around;text-align:center"><div>${mr(61,'#5BD98B','6:42',36)}<div class="mut">Drive</div></div><div>${mr(34,'#F2B84B','9:10',36)}<div class="mut">Shift</div></div><div>${mr(58,'#5BD98B','41h',36)}<div class="mut">Cycle</div></div></div></div><div class="pc"><div class="pr">${mr(68,'#C8F25C','68%')}<div style="flex:1"><div class="mut">Kept this week</div><b style="font-size:15px;color:#C8F25C">$2,720</b></div><div style="text-align:right"><div class="mut">Revenue</div><b>$4,000</b></div></div></div><div class="pbn">Navigate</div>`,
+invoice:()=>hdr('Invoice 1012')+`<div class="pc"><div class="pr">${mr(80,'#FF6A4D','8d',50)}<div><div class="mut">Coyote owes you</div><div class="pbig">$2,450</div></div></div></div><div class="pc mut">Sent Oct 1 · Due Oct 6 · No reminders yet</div><div class="pbn">Send a reminder</div><div class="pbn g">Mark paid</div>`,
+remind:()=>hdr('Reminder')+`<div class="pc"><b>To</b> Coyote Logistics<br><br>Friendly reminder: invoice 1012 for $2,450 is past due. Can you confirm payment?</div><div class="pc mut">Your mailbox · BCC quotes@</div><div class="pbn">Send</div><div class="pbn g">Edit</div>`,
+late:()=>hdr('Running late')+`<div class="pc"><b>To</b> Apex Freight<br><br>Traffic put me about 40 minutes behind. I'll arrive around 2:40.</div><div class="pc mut">ETA from the map · BCC quotes@</div><div class="pbn">Send</div><div class="pbn g">Edit</div>`,
+paid:()=>hdr('Invoice 1012')+`<div class="pc" style="text-align:center;padding:18px 8px"><div style="font:800 34px var(--fd);color:#C8F25C">PAID</div><div class="pbig">$2,450</div><div class="mut">Coyote Logistics · today</div></div><div class="pc mut">Recorded. Undo for 8 seconds.</div>`,
+find:()=>hdr('Find')+`<div><span class="pchip">Dry van</span><span class="pchip on">New authority OK</span><span class="pchip">500+ mi</span></div><div class="pc"><div class="pr">${mr(53,'#C8F25C','53%',34)}<div style="flex:1"><b style="white-space:nowrap">Dallas → Houston</b><div class="mut">$900 · Apex</div></div></div><span class="tg">New MC OK</span></div><div class="pc"><div class="pr">${mr(49,'#F2B84B','49%',34)}<div style="flex:1"><b style="white-space:nowrap">Austin → Atlanta</b><div class="mut">$2,600 · TQL</div></div></div><span class="tg">New MC OK</span></div><div class="pbn">Email broker</div>`,
+brk:()=>hdr('Your numbers')+`<div class="pc" style="text-align:center"><div class="mut">Break-even</div><div class="pbig">$1.92<span class="mut"> /mile</span></div></div><div class="pc mut" style="line-height:1.7">Fuel $0.62 · Insurance $0.31<br>Truck $0.38 · Repairs $0.24<br>Everything else $0.37</div><div class="pc" style="text-align:center"><div class="mut">This load pays $2.37/mi</div><div class="pbig" style="color:#C8F25C">+$0.45<span class="mut"> /mi kept</span></div></div>`
 };
-
-P.find=()=>hdr('Find')+`<div><span class="pchip">Dry van</span><span class="pchip on">New authority OK</span><span class="pchip">500+ mi</span></div><div class="pc"><div class="pr"><div style="width:36px;height:36px;position:relative">${rg(53,'#C8F25C')}<b style="position:absolute;inset:0;display:grid;place-items:center;font:500 8px var(--fm)">53%</b></div><div style="flex:1"><b style="font-size:10.5px;white-space:nowrap">Dallas → Houston</b><div class="mut">$900 · Apex</div></div><span class="tg">New MC OK</span></div></div><div class="pc"><div class="pr"><div style="width:36px;height:36px;position:relative">${rg(49,'#F2B84B')}<b style="position:absolute;inset:0;display:grid;place-items:center;font:500 8px var(--fm)">49%</b></div><div style="flex:1"><b style="font-size:10.5px;white-space:nowrap">Austin → Atlanta</b><div class="mut">$2,600 · TQL</div></div><span class="tg">New MC OK</span></div></div><div class="pbn">Email broker</div>`;
-P.break=()=>hdr('Your numbers')+`<div class="pc" style="text-align:center"><div class="mut">Break-even</div><div class="pbig">$1.92<span class="mut"> /mile</span></div></div><div class="pc mut" style="line-height:1.6">Fuel $0.62 · Insurance $0.31<br>Truck $0.38 · Repairs $0.24 · Other $0.37</div><div class="pc" style="text-align:center"><div class="mut">This load pays $2.37/mi</div><div class="pbig" style="color:#C8F25C">+$0.45<span class="mut"> /mile kept</span></div></div>`;
-const TRK=`<div class="trk"><svg viewBox="0 0 120 50" fill="currentColor"><rect x="2" y="8" width="72" height="28" rx="3"/><path d="M76 16h22l12 12v8H76z"/><circle cx="20" cy="40" r="7" stroke="#0B0F0C" stroke-width="3"/><circle cx="44" cy="40" r="7" stroke="#0B0F0C" stroke-width="3"/><circle cx="68" cy="40" r="7" stroke="#0B0F0C" stroke-width="3"/><circle cx="98" cy="40" r="7" stroke="#0B0F0C" stroke-width="3"/></svg></div>`;
-const GSG=(t,sub='')=>`<div class="sgn slam">${t}${sub?`<small>${sub}</small>`:''}</div>`;
-const YSG=(t,sub='')=>`<div class="ysg slam">${t}${sub?`<small>${sub}</small>`:''}</div>`;
+const dev=(inner,r)=>`<div class="dev${r?' r':''}">${inner}</div>`;
+const call=(t,top,left)=>`<div class="call" style="top:${top}px;left:${left}px">${t}</div>`;
+const mark=`<svg width="26" height="26" viewBox="0 0 48 48" fill="none"><path d="M9 38V14.5c0-1.3 1.6-2 2.5-1L24 26.5l12.5-13c.9-1 2.5-.3 2.5 1V30" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const cta=(line,bg)=>({bg,d:3500,sfx:'ding',h:`<div class="logo rise">${mark}Masar Solo</div><div class="t1">${W(line,200)}</div><div class="t3 rise" style="animation-delay:.8s">Start your 14-day trial. Cancel anytime.</div><span class="btn pop" style="animation-delay:1.1s">masar10x.io</span>`});
+const conf=n=>Array.from({length:n},(_,i)=>{const a=i/n*6.28,r=80+(i*37)%70;const c=['#C8F25C','#FF6A4D','#3D7BFF','#FFB020'][i%4];return `<i class="cf" style="left:50%;top:48%;background:${c};--x:${Math.cos(a)*r}px;--y:${Math.sin(a)*r-30}px"></i>`}).join('');
+const odo=n=>`<div class="odo">${String(n).split('').map((d,i)=>`<span><i style="transform:translateY(-${(+d+10)*44}px);animation-delay:${i*90}ms">${'0123456789'.repeat(2).split('').map(x=>`<em style="font-style:normal">${x}</em>`).join('')}</i></span>`).join('')}</div>`;
 const ADS=[
-{name:'1 · New authority? Keep the wheels turning',hook:'"Brand-new MC? Brokers keep saying come back in six months."',why:'<b>Audience:</b> owner-operators with a new authority. <b>Pain:</b> brokers that want months of authority. <b>App shown:</b> Find with a "New authority OK" filter, then the offer. <b style="color:#FFC72C">Hold:</b> the filter and the broker requirement data are not built or verified. Do not run this ad until they exist.',sc:[
-{bg:'ink',d:2000,h:`${TRK}${GSG('New MC?','Brand-new authority?')}`,sfx:'whoosh'},
-{bg:'ink',d:3000,h:`<div class="sm a a1">Every broker, every call</div><div class="bub slide" style="animation-delay:.1s">Sorry, we need 6 months of authority.</div><div class="bub slide" style="animation-delay:.8s">Authority too new. Pass.</div><div class="bub slide" style="animation-delay:1.5s">Call us back later.</div>`},
-{bg:'coral',d:2000,h:`<div class="t1 slam">Truck parked.<br>Bills running.</div>`},
-phone(P.find(),'Loads that will <span class="hl">book you.</span>','In the app','top','ink'),
-phone(P.offer(),'And you see what you keep.','In the app','top','blue'),
-{bg:'lime',d:2000,h:`<div class="t1 slam">Keep the wheels <span class="hl">turning.</span></div>`,sfx:'ding'},
-cta('Find loads that fit <span class="hl" style="background:var(--ink);color:var(--lime)">your authority.</span>')]},
-{name:'2 · Know your break-even',hook:'"Running day and night. Where is the money?"',why:'<b>Audience:</b> every owner-operator. <b>Pain:</b> busy truck, nothing left. <b>App shown:</b> break-even per mile, and what this load leaves. <b>Needs:</b> the driver has entered their real costs. Numbers are examples.',sc:[
-{bg:'ink',d:2000,h:`${TRK}${YSG('Running day and night?')}`,sfx:'whoosh'},
-{bg:'coral',d:2500,h:`<div class="sm a a1">Taking home</div><div class="huge slam">$ ???</div>`},
-{bg:'ink',d:2500,h:`<div class="t1 a a1">Know your <span class="hl">break-even?</span></div><div class="t3 a a3">Per mile. To the cent.</div>`},
-phone(P.break(),'Your number. <span class="hl">Every load.</span>','In the app','top','blue'),
-{bg:'lime',d:3000,h:`<div class="sm a a1">$4,000 revenue. You kept</div><div class="huge" data-count="2720" data-from="4000">$4,000</div>`,sfx:'ding'},
-cta('Know your number <span class="hl" style="background:var(--ink);color:var(--lime)">before</span> you book.')]},
-{name:'3 · Fuel went up. Do the math',hook:'"Diesel climbs. Is that load still worth it?"',why:'<b>Pain:</b> fuel costs. <b>App shown:</b> the offer with the keep ring, the counter and the email preview.',sc:[
-{bg:'ink',d:2000,h:`${TRK}${YSG('Fuel just went up?')}`,sfx:'whoosh'},
-{bg:'lime',d:2000,h:`<div class="sm a a1">That load pays</div><div class="huge slam">$2,850</div><div class="t2 a a3">Great rate?</div>`},
-phone(P.offer(),'Check what you <span class="hl">keep.</span>','In the app'),
-phone(P.counter(),'Counter in <span class="hl">two taps.</span>','In the app','top','blue'),
-phone(P.email(),'You review. You tap Send.','In the app'),
-{bg:'blue',d:2500,h:`${ring(51,'#C8F25C','51%')}<div class="t2 a a2">Now you keep <span style="color:#C8F25C">$1,610</span></div><div class="t3 a a3">Same miles. Better rate.</div>`,sfx:'ding'},
-cta('Know what you keep <span class="hl" style="background:var(--ink);color:var(--lime)">before</span> you book.')]},
-{name:'4 · Talk, don\u2019t type',hook:'"Hands on the wheel. Masar handles the rest."',why:'<b>Pain:</b> paperwork on the road. <b>App shown:</b> the Masar ball, Tap and talk, the email preview. <b>Safety:</b> eyes stay on the road.',sc:[
-{bg:'ink',d:2000,h:`${TRK}${GSG('Hands on the wheel')}`,sfx:'whoosh'},
-phone(P.chat(),'Tap. Talk. Done.','At the truck stop','top','ink'),
-{bg:'blue',d:2500,h:`<div class="wave a a1">${'<i></i>'.repeat(14)}</div><div class="t2 a a2">"Counter that one at 3,150."</div>`},
-phone(P.email(),'Masar drafts it.','You check it','top','ink'),
-{bg:'lime',d:2500,h:`<div class="chk"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><div class="t2 a a2">Sent. Eyes on the road.</div>`,sfx:'ding'},
-cta('Your co-driver for the <span class="hl" style="background:var(--ink);color:var(--lime)">office.</span>')]},
-{name:'5 · Get paid',hook:'"Brokers pay when they feel like it."',why:'<b>Pain:</b> late invoices. <b>App shown:</b> the late invoice, the reminder and the paid moment. <b>Ask-first:</b> nothing goes out until he taps.',sc:[
-{bg:'ink',d:2000,h:`${TRK}${YSG('Invoice late?')}`,sfx:'whoosh'},
-{bg:'coral',d:2500,h:`${ring(80,'#1A0904','8d')}<div class="t2 a a2">Invoice 1012. <br>8 days late.</div>`},
-phone(P.invoice(),'Masar spots it.','In the app','top','blue'),
-phone(P.late().replace('Running late','Reminder').replace("Traffic put me about 40 minutes behind. I'll arrive around 2:40.",'Friendly reminder: invoice 1012 for $2,450 is past due. Can you confirm payment?').replace('Estimate from the map · ','Written for you · '),'You tap <span class="hl">Send.</span>','Your mailbox','top','ink'),
-phone(P.paid(),'Paid. Recorded.','Six days later','top','lime'),
-cta('Get paid <span class="hl" style="background:var(--ink);color:var(--lime)">faster.</span>')]},
-{name:'6 · A day with Masar',hook:'"Booked. Rolling. Paid."',why:'<b>Idea:</b> a day on the road in five screens. <b>App shown:</b> offer, Home with ELD hours, running late, paid.',sc:[
-{bg:'ink',d:2000,h:`${TRK}${GSG('A day with Masar')}`,sfx:'whoosh'},
-phone(P.offer(),'Rate check before coffee.','6:10 am','top','ink'),
-phone(P.home(),'On the road. Hours watched.','8:40 am','top','blue'),
-phone(P.late(),'Running late? One tap.','12:15 pm','top','coral'),
-phone(P.paid(),'Paid. Recorded.','6:45 pm','top','lime'),
-cta('Run the <span class="hl" style="background:var(--ink);color:var(--lime)">business.</span><br>Not the paperwork.')]}
+{name:'1 · New authority',tr:'up',hook:'"Brand-new MC? Brokers keep saying come back later."',
+ why:'<b>Look:</b> a broker text thread, stories-style swipe up. <b>App:</b> Find with a new-authority filter, then the offer. <span class="hold"><b>Hold:</b> that filter and the broker data behind it are not built or verified. Do not run this ad until they exist.</span>',
+ music:{ms:122,n:[55,0,55,0,0,65.4,0,0,49,0,49,0,0,58.3,0,0]},
+ sc:[
+ {bg:'ink',d:2600,h:`<div class="mc pop">MC# 1294473 · active <b>14 days</b></div><div class="t1">${W('Brand-new *authority?*',250)}</div>`},
+ {bg:'chat',d:3400,cls:'top',h:`<div class="sm" style="margin-top:6px">Broker replies</div><div class="thr"><div class="bub" style="animation-delay:.1s"><small>TQL</small>Sorry, we need 6 months of authority.<span class="x" style="animation-delay:.5s">✕</span></div><div class="bub" style="animation-delay:.9s"><small>Coyote</small>Too new for us. Pass.<span class="x" style="animation-delay:1.3s">✕</span></div><div class="bub" style="animation-delay:1.7s"><small>Echo</small>Call us back in a few months.<span class="x" style="animation-delay:2.1s">✕</span></div><div class="typing rise" style="animation-delay:2.5s"><i></i><i></i><i></i></div></div>`},
+ {bg:'coral',d:2200,h:`<div class="t1">${W('Truck parked. *Bills* still due.')}</div>`},
+ {bg:'ink',d:3200,cls:'top',h:`<div class="sm">Masar Solo</div><div class="t2">${W('Loads that will *book you.*')}</div>${dev(P.find())}${call('Brokers that take new MCs',462,120)}`},
+ {bg:'blue',d:3000,cls:'top',h:`<div class="t2">${W('And what you *keep.*')}</div>${dev(P.offer(),1)}${call('Before you book',410,12)}`},
+ cta('Keep the wheels *turning.*','lime')]},
+{name:'2 · Know your break-even',tr:'wipe',hook:'"Running day and night. Where is the money?"',
+ why:'<b>Look:</b> odometer, a printed receipt, a gauge. Wipe-up transitions. <b>App:</b> break-even per mile on this load. <b>Needs:</b> the driver has entered real costs. Numbers are examples.',
+ music:{ms:150,n:[49,0,0,49,0,0,58.3,0,49,0,0,65.4,0,58.3,0,0]},
+ sc:[
+ {bg:'ink',d:2800,h:`<div class="sm rise">Miles this quarter</div>${odo(31482)}<div class="t1">${W('Running day *and night?*',500)}</div>`},
+ {bg:'paper',d:3400,h:`<div class="rcpt"><div style="text-align:center;font-weight:700">WEEK 41 · TRUCK 112</div><hr><div class="l"><span>Revenue</span><span>$4,000</span></div><div class="l m"><span>Fuel</span><span>−$890</span></div><div class="l m"><span>Tolls</span><span>−$140</span></div><div class="l m"><span>Repairs</span><span>−$250</span></div><div class="l m"><span>Insurance, truck</span><span>−$?</span></div><hr><div class="tot"><span>Take home</span><span>???</span></div></div>`},
+ {bg:'ink',d:3000,h:`<div class="gauge"><svg viewBox="0 0 230 130"><path d="M15 115a100 100 0 0 1 200 0" fill="none" stroke="#2A372D" stroke-width="18" stroke-linecap="round"/><path d="M15 115a100 100 0 0 1 120-98" fill="none" stroke="#FF6A4D" stroke-width="18" stroke-linecap="round"/><path d="M135 17a100 100 0 0 1 80 98" fill="none" stroke="#C8F25C" stroke-width="18" stroke-linecap="round"/><g class="needle"><path d="M115 115L115 30" stroke="#fff" stroke-width="5" stroke-linecap="round"/></g><circle cx="115" cy="115" r="9" fill="#fff"/></svg></div><div class="t1">${W('Know your *break-even.*',300)}</div><div class="t3 rise" style="animation-delay:.9s">Per mile. Before every load.</div>`},
+ {bg:'paper',d:3200,cls:'top',h:`<div class="t2">${W('Your number. *Every load.*')}</div>${dev(P.brk())}${call('Every cost, per mile',410,120)}`},
+ {bg:'paper',d:2600,h:`<div class="sm rise">On this load you keep</div><div class="huge pop">+$0.45</div><div class="t2">${W('per mile. Not a guess.',400)}</div>`},
+ cta('Know your number *before* you book.','ink')]},
+{name:'3 · Fuel and the rate',tr:'iris',hook:'"Watching the pump climb? Check the rate first."',
+ why:'<b>Look:</b> a diesel pump display that ticks up, iris transitions. <b>App:</b> the offer with the keep ring, then the counter with the live keep.',
+ music:{ms:115,n:[55,55,0,55,0,65.4,0,55,49,49,0,49,0,58.3,0,49]},
+ sc:[
+ {bg:'ink',d:3000,h:`<div class="pump rise"><div class="lab">DIESEL</div><div class="lcd"><span>GAL</span><b data-count="152.4" data-dec="1">0.0</b></div><div class="lcd"><span>TOTAL</span><b data-count="730" data-pre="$" data-dec="2">$0.00</b></div></div><div class="t2">${W('Watching the pump *climb?*',600)}</div>`},
+ {bg:'amber',d:2200,h:`<div class="sm">That load pays</div><div class="huge pop">$2,850</div><div class="t2">${W('Still worth it?',400)}</div>`},
+ {bg:'ink',d:3200,cls:'top',h:`<div class="t2">${W('See what you *keep.*')}</div>${dev(P.offer())}${call('48% kept, after fuel',410,120)}`},
+ {bg:'blue',d:3200,cls:'top',h:`<div class="t2">${W('Counter in *two taps.*')}</div>${dev(P.counter(),1)}${call('Keep updates live',410,12)}`},
+ {bg:'amber',d:2600,h:`<div class="sm rise">Same miles. Better rate.</div><div class="huge pop">$1,610</div><div class="t2">${W('kept. Up from $1,310.',400)}</div>`},
+ cta('Know what you keep *before* you book.','amber')]},
+{name:'4 · Talk, don’t type',tr:'whip',hook:'"Hands on the wheel. Masar handles the office."',
+ why:'<b>Look:</b> a live voice wave, words typing as he speaks, fast whip pans. <b>App:</b> Tap and talk, then the email preview. <b>Safety:</b> he reviews and taps Send.',
+ music:{ms:110,n:[65.4,0,65.4,0,73.4,0,0,65.4,0,0,55,0,58.3,0,0,0]},
+ sc:[
+ {bg:'blue',d:2400,h:`<div class="bars">${Array.from({length:18},(_,i)=>`<i style="animation-delay:${(i%6)*.08}s;animation-duration:${.35+(i%5)*.08}s"></i>`).join('')}</div><div class="t1">${W('Hands on the *wheel.*',200)}</div>`},
+ {bg:'ink',d:3000,h:`<div class="mic pop"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></div><div class="t2 tw" style="text-align:center">${W('"Counter that one at *3,150.*"',500,220)}</div>`},
+ {bg:'blue',d:3000,cls:'top',h:`<div class="t2">${W('One big *button.*')}</div>${dev(P.chat())}${call('Tap and talk',410,120)}`},
+ {bg:'ink',d:3200,cls:'top',h:`<div class="t2">${W('Masar drafts. *You send.*')}</div>${dev(P.email(),1)}${call('Nothing sends without your tap',410,12)}`},
+ {bg:'blue',d:2400,h:`<div class="mic pop"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><div class="t1" style="text-align:center">${W('Sent. *Eyes up.*',300)}</div>`},
+ cta('Your co-driver for the *office.*','blue')]},
+{name:'5 · Get paid',tr:'flip',hook:'"Brokers pay when they feel like it."',
+ why:'<b>Look:</b> a calendar counting late days, page-flip transitions, a PAID stamp. <b>App:</b> the late invoice, the reminder, paid. <b>Ask-first:</b> nothing goes out until he taps.',
+ music:{ms:130,n:[49,0,0,0,49,0,58.3,0,65.4,0,0,0,58.3,0,49,0]},
+ sc:[
+ {bg:'paper',d:3000,h:`<div class="cal pop"><div class="mo">OCTOBER</div><div class="dy" data-count="14" data-from="6">6</div><div class="lt">Payment was due Oct 6</div></div><div class="t2" style="text-align:center">${W('Still *waiting* to get paid?',500)}</div>`},
+ {bg:'coral',d:2300,h:`<div class="t1">${W('Brokers pay when they *feel like it.*')}</div>`},
+ {bg:'ink',d:3200,cls:'top',h:`<div class="t2">${W('Masar *spots it.*')}</div>${dev(P.invoice())}${call('8 days late',410,120)}`},
+ {bg:'paper',d:3200,cls:'top',h:`<div class="t2">${W('Writes the nudge. *You tap Send.*')}</div>${dev(P.remind(),1)}${call('From your own mailbox',410,12)}`},
+ {bg:'lime',d:3000,h:`${conf(20)}<div class="inv"><div class="sm" style="color:#555">Invoice 1012 · Coyote</div><div class="huge" style="font-size:50px">$2,450</div><div class="stamp">PAID</div></div><div class="t2" style="text-align:center">${W('Paid. *Recorded.*',1300)}</div>`},
+ cta('Get paid *faster.*','coral')]},
+{name:'6 · A day with Masar',tr:'stack',hook:'"From first coffee to last stop."',
+ why:'<b>Look:</b> one day from sunrise to night, cards stacking in. <b>App:</b> offer, Home with hours and money, running late, paid.',
+ music:{ms:125,n:[65.4,0,73.4,0,82.4,0,73.4,0,65.4,0,55,0,58.3,0,65.4,0]},
+ sc:[
+ {bg:'dawn',d:2800,h:`<i class="sun" style="right:30px;top:120px"></i><div class="ts rise">Tuesday</div><div class="clock pop">6:10</div><div class="t1">${W('A day with *Masar.*',400)}</div>`},
+ {bg:'dawn',d:3000,cls:'top',h:`<div class="ts">6:10 AM</div><div class="t2">${W('Rate check before *coffee.*')}</div>${dev(P.offer())}`},
+ {bg:'morn',d:3000,cls:'top',h:`<i class="sun" style="right:14px;top:40px"></i><div class="ts">9:40 AM</div><div class="t2">${W('Rolling. Hours *watched.*')}</div>${dev(P.home(),1)}`},
+ {bg:'noon',d:3000,cls:'top',h:`<div class="ts">12:15 PM</div><div class="t2">${W('Running late? *One tap.*')}</div>${dev(P.late())}`},
+ {bg:'dusk',d:3000,cls:'top',h:`<div class="ts">6:45 PM</div><div class="t2">${W('Paid. *Recorded.*')}</div>${dev(P.paid(),1)}`},
+ cta('Run the *business.* Not the paperwork.','night')]}
 ];
-
-let AC=null,snd=null,beat=null,step=0;
+/* sound */
+let AC=null,owner=null,beat=null,step=0;
 const ac=()=>{if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}return AC};
-const nz=(c,d)=>{const b=c.createBuffer(1,c.sampleRate*d,c.sampleRate),a=b.getChannelData(0);for(let i=0;i<a.length;i++)a[i]=Math.random()*2-1;return b};
-const env=(c,g,t,a,d,v)=>{g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(v,t+a);g.gain.exponentialRampToValueAtTime(0.0001,t+a+d)};
+const noise=(c,d)=>{const b=c.createBuffer(1,Math.floor(c.sampleRate*d),c.sampleRate),a=b.getChannelData(0);for(let i=0;i<a.length;i++)a[i]=Math.random()*2-1;return b};
+const env=(g,t,a,d,v)=>{g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(v,t+a);g.gain.exponentialRampToValueAtTime(0.0001,t+a+d)};
 const fx={
- whoosh(){const c=ac();if(!c)return;const t=c.currentTime,s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();s.buffer=nz(c,.5);f.type='bandpass';f.Q.value=1.2;f.frequency.setValueAtTime(300,t);f.frequency.exponentialRampToValueAtTime(3500,t+.35);env(c,g,t,.1,.3,.22);s.connect(f).connect(g).connect(c.destination);s.start(t)},
- ding(){const c=ac();if(!c)return;const t=c.currentTime;[880,1318].forEach((fr,i)=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=fr;env(c,g,t+i*.06,.01,.6,.18);o.connect(g).connect(c.destination);o.start(t+i*.06);o.stop(t+1)})},
- kick(){const c=ac(),t=c.currentTime,o=c.createOscillator(),g=c.createGain();o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(40,t+.14);env(c,g,t,.005,.2,.5);o.connect(g).connect(c.destination);o.start(t);o.stop(t+.3)},
- hat(){const c=ac(),t=c.currentTime,s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();s.buffer=nz(c,.08);f.type='highpass';f.frequency.value=7000;env(c,g,t,.002,.05,.12);s.connect(f).connect(g).connect(c.destination);s.start(t)},
- bass(fr){const c=ac(),t=c.currentTime,o=c.createOscillator(),f=c.createBiquadFilter(),g=c.createGain();o.type='sawtooth';o.frequency.value=fr;f.type='lowpass';f.frequency.value=420;env(c,g,t,.01,.22,.22);o.connect(f).connect(g).connect(c.destination);o.start(t);o.stop(t+.35)}
+ whoosh(){const c=ac();if(!c)return;const t=c.currentTime,s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();s.buffer=noise(c,.5);f.type='bandpass';f.Q.value=1.4;f.frequency.setValueAtTime(300,t);f.frequency.exponentialRampToValueAtTime(3800,t+.35);env(g,t,.08,.3,.2);s.connect(f).connect(g).connect(c.destination);s.start(t)},
+ ding(){const c=ac();if(!c)return;const t=c.currentTime;[880,1318,1760].forEach((fr,i)=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=fr;env(g,t+i*.07,.01,.6,.14);o.connect(g).connect(c.destination);o.start(t+i*.07);o.stop(t+1.1)})},
+ kick(){const c=ac(),t=c.currentTime,o=c.createOscillator(),g=c.createGain();o.frequency.setValueAtTime(150,t);o.frequency.exponentialRampToValueAtTime(42,t+.14);env(g,t,.004,.2,.5);o.connect(g).connect(c.destination);o.start(t);o.stop(t+.3)},
+ hat(){const c=ac(),t=c.currentTime,s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();s.buffer=noise(c,.06);f.type='highpass';f.frequency.value=7500;env(g,t,.002,.045,.1);s.connect(f).connect(g).connect(c.destination);s.start(t)},
+ clap(){const c=ac(),t=c.currentTime,s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();s.buffer=noise(c,.2);f.type='bandpass';f.frequency.value=1500;env(g,t,.003,.12,.16);s.connect(f).connect(g).connect(c.destination);s.start(t)},
+ bass(fr){const c=ac(),t=c.currentTime,o=c.createOscillator(),f=c.createBiquadFilter(),g=c.createGain();o.type='sawtooth';o.frequency.value=fr;f.type='lowpass';f.frequency.value=480;env(g,t,.01,.2,.2);o.connect(f).connect(g).connect(c.destination);o.start(t);o.stop(t+.32)}
 };
-const NOTES=[55,0,0,55,0,0,65.4,0,55,0,0,73.4,0,0,65.4,0];
-function startBeat(){stopBeat();step=0;beat=setInterval(()=>{const k=step%16;if(k%4===0)fx.kick();if(k%4===2)fx.hat();if(NOTES[k])fx.bass(NOTES[k]);step++},125)}
+function startBeat(m){stopBeat();step=0;beat=setInterval(()=>{const k=step%16;if(k%4===0)fx.kick();if(k%2===1)fx.hat();if(k===4||k===12)fx.clap();if(m.n[k])fx.bass(m.n[k]);step++},m.ms)}
 function stopBeat(){clearInterval(beat);beat=null}
+/* players */
 const row=document.getElementById('row');const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-ADS.forEach((ad,n)=>{
+const runCounters=el=>el.querySelectorAll('[data-count]').forEach(n=>{const to=+n.dataset.count,fr=+(n.dataset.from||0),dec=+(n.dataset.dec||0),pre=n.dataset.pre||'',t0=performance.now()+300;const tick=now=>{const k=Math.max(0,Math.min(1,(now-t0)/1500));const v=fr+(to-fr)*(1-Math.pow(1-k,3));n.textContent=pre+(dec?v.toFixed(dec):Math.round(v)).toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec});if(k<1)requestAnimationFrame(tick)};requestAnimationFrame(tick)});
+ADS.forEach(ad=>{
  const u=document.createElement('div');u.className='unit';
- u.innerHTML=`<span class="tag">${ad.name}</span><p class="hook">${ad.hook}</p><div class="ad"><div class="prog">${ad.sc.map(()=>'<i><b></b></i>').join('')}</div><div class="sc" role="img" aria-label="${ad.name}"></div></div><div class="ctl"><button type="button" data-a="p">Pause</button><button type="button" data-a="r">Replay</button><button type="button" data-a="n">Next ›</button><button type="button" data-a="s">Sound on</button></div><p class="why">${ad.why}</p>`;
+ u.innerHTML=`<span class="tag">${ad.name}</span><p class="hook">${ad.hook}</p><div class="ad" role="img" aria-label="${ad.name} ad preview"><div class="prog">${ad.sc.map(()=>'<i><b></b></i>').join('')}</div><div class="stage"></div></div><div class="ctl"><button type="button" data-a="p">${reduce?'Play':'Pause'}</button><button type="button" data-a="r">Replay</button><button type="button" data-a="n">Next ›</button><button type="button" data-a="s">Sound on</button></div><p class="why">${ad.why}</p>`;
  row.appendChild(u);
- const box=u.querySelector('.sc'),bars=[...u.querySelectorAll('.prog i')];let i=0,t=null,paused=reduce,raf=null;
- const count=()=>{box.querySelectorAll('[data-count]').forEach(el=>{const to=+el.dataset.count,fr=+el.dataset.from,t0=performance.now();const step=now=>{const k=Math.min(1,(now-t0)/1700);el.textContent='$'+Math.round(fr+(to-fr)*(1-Math.pow(1-k,3))).toLocaleString('en-US');if(k<1)raf=requestAnimationFrame(step)};raf=requestAnimationFrame(step)})};
- const show=(k)=>{i=k;const s=ad.sc[k];if(snd===u&&s.sfx&&fx[s.sfx])fx[s.sfx]();box.className='sc bg-'+s.bg+(s.cls?' '+s.cls:'');box.innerHTML=s.h;bars.forEach((b,j)=>{b.className=j<k?'done':'';const f=b.firstElementChild;f.style.transition='none';f.style.transform=j<k?'scaleX(1)':'scaleX(0)'});const f=bars[k].firstElementChild;void f.offsetWidth;if(!reduce){f.style.transition=`transform ${s.d}ms linear`;f.style.transform='scaleX(1)'}else{f.style.transform='scaleX(1)'}count();clearTimeout(t);if(!paused)t=setTimeout(()=>show((k+1)%ad.sc.length),s.d)};
- u.querySelector('.ctl').addEventListener('click',e=>{const a=e.target.dataset.a;if(!a)return;if(a==='p'){paused=!paused;e.target.textContent=paused?'Play':'Pause';if(paused){clearTimeout(t)}else show(i)}if(a==='r'){show(0)}if(a==='n'){show((i+1)%ad.sc.length)}if(a==='s'){const on=snd!==u;document.querySelectorAll('[data-a="s"]').forEach(x=>{x.textContent='Sound on';x.classList.remove('snd')});if(on){ac()&&ac().resume();snd=u;e.target.textContent='Sound off';e.target.classList.add('snd');startBeat();if(paused){paused=false;u.querySelector('[data-a="p"]').textContent='Pause'}show(0)}else{snd=null;stopBeat()}}});
- if(reduce)u.querySelector('[data-a="p"]').textContent='Play';
+ const stage=u.querySelector('.stage'),bars=[...u.querySelectorAll('.prog i b')];let i=0,t=null,paused=reduce;
+ const show=k=>{i=k;const s=ad.sc[k];
+  const old=stage.querySelector('.cur');const n=document.createElement('div');
+  n.className=`sc cur bg-${s.bg}${s.cls?' '+s.cls:''}${old&&!reduce?' in-'+ad.tr:''}`;n.innerHTML=s.h;stage.appendChild(n);
+  if(old){old.classList.remove('cur');if(!reduce){old.classList.add('out-'+ad.tr);setTimeout(()=>old.remove(),800)}else old.remove()}
+  runCounters(n);
+  if(owner===u){fx[s.sfx||'whoosh']()}
+  bars.forEach((b,j)=>{b.style.transition='none';b.style.transform=`scaleX(${j<k?1:0})`});
+  const b=bars[k];void b.offsetWidth;if(!reduce&&!paused){b.style.transition=`transform ${s.d}ms linear`}b.style.transform='scaleX(1)';
+  clearTimeout(t);if(!paused)t=setTimeout(()=>show((k+1)%ad.sc.length),s.d)};
+ u.querySelector('.ctl').addEventListener('click',e=>{const a=e.target.dataset&&e.target.dataset.a;if(!a)return;
+  if(a==='p'){paused=!paused;e.target.textContent=paused?'Play':'Pause';if(paused)clearTimeout(t);else show(i)}
+  if(a==='r')show(0);
+  if(a==='n')show((i+1)%ad.sc.length);
+  if(a==='s'){const turnOn=owner!==u;document.querySelectorAll('[data-a="s"]').forEach(x=>{x.textContent='Sound on';x.classList.remove('on')});stopBeat();owner=null;
+   if(turnOn){const c=ac();if(c&&c.resume)c.resume();owner=u;e.target.textContent='Sound off';e.target.classList.add('on');startBeat(ad.music);if(paused){paused=false;u.querySelector('[data-a="p"]').textContent='Pause'}show(0)}}
+ });
  show(0);
 });
 </script>
