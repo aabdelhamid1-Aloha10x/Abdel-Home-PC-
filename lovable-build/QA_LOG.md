@@ -191,3 +191,7 @@ Verdict: PASS WITH GAPS (code-checked talk.ts, road.server.ts, lookup.server.ts;
 9. GAP (owner): Open-Meteo commercial terms, HERE terms, AI provider no-training/no-retention terms, privacy page line (docs/specs/AI_PROVIDERS.md).
 10. NOTE: kept app fonts (Space Grotesk / IBM Plex Mono) instead of mockup fonts, by project rule. Fine.
 No fix message sent: gaps are untestable here or owner items, not rule violations.
+
+## 2026-10-14 11:40 — Owner decision on v3 gaps
+- Gaps 1 (live ETA) and 2 (Booked/Start/memory-Yes untested) dismissed by owner.
+- Gap 3 (provider terms): links sent to owner for Open-Meteo, HERE, Anthropic, Lovable AI gateway. Key points: Open-Meteo free tier is non-commercial (needs paid plan); HERE Base Plan is pay-as-you-go and has an excluded-use-cases page to read (fleet/asset tracking); Anthropic API under Commercial Terms does not train on data, deletes in 30 days, ZDR by request; Lovable gateway training/opt-out statements conflict, ask Lovable for DPA and training opt-out.
