@@ -177,3 +177,17 @@ Verdict: PASS (analysis only; nothing to verify in code, nothing published).
 - Six animated 9:16 ad concepts for Solo owner-operators: sign + truck hooks, in-app screens, synthesized beat/effects (one ad at a time). New: ad 1 new-authority drivers, ad 2 break-even per mile.
 - HOLD on ad 1: needs a "New authority OK" filter and broker authority-age requirement data that are not built or verified; do not run until they exist. Ad 2 needs the driver's real costs entered. All numbers are examples; no earnings or "more loads" promises; no credits mentioned; ask-first shown on every outward action.
 - Final videos still need licensed/generated music, voiceover, and a claims check.
+
+## 2026-10-14 10:30 — Solo v3 round (Lovable msg main:agent#00000000032900, edit edt-41207bee)
+Verdict: PASS WITH GAPS (code-checked talk.ts, road.server.ts, lookup.server.ts; Lovable's report in docs/reports/solo-audit-2026-10-14.md). Not published.
+1. PASS: S7 self-harm caught by regex before any model call, fixed 988 reply (EN/ES) (src/lib/masar/talk.ts SELF_HARM).
+2. PASS: S3 memory blocks health, money/card, password, ID, exact address before storing (talk.ts NEVER_REMEMBER); asks first per Lovable; Forget deletes (not tapped in test).
+3. PASS: S1 untrusted() wrapper for outside text; late email recipient comes only from the load via brokerAddress (road.server.ts lateLookup); drafts only, never sends; audit_log late_draft entries.
+4. PASS: S2 coach numbers gated to owner or pay-permission roles (businessSnapshot); all queries via ctx.sb (user RLS). Privacy SQL test two companies owner vs driver reported passing.
+5. PASS: S5/S8 daily caps (coach 20, talk 60, weather 30, traffic 30) per user; small talk free; weather city-level rounding.
+6. PASS: eval 60/60 (earlier runs 59 and 58 of 60); axe 0 violations on 7 screens both themes; booking/follow-up/late emails are fixed templates.
+7. GAP: Home hero shows the appointment time, not a live ETA (no truck location for A&H). Live traffic untested.
+8. GAP: Booked moment and Start this load not clicked end to end; memory "Yes" store path not exercised.
+9. GAP (owner): Open-Meteo commercial terms, HERE terms, AI provider no-training/no-retention terms, privacy page line (docs/specs/AI_PROVIDERS.md).
+10. NOTE: kept app fonts (Space Grotesk / IBM Plex Mono) instead of mockup fonts, by project rule. Fine.
+No fix message sent: gaps are untestable here or owner items, not rule violations.
