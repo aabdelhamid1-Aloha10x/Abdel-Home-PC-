@@ -1,0 +1,98 @@
+<title>Masar Solo Ads</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=DM+Mono:wght@500&family=DM+Sans:wght@400;500;700&display=swap">
+<style>
+/* Layout: five 9:16 ad players in a wrapping row. Single committed look: ink black, lime, coral, electric blue. Each scene 2 to 3.5 s, auto-looping. */
+:root{--ink:#0B0F0C;--ink2:#18201A;--lime:#C8F25C;--coral:#FF6A4D;--blue:#3D7BFF;--paper:#F5F7EF;--fd:'Bricolage Grotesque',system-ui,sans-serif;--fb:'DM Sans',system-ui,sans-serif;--fm:'DM Mono',ui-monospace,monospace;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:#070A08;color:#F1F5EC;font-family:var(--fb);padding-block:28px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font:800 30px/1.05 var(--fd);margin:0 0 8px;text-wrap:balance}.lead{color:#9DAA9E;max-width:64ch;line-height:1.5;margin:0 0 22px}
+.row{display:flex;flex-wrap:wrap;gap:26px;align-items:flex-start}.unit{width:288px;max-width:100%}
+.tag{font:500 11px var(--fm);letter-spacing:.08em;text-transform:uppercase;color:#9DAA9E;display:block;margin-bottom:6px}
+.hook{font:700 16px/1.2 var(--fd);margin:0 0 8px}
+.ad{position:relative;width:288px;max-width:100%;aspect-ratio:9/16;border-radius:22px;overflow:hidden;background:var(--ink);border:1px solid #2A372D}
+.prog{position:absolute;top:8px;left:10px;right:10px;display:flex;gap:4px;z-index:5}.prog i{flex:1;height:3px;border-radius:3px;background:rgba(255,255,255,.28);overflow:hidden;position:relative}.prog i b{position:absolute;inset:0;background:#fff;transform:scaleX(0);transform-origin:left}.prog i.done b{transform:scaleX(1)}
+.sc{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;gap:12px;padding:34px 22px 28px}
+.bg-ink{background:var(--ink);color:#F1F5EC}.bg-lime{background:var(--lime);color:#10200A}.bg-coral{background:var(--coral);color:#1A0904}.bg-blue{background:var(--blue);color:#fff}
+.sc *{margin:0}.t1{font:800 44px/.95 var(--fd);letter-spacing:-.02em;text-wrap:balance}.t2{font:800 30px/1 var(--fd);letter-spacing:-.01em;text-wrap:balance}.t3{font:700 17px/1.25 var(--fb)}.sm{font:500 11px var(--fm);letter-spacing:.08em;text-transform:uppercase;opacity:.75}
+.huge{font:800 64px/.9 var(--fd);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.hl{background:var(--lime);color:#10200A;padding:0 .2em;border-radius:6px;box-decoration-break:clone;-webkit-box-decoration-break:clone}.bg-lime .hl{background:var(--ink);color:var(--lime)}
+.a{opacity:0;animation:up .5s cubic-bezier(.2,1,.3,1) forwards}.a1{animation-delay:.05s}.a2{animation-delay:.35s}.a3{animation-delay:.7s}.a4{animation-delay:1.05s}.a5{animation-delay:1.4s}
+@keyframes up{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+.slam{opacity:0;animation:slam .45s cubic-bezier(.2,1.5,.4,1) forwards}@keyframes slam{from{opacity:0;transform:scale(2.2) rotate(-6deg)}to{opacity:1;transform:none}}
+.slide{opacity:0;animation:sl .5s cubic-bezier(.2,1,.3,1) forwards}@keyframes sl{from{opacity:0;transform:translateX(60px)}to{opacity:1;transform:none}}
+.pulse{animation:pl 1.2s ease-in-out infinite}@keyframes pl{50%{transform:scale(1.07)}}
+.ring{width:150px;height:150px;position:relative}.ring svg{width:100%;height:100%;transform:rotate(-90deg)}.ring span{position:absolute;inset:0;display:grid;place-items:center;font:800 34px var(--fd)}
+.ring circle.v{animation:dr 1.1s .2s cubic-bezier(.2,1,.3,1) both}@keyframes dr{from{stroke-dashoffset:var(--full)}}
+.card{background:var(--ink2);color:#F1F5EC;border-radius:16px;padding:12px 14px;font-size:13px;line-height:1.35}
+.btn{display:inline-block;background:var(--ink);color:var(--lime);font:700 15px var(--fb);padding:13px 20px;border-radius:99px;align-self:flex-start}.btn.l{background:var(--lime);color:#10200A}
+.wave{display:flex;gap:4px;align-items:center;height:70px}.wave i{width:7px;border-radius:5px;background:#fff;height:20px;animation:wv .7s ease-in-out infinite alternate;transform-origin:center}@keyframes wv{to{transform:scaleY(3)}}.wave i:nth-child(2n){animation-duration:.5s}.wave i:nth-child(3n){animation-duration:.9s}
+.chk{width:110px;height:110px;border-radius:50%;background:var(--ink);color:var(--lime);display:grid;place-items:center;animation:slam .5s cubic-bezier(.2,1.5,.4,1) both}
+.cf{position:absolute;width:10px;height:10px;border-radius:3px;opacity:0;animation:cf 1.4s ease-out forwards}@keyframes cf{0%{opacity:1;transform:translate(0,0) rotate(0)}100%{opacity:0;transform:translate(var(--x),var(--y)) rotate(300deg)}}
+.ln{display:flex;justify-content:space-between;font:700 22px var(--fd);border-bottom:2px solid rgba(255,255,255,.18);padding-bottom:8px}.ln span:last-child{color:var(--coral);font-family:var(--fm)}
+.chp{display:inline-block;background:var(--ink);color:var(--lime);font:700 15px var(--fb);padding:10px 16px;border-radius:99px;margin:3px 4px 3px 0}
+.logo{display:flex;align-items:center;gap:8px;font:800 20px var(--fd)}
+.ctl{display:flex;gap:8px;margin-top:10px}.ctl button{background:#18201A;color:#F1F5EC;border:1px solid #2A372D;border-radius:99px;padding:9px 14px;font:500 13px var(--fb);cursor:pointer;min-height:40px}.ctl button:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+.why{font-size:12.5px;color:#9DAA9E;line-height:1.45;margin:8px 2px 0}.why b{color:#F1F5EC}
+.fine{font-size:11.5px;color:#7E8B80;margin-top:26px;max-width:70ch;line-height:1.5}
+@media (prefers-reduced-motion:reduce){.a,.slam,.slide,.cf,.chk,.ring circle.v{animation:none;opacity:1}.pulse,.wave i{animation:none}.cf{display:none}}
+</style>
+<h1>Five ads for Masar Solo</h1>
+<p class="lead">Each ad is a 9:16 video of about 15 seconds. A new scene every 2 to 3 seconds, loud type, quick cuts, all about what an owner-operator keeps. They loop on their own. Use Pause or Replay on any of them.</p>
+<div class="row" id="row"></div>
+<p class="fine">Example numbers are for illustration only. Results depend on each driver's loads and costs. Trial: 14 days, card required, cancel anytime.</p>
+<script>
+const ring=(p,col,txt,full=94)=>`<div class="ring"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="4"/><circle class="v" cx="18" cy="18" r="15" fill="none" stroke="${col}" stroke-width="4" stroke-linecap="round" pathLength="100" stroke-dasharray="${p} 100" style="--full:${p}"/></svg><span>${txt}</span></div>`;
+const mark=`<svg width="26" height="26" viewBox="0 0 48 48" fill="none"><path d="M9 38V14.5c0-1.3 1.6-2 2.5-1L24 26.5l12.5-13c.9-1 2.5-.3 2.5 1V30" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const cta=(line)=>({bg:'lime',d:3600,h:`<div class="logo a a1">${mark}Masar Solo</div><div class="t1 a a2">${line}</div><div class="t3 a a3">Start your 14-day trial.<br>Cancel anytime.</div><span class="btn a a4">masar10x.io</span>`});
+const conf=(n)=>Array.from({length:n},(_,i)=>{const a=i/n*6.28,r=70+((i*37)%60);const c=['#C8F25C','#FF6A4D','#3D7BFF','#fff'][i%4];return `<i class="cf" style="left:50%;top:44%;background:${c};--x:${Math.cos(a)*r}px;--y:${Math.sin(a)*r-20}px;animation-delay:${(i%5)*.06}s"></i>`}).join('');
+const ADS=[
+{name:'1 · Do the math before you book',hook:'"Diesel climbs. Is that load still worth it?"',why:'<b>Pain:</b> fuel costs. <b>Shows:</b> the keep ring and the counter. <b>Ends:</b> know what you keep before you book.',sc:[
+{bg:'ink',d:2400,h:`<div class="sm a a1">Owner-operators</div><div class="t1 a a2">Diesel keeps <span class="hl">climbing.</span></div>`},
+{bg:'lime',d:2200,h:`<div class="sm a a1">That load pays</div><div class="huge slam">$2,850</div><div class="t2 a a3">Great rate?</div>`},
+{bg:'ink',d:2800,h:`${ring(48,'#F2B84B','48%')}<div class="t2 a a2">You keep <span style="color:#F2B84B">$1,310</span></div><div class="t3 a a3">after fuel, tolls and truck costs</div>`},
+{bg:'coral',d:2600,h:`<div class="t1 slam">Counter <br>+$300</div><div class="t3 a a3">Masar writes the email.<br>You tap Send.</div>`},
+{bg:'blue',d:2600,h:`${ring(51,'#C8F25C','51%')}<div class="t2 a a2">Now you keep <span style="color:#C8F25C">$1,610</span></div><div class="t3 a a3">Same miles. Better rate.</div>`},
+cta('Know what you keep <span class="hl" style="background:var(--ink);color:var(--lime)">before</span> you book.')]},
+{name:'2 · Revenue is not money',hook:'"You made $4,000. Did you?"',why:'<b>Pain:</b> chasing revenue. <b>Shows:</b> revenue next to what you kept. <b>Teaches:</b> keep is the number that pays bills.',sc:[
+{bg:'ink',d:2400,h:`<div class="sm a a1">This week</div><div class="huge slam">$4,000</div><div class="t2 a a3">in revenue. Nice.</div>`},
+{bg:'coral',d:2200,h:`<div class="t1 slam">…but did you keep it?</div>`},
+{bg:'ink',d:3000,h:`<div class="sm a a1">Where it went</div><div class="ln slide" style="animation-delay:.1s"><span>Fuel</span><span>−$890</span></div><div class="ln slide" style="animation-delay:.45s"><span>Tolls</span><span>−$140</span></div><div class="ln slide" style="animation-delay:.8s"><span>Repairs</span><span>−$250</span></div><div class="t3 a a4" style="opacity:.8">$4,000 − $1,280 = ?</div>`},
+{bg:'lime',d:3000,h:`<div class="sm a a1">You kept</div><div class="huge" data-count="2720" data-from="4000">$4,000</div><div class="t3 a a3">That is the number that pays your bills.</div>`},
+{bg:'ink',d:2800,h:`<div class="t2 a a1">Revenue is the <span class="hl">vanity</span> number.</div><div class="t2 a a3" style="color:#C8F25C">Kept pays the bills.</div>`},
+cta('See both. <span class="hl" style="background:var(--ink);color:var(--lime)">Care</span> about one.')]},
+{name:'3 · Talk, don’t type',hook:'"Hands on the wheel. Masar handles the rest."',why:'<b>Pain:</b> paperwork on the road. <b>Shows:</b> voice, the email preview, one tap to send. <b>Safety:</b> eyes stay on the road.',sc:[
+{bg:'ink',d:2200,h:`<div class="t1 a a1">Hands on the <span class="hl">wheel.</span></div>`},
+{bg:'blue',d:2800,h:`<div class="wave a a1">${'<i></i>'.repeat(14)}</div><div class="t2 a a2">"Counter that one at 2,800."</div>`},
+{bg:'ink',d:2800,h:`<div class="sm a a1">Masar drafts it</div><div class="card slide"><b>To:</b> Apex Freight<br><b>Subject:</b> Counter $2,800<br><br>Thanks for the load. Can we do $2,800?</div><span class="btn l a a3">Send</span>`},
+{bg:'lime',d:2400,h:`<div class="chk"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><div class="t2 a a2">Sent. Eyes on the road.</div>`},
+{bg:'ink',d:2800,h:`<div class="sm a a1">Just say it</div><div><span class="chp a a2">Log fuel</span><span class="chp a a3">Weather ahead</span><span class="chp a a4">I'm running late</span><span class="chp a a5">Find a load</span></div>`},
+cta('Your co-driver for the <span class="hl" style="background:var(--ink);color:var(--lime)">office.</span>')]},
+{name:'4 · Get paid',hook:'"Brokers pay when they feel like it."',why:'<b>Pain:</b> late invoices. <b>Shows:</b> the late ring, the reminder and the paid moment. <b>Ask-first:</b> nothing goes out until he taps.',sc:[
+{bg:'coral',d:2600,h:`${ring(80,'#1A0904','8d')}<div class="t2 a a2">Invoice 1012. <br>8 days late.</div>`},
+{bg:'ink',d:2400,h:`<div class="t1 a a1">Brokers pay when they <span class="hl">feel like it.</span></div>`},
+{bg:'blue',d:2800,h:`<div class="sm a a1">Masar spots it</div><div class="card slide"><b>Reminder ready</b><br>Coyote Logistics · $2,450<br>Friendly nudge, your mailbox.</div><div class="t3 a a3">Written for you.</div>`},
+{bg:'ink',d:2200,h:`<div class="t1 slam">You tap <span class="hl">Send.</span></div>`},
+{bg:'lime',d:3000,h:`${conf(18)}<div class="sm a a1">Invoice 1012</div><div class="huge slam">PAID</div><div class="t2 a a3">$2,450</div>`},
+cta('Get paid <span class="hl" style="background:var(--ink);color:var(--lime)">faster.</span>')]},
+{name:'5 · Your back office, on autopilot',hook:'"Booked. Rolling. Paid."',why:'<b>Pain:</b> doing everything alone. <b>Shows:</b> fast cuts through the app, 2 seconds each. <b>Tone:</b> hyper, upbeat, one big idea.',sc:[
+{bg:'lime',d:2000,h:`${conf(18)}<div class="chk" style="background:var(--ink)"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><div class="t1 a a2">Booked!</div>`},
+{bg:'ink',d:2000,h:`<div class="sm a a1">On the road</div><div class="t2 a a2">Atlanta → Dallas</div><div class="huge a a3" style="font-size:54px;color:#C8F25C">11:30</div><div class="t3 a a4">arrival</div>`},
+{bg:'blue',d:2000,h:`${ring(68,'#C8F25C','68%')}<div class="t2 a a2">$2,720 kept</div>`},
+{bg:'coral',d:2000,h:`<div class="t1 slam">Running late?</div><div class="t3 a a3">Masar writes the note.<br>You tap Send.</div>`},
+{bg:'ink',d:2000,h:`<div class="sm a a1">Hours of service</div><div class="t2 a a2">4:18 left to drive</div><div class="t3 a a3">Break in 1:18. Masar reminds you.</div>`},
+{bg:'lime',d:2000,h:`<div class="t1 slam">One app.<br>Whole office.</div>`},
+cta('Run the <span class="hl" style="background:var(--ink);color:var(--lime)">business.</span><br>Not the paperwork.')]}
+];
+const row=document.getElementById('row');const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ADS.forEach((ad,n)=>{
+ const u=document.createElement('div');u.className='unit';
+ u.innerHTML=`<span class="tag">${ad.name}</span><p class="hook">${ad.hook}</p><div class="ad"><div class="prog">${ad.sc.map(()=>'<i><b></b></i>').join('')}</div><div class="sc" role="img" aria-label="${ad.name}"></div></div><div class="ctl"><button type="button" data-a="p">Pause</button><button type="button" data-a="r">Replay</button><button type="button" data-a="n">Next ›</button></div><p class="why">${ad.why}</p>`;
+ row.appendChild(u);
+ const box=u.querySelector('.sc'),bars=[...u.querySelectorAll('.prog i')];let i=0,t=null,paused=reduce,raf=null;
+ const count=()=>{box.querySelectorAll('[data-count]').forEach(el=>{const to=+el.dataset.count,fr=+el.dataset.from,t0=performance.now();const step=now=>{const k=Math.min(1,(now-t0)/1700);el.textContent='$'+Math.round(fr+(to-fr)*(1-Math.pow(1-k,3))).toLocaleString('en-US');if(k<1)raf=requestAnimationFrame(step)};raf=requestAnimationFrame(step)})};
+ const show=(k)=>{i=k;const s=ad.sc[k];box.className='sc bg-'+s.bg;box.innerHTML=s.h;bars.forEach((b,j)=>{b.className=j<k?'done':'';const f=b.firstElementChild;f.style.transition='none';f.style.transform=j<k?'scaleX(1)':'scaleX(0)'});const f=bars[k].firstElementChild;void f.offsetWidth;if(!reduce){f.style.transition=`transform ${s.d}ms linear`;f.style.transform='scaleX(1)'}else{f.style.transform='scaleX(1)'}count();clearTimeout(t);if(!paused)t=setTimeout(()=>show((k+1)%ad.sc.length),s.d)};
+ u.querySelector('.ctl').addEventListener('click',e=>{const a=e.target.dataset.a;if(!a)return;if(a==='p'){paused=!paused;e.target.textContent=paused?'Play':'Pause';if(paused){clearTimeout(t)}else show(i)}if(a==='r'){show(0)}if(a==='n'){show((i+1)%ad.sc.length)}});
+ if(reduce)u.querySelector('[data-a="p"]').textContent='Play';
+ show(0);
+});
+</script>
