@@ -50,3 +50,11 @@ Hold: needs the new-authority filter and verified broker data before it can clai
 
 ## Claims guardrails
 Numbers are examples and labelled. No promised earnings. No credits mentioned. Every outward action shows the driver tapping Send. Trial: 14 days, card required, cancel anytime.
+
+## First cut produced (2026-10-14)
+- Direction A, 30 s, 1080p 16:9. ElevenLabs flow "Masar Solo TV ad A - Gross is a lie" (MbzSdIgZkgzqTiB4KPK8).
+- Shots: Google Veo 3.1 with a fixed driver and truck reference image (logo-free version chosen). 6 shots: cab in rain, diesel island, phone glow smile, thumb taps Send, sunrise aerial, hero walk-up. Edited locally with ffmpeg; end card rendered from our own design.
+- Voiceover: ElevenLabs v4, voice "Jim Pro Manly read" (blue-collar), three segments placed on picture. Score: ElevenLabs Music v2.5, original instrumental.
+- Masters: web -14 LUFS, broadcast -24 LKFS (US CALM Act target). Files kept in the session scratchpad (not in git; too large).
+- Spend: about $40 of ElevenLabs credits (4 failed shots at 6 s; Veo requires 8 s with reference images).
+- Open before airing: real app screen inserts, lawyer clearance (AI likeness, truck trade dress resembles a Peterbilt 389 though badges are blank), AI disclosure per network/platform, broadcaster QC specs (station may need ProRes/MXF, 1080i/29.97, slate, captions), and checking the "$7,600 gross" line stays an example.
