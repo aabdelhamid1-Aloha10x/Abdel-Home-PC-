@@ -149,3 +149,15 @@ No rule violations seen in the reports.
 - Already fixed by Lovable earlier (do not re-send): JSON-fence parse error (old row predates fix); 5-minute inbox check while waiting on broker reply.
 - Scope note: Solo is phone-only; desktop-layout recommendations withdrawn.
 - Next: owner approves priorities, then ONE consolidated fix message to Lovable (P1 first). Not yet sent.
+
+## 2026-10-14 07:00 — Fix round after Codex + Lovable audits (Lovable msg main:agent#00000000031185, edit edt-26ed7c8a)
+Verdict: PASS WITH GAPS (code-checked: lookup.server.ts, driver-phrases.md, sample-data SQL, accepted_rate usage; not run live by me).
+1. PASS (code): chat unpaid_invoices tool exists (src/lib/masar/lookup.server.ts), returns real result + cards; isProgressOnly guard blocks "Checking..." as final reply. Cards read-only; Chase goes back through ask-first tool.
+2. PASS (code): accepted_rate + accepted_at columns added; offer list/detail/counter/booking/KeepRing use accepted_rate ?? rate; missing amount shows confirm-rate banner.
+3. GAP: when a broker accepts with no amount, code falls back to our counter_rate as the accepted rate (inbound handler: acc = cr.amount ?? counter_rate) and writes it to broker_messages.reply_amount. Plan said never reuse silently; it should show "assumed our counter" or ask to confirm. Atlanta->Dallas $3,300 was also set by direct SQL patch, not by the parser alone.
+4. GAP: driver-phrases eval (43/44) checks only which tool is chosen, not the final reply. p44 "and the other one?" passes only with scripted prior turn. p32 fails (asks booked/paid instead of setting goal). Voice in a real cab untested.
+5. PASS: demo brokers bookable via is_demo rows with broker_verified=true (data only, no code bypass); unverified real broker still blocked.
+6. NOTE: sample-data SQL ran with service_role claim on A&H demo company only (owner-authorized). Earnings now $779 wk / $2,922 mo / $7,182 yr.
+7. NOT VERIFIED by me: load-rules save fix (/s/prefs), forward-loop fix, 44px targets/contrast, axe results, titles. Lovable reports pass; needs a live check on the published app.
+8. Not published (Lovable says so). Publish pending owner go.
+Owner corrections: payment method verified, no red banner; HERE key already added -- earlier status lists were stale.
