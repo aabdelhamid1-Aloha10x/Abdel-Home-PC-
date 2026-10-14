@@ -195,3 +195,22 @@ No fix message sent: gaps are untestable here or owner items, not rule violation
 ## 2026-10-14 11:40 — Owner decision on v3 gaps
 - Gaps 1 (live ETA) and 2 (Booked/Start/memory-Yes untested) dismissed by owner.
 - Gap 3 (provider terms): links sent to owner for Open-Meteo, HERE, Anthropic, Lovable AI gateway. Key points: Open-Meteo free tier is non-commercial (needs paid plan); HERE Base Plan is pay-as-you-go and has an excluded-use-cases page to read (fleet/asset tracking); Anthropic API under Commercial Terms does not train on data, deletes in 30 days, ZDR by request; Lovable gateway training/opt-out statements conflict, ask Lovable for DPA and training opt-out.
+
+## 2026-10-14 13:10 — Solo v3 vs mockup (owner: "not similar to the mock-up")
+Compared Lovable commit 2a17325 (code read, not clicked) with mockups/solo_v3.html. Verdict: PARTIAL MATCH. Home shell built; the four detail screens were not.
+
+MATCHES
+- Bottom nav: Home, Loads, big Masar ball center, Earnings, Truck. Gear + bell top right.
+- Home: RoadHero (map, route, arrive time, progress, Navigate/Broker/Docs/Running late), EldRings, Needs-you chips, MoneyCard (kept ring + revenue, Week/Month).
+- Booked! celebration exists and is used when booking an offer.
+- Loads: Offers / My loads / Find tabs; My loads grouped On the road now / Next up / Done.
+- Chat: greeting, open-task chips, Weather / Find a load / I'm late shortcuts, Archive icon.
+
+DOES NOT MATCH
+1. Load detail (mock 5, 6): /s/loads/$id is still the OLD screen. No step strip (Booked > Pickup > Loaded > Rolling), no per-stop Done/ETA rows, no 3 document tiles, no one big next-step button, no countdown + pre-trip checklist for a booked load, no "Problem or cancel".
+2. ELD detail (mock 7): none. EldRings on Home is not tappable. No big "time left to drive" ring, break reminder, duty bar, "Will I make the 2:00 pm delivery?" button. /s/connections/eld is only the provider picker.
+3. Offer reply (mock 8): /s/find/$id is the old offer screen. No "Apex came back at $2,700" headline, no "You asked / posted" line, no Accept / Counter / Pass row, no email preview first.
+4. Late invoice (mock 9): none. The Home chip goes to /s/money?show=unpaid. /s/invoice-sent/$id is the old "sent" screen with Record payment; no days-late ring, timeline, Send a reminder, Get paid faster.
+5. Loads cards: still the old card (status chip, step bars, doc buttons, status buttons). Mock has keep ring %, Arrive time, amount, "Rolling/Booked" and short Done rows ("Delivered · invoice sent").
+6. EldRings and the Needs-you "Invoice" chip hide/route wrongly: rings only show with a connected ELD AND logs, so a demo account sees no rings at all.
+NOT CHECKED: VoiceComposer (big "Tap and talk" button), dark/light colors vs mock tokens, the live preview itself.
