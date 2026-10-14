@@ -35,9 +35,22 @@ h1{font:800 30px/1.05 var(--fd);margin:0 0 8px;text-wrap:balance}.lead{color:#9D
 .why{font-size:12.5px;color:#9DAA9E;line-height:1.45;margin:8px 2px 0}.why b{color:#F1F5EC}
 .fine{font-size:11.5px;color:#7E8B80;margin-top:26px;max-width:70ch;line-height:1.5}
 @media (prefers-reduced-motion:reduce){.a,.slam,.slide,.cf,.chk,.ring circle.v{animation:none;opacity:1}.pulse,.wave i{animation:none}.cf{display:none}}
+
+.top{justify-content:flex-start;gap:8px;padding-bottom:0}
+.stamp{font:500 11px var(--fm);letter-spacing:.08em;text-transform:uppercase;opacity:.8}
+.phn{width:216px;height:330px;margin:auto auto 0;border:5px solid #2A372D;border-bottom:0;border-radius:26px 26px 0 0;background:#0F1511;color:#F1F5EC;padding:10px;overflow:hidden;display:flex;flex-direction:column;gap:7px;font-size:11px;line-height:1.3;animation:rise .7s cubic-bezier(.2,1,.3,1) both;position:relative}
+@keyframes rise{from{transform:translateY(140px);opacity:.2}to{transform:none;opacity:1}}
+.pc{background:#18201A;border:1px solid #2A372D;border-radius:14px;padding:8px 10px}
+.pb{display:flex;align-items:center;justify-content:space-between;font:800 13px var(--fd)}
+.pr{display:flex;align-items:center;gap:8px}.pr svg{width:40px;height:40px;transform:rotate(-90deg);flex:0 0 auto}
+.pbn{background:#C8F25C;color:#10200A;font-weight:700;text-align:center;border-radius:12px;padding:9px;font-size:12px}
+.pbn.g{background:#1F2A21;color:#F1F5EC}
+.mut{color:#9DAA9E;font-size:10px}.pbig{font:800 22px/1 var(--fd);font-variant-numeric:tabular-nums}
+.tap{position:absolute;right:12px;bottom:70px;width:34px;height:34px;border-radius:50%;background:rgba(200,242,92,.35);border:2px solid #C8F25C;animation:tp 1.2s ease-out .9s both infinite}@keyframes tp{0%{transform:scale(.5);opacity:1}100%{transform:scale(1.5);opacity:0}}
+@media (prefers-reduced-motion:reduce){.phn,.tap{animation:none}}
 </style>
 <h1>Five ads for Masar Solo</h1>
-<p class="lead">Each ad is a 9:16 video of about 15 seconds. A new scene every 2 to 3 seconds, loud type, quick cuts, all about what an owner-operator keeps. They loop on their own. Use Pause or Replay on any of them.</p>
+<p class="lead">Each ad is a 9:16 video of about 17 seconds, with real app screens in it. A new scene every 2 to 3 seconds, loud type, quick cuts, all about what an owner-operator keeps. They loop on their own. Use Pause or Replay on any of them.</p>
 <div class="row" id="row"></div>
 <p class="fine">Example numbers are for illustration only. Results depend on each driver's loads and costs. Trial: 14 days, card required, cancel anytime.</p>
 <script>
@@ -45,42 +58,57 @@ const ring=(p,col,txt,full=94)=>`<div class="ring"><svg viewBox="0 0 36 36"><cir
 const mark=`<svg width="26" height="26" viewBox="0 0 48 48" fill="none"><path d="M9 38V14.5c0-1.3 1.6-2 2.5-1L24 26.5l12.5-13c.9-1 2.5-.3 2.5 1V30" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const cta=(line)=>({bg:'lime',d:3600,h:`<div class="logo a a1">${mark}Masar Solo</div><div class="t1 a a2">${line}</div><div class="t3 a a3">Start your 14-day trial.<br>Cancel anytime.</div><span class="btn a a4">masar10x.io</span>`});
 const conf=(n)=>Array.from({length:n},(_,i)=>{const a=i/n*6.28,r=70+((i*37)%60);const c=['#C8F25C','#FF6A4D','#3D7BFF','#fff'][i%4];return `<i class="cf" style="left:50%;top:44%;background:${c};--x:${Math.cos(a)*r}px;--y:${Math.sin(a)*r-20}px;animation-delay:${(i%5)*.06}s"></i>`}).join('');
+
+const rg=(p,c,t)=>`<svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" fill="none" stroke="#2A372D" stroke-width="4"/><circle cx="18" cy="18" r="15" fill="none" stroke="${c}" stroke-width="4" stroke-linecap="round" pathLength="100" stroke-dasharray="${p} 100"/></svg>`;
+const hdr=(t)=>`<div class="pb"><span>${t}</span><span class="mut">92%</span></div>`;
+const phone=(inner,cap,time,cls='top',bg='ink')=>({bg,d:2700,cls,h:`${time?`<div class="stamp a a1">${time}</div>`:''}<div class="t2 a a1" style="font-size:25px">${cap}</div><div class="phn">${inner}<i class="tap"></i></div>`});
+const P={
+offer:()=>hdr('Loads')+`<div class="pc"><div class="pr"><div style="width:40px;height:40px;position:relative">${rg(48,'#F2B84B')}<b style="position:absolute;inset:0;display:grid;place-items:center;font:500 9px var(--fm)">48%</b></div><div><b>Atlanta → Dallas</b><div class="mut">$2,850 · 780 mi</div></div></div></div><div class="pc" style="text-align:center"><div class="mut">You keep</div><div class="pbig" style="color:#F2B84B">$1,310</div><div class="mut">after fuel, tolls, truck</div></div><div class="pc mut">Why this number ›</div><div class="pbn">Counter</div>`,
+counter:()=>hdr('Counter')+`<div class="pc" style="text-align:center"><div class="mut">Ask</div><div class="pbig">$3,150</div></div><div class="pr" style="justify-content:center"><span class="pbn g" style="padding:8px 14px">−$50</span><span class="pbn" style="padding:8px 14px">+$50</span></div><div class="pc" style="text-align:center"><div class="mut">You keep</div><div class="pbig" style="color:#C8F25C">$1,610</div><div class="mut">51% of pay</div></div><div class="pbn">Preview email</div>`,
+email:()=>hdr('Email')+`<div class="pc"><b>To</b> Apex Freight<br><b>Subject</b> Counter $3,150<br><br>Thanks for the load. Can we do $3,150?</div><div class="pc mut">BCC quotes@masar10x.io</div><div class="pbn">Send</div><div class="pbn g">Edit</div>`,
+home:()=>hdr('Masar')+`<div class="pc"><div class="mut">On the road</div><b style="font-size:13px">Atlanta → Dallas</b><div style="height:5px;border-radius:5px;background:#1F2A21;margin:6px 0"><i style="display:block;width:62%;height:100%;background:#C8F25C;border-radius:5px"></i></div><div class="mut">Arrive 11:30 · 312 mi left</div></div><div class="pc"><div class="pr" style="justify-content:space-around;text-align:center"><div>${rg(61,'#5BD98B')}<div class="mut">Drive 6:42</div></div><div>${rg(34,'#F2B84B')}<div class="mut">Shift 9:10</div></div><div>${rg(58,'#5BD98B')}<div class="mut">Cycle 41:20</div></div></div></div><div class="pbn">Navigate</div>`,
+money:()=>hdr('This week')+`<div class="pc"><div class="pr"><div style="width:58px;height:58px;position:relative">${rg(68,'#C8F25C')}<b style="position:absolute;inset:0;display:grid;place-items:center;font:500 11px var(--fm)">68%</b></div><div style="flex:1"><div class="mut">You kept</div><div class="pbig" style="color:#C8F25C">$2,720</div></div></div><div style="display:flex;justify-content:space-between;margin-top:8px;border-top:1px solid #2A372D;padding-top:6px"><span class="mut">Revenue</span><b>$4,000</b></div></div><div class="pc mut">Fuel −$890 · Tolls −$140 · Repairs −$250</div>`,
+chat:()=>hdr('Masar')+`<div class="pc">Morning, Abdel. Load is rolling. You arrive 11:30.</div><div style="margin-top:auto" class="pbn" >🎙 Tap and talk</div><div class="mut" style="text-align:center">or type a message</div>`,
+invoice:()=>hdr('Invoice 1012')+`<div class="pc"><div class="pr"><div style="width:52px;height:52px;position:relative">${rg(80,'#FF6A4D')}<b style="position:absolute;inset:0;display:grid;place-items:center;font:500 12px var(--fm)">8d</b></div><div><div class="mut">Coyote owes you</div><div class="pbig">$2,450</div></div></div></div><div class="pc mut">Sent Oct 1 · Due Oct 6 · No reminders yet</div><div class="pbn">Send a reminder</div><div class="pbn g">Mark paid</div>`,
+paid:()=>hdr('Invoice 1012')+`<div class="pc" style="text-align:center;padding:16px 8px"><div style="font:800 34px var(--fd);color:#C8F25C">PAID</div><div class="pbig">$2,450</div><div class="mut">Coyote Logistics · today</div></div><div class="pc mut">Recorded. Undo for 8 seconds.</div>`,
+late:()=>hdr('Running late')+`<div class="pc"><b>To</b> Apex Freight<br><br>Traffic put me about 40 minutes behind. I'll arrive around 2:40.</div><div class="pc mut">Estimate from the map · BCC quotes@</div><div class="pbn">Send</div><div class="pbn g">Edit</div>`
+};
 const ADS=[
-{name:'1 · Do the math before you book',hook:'"Diesel climbs. Is that load still worth it?"',why:'<b>Pain:</b> fuel costs. <b>Shows:</b> the keep ring and the counter. <b>Ends:</b> know what you keep before you book.',sc:[
-{bg:'ink',d:2400,h:`<div class="sm a a1">Owner-operators</div><div class="t1 a a2">Diesel keeps <span class="hl">climbing.</span></div>`},
-{bg:'lime',d:2200,h:`<div class="sm a a1">That load pays</div><div class="huge slam">$2,850</div><div class="t2 a a3">Great rate?</div>`},
-{bg:'ink',d:2800,h:`${ring(48,'#F2B84B','48%')}<div class="t2 a a2">You keep <span style="color:#F2B84B">$1,310</span></div><div class="t3 a a3">after fuel, tolls and truck costs</div>`},
-{bg:'coral',d:2600,h:`<div class="t1 slam">Counter <br>+$300</div><div class="t3 a a3">Masar writes the email.<br>You tap Send.</div>`},
-{bg:'blue',d:2600,h:`${ring(51,'#C8F25C','51%')}<div class="t2 a a2">Now you keep <span style="color:#C8F25C">$1,610</span></div><div class="t3 a a3">Same miles. Better rate.</div>`},
+{name:'1 · Do the math before you book',hook:'"Diesel climbs. Is that load still worth it?"',why:'<b>Pain:</b> fuel costs. <b>App shown:</b> the offer with the keep ring, the counter and the email preview. <b>Ends:</b> know what you keep before you book.',sc:[
+{bg:'ink',d:2300,h:`<div class="sm a a1">Owner-operators</div><div class="t1 a a2">Diesel keeps <span class="hl">climbing.</span></div>`},
+{bg:'lime',d:2100,h:`<div class="sm a a1">That load pays</div><div class="huge slam">$2,850</div><div class="t2 a a3">Great rate?</div>`},
+phone(P.offer(),'Check what you <span class="hl">keep.</span>','In the app'),
+phone(P.counter(),'Counter in <span class="hl">two taps.</span>','In the app','top','blue'),
+phone(P.email(),'You review. You tap Send.','In the app'),
+{bg:'blue',d:2500,h:`${ring(51,'#C8F25C','51%')}<div class="t2 a a2">Now you keep <span style="color:#C8F25C">$1,610</span></div><div class="t3 a a3">Same miles. Better rate.</div>`},
 cta('Know what you keep <span class="hl" style="background:var(--ink);color:var(--lime)">before</span> you book.')]},
-{name:'2 · Revenue is not money',hook:'"You made $4,000. Did you?"',why:'<b>Pain:</b> chasing revenue. <b>Shows:</b> revenue next to what you kept. <b>Teaches:</b> keep is the number that pays bills.',sc:[
-{bg:'ink',d:2400,h:`<div class="sm a a1">This week</div><div class="huge slam">$4,000</div><div class="t2 a a3">in revenue. Nice.</div>`},
-{bg:'coral',d:2200,h:`<div class="t1 slam">…but did you keep it?</div>`},
-{bg:'ink',d:3000,h:`<div class="sm a a1">Where it went</div><div class="ln slide" style="animation-delay:.1s"><span>Fuel</span><span>−$890</span></div><div class="ln slide" style="animation-delay:.45s"><span>Tolls</span><span>−$140</span></div><div class="ln slide" style="animation-delay:.8s"><span>Repairs</span><span>−$250</span></div><div class="t3 a a4" style="opacity:.8">$4,000 − $1,280 = ?</div>`},
-{bg:'lime',d:3000,h:`<div class="sm a a1">You kept</div><div class="huge" data-count="2720" data-from="4000">$4,000</div><div class="t3 a a3">That is the number that pays your bills.</div>`},
-{bg:'ink',d:2800,h:`<div class="t2 a a1">Revenue is the <span class="hl">vanity</span> number.</div><div class="t2 a a3" style="color:#C8F25C">Kept pays the bills.</div>`},
-cta('See both. <span class="hl" style="background:var(--ink);color:var(--lime)">Care</span> about one.')]},
-{name:'3 · Talk, don’t type',hook:'"Hands on the wheel. Masar handles the rest."',why:'<b>Pain:</b> paperwork on the road. <b>Shows:</b> voice, the email preview, one tap to send. <b>Safety:</b> eyes stay on the road.',sc:[
+{name:'2 · Revenue is not money',hook:'"You made $4,000. Did you?"',why:'<b>Pain:</b> chasing revenue. <b>App shown:</b> Home money card, kept big with revenue next to it. <b>Teaches:</b> keep pays the bills.',sc:[
+{bg:'ink',d:2300,h:`<div class="sm a a1">This week</div><div class="huge slam">$4,000</div><div class="t2 a a3">in revenue. Nice.</div>`},
+{bg:'coral',d:2000,h:`<div class="t1 slam">…but did you keep it?</div>`},
+{bg:'ink',d:2800,h:`<div class="sm a a1">Where it went</div><div class="ln slide" style="animation-delay:.1s"><span>Fuel</span><span>−$890</span></div><div class="ln slide" style="animation-delay:.45s"><span>Tolls</span><span>−$140</span></div><div class="ln slide" style="animation-delay:.8s"><span>Repairs</span><span>−$250</span></div><div class="t3 a a4" style="opacity:.8">$4,000 − $1,280 = ?</div>`},
+phone(P.money(),'See both. <span class="hl">Every week.</span>','In the app','top','lime'),
+{bg:'lime',d:2800,h:`<div class="sm a a1">You kept</div><div class="huge" data-count="2720" data-from="4000">$4,000</div><div class="t3 a a3">That is the number that pays your bills.</div>`},
+cta('Revenue is for <span class="hl" style="background:var(--ink);color:var(--lime)">bragging.</span> Kept is for bills.')]},
+{name:'3 · Talk, don\u2019t type',hook:'"Hands on the wheel. Masar handles the rest."',why:'<b>Pain:</b> paperwork on the road. <b>App shown:</b> the Masar ball, Tap and talk, the email preview. <b>Safety:</b> eyes stay on the road.',sc:[
 {bg:'ink',d:2200,h:`<div class="t1 a a1">Hands on the <span class="hl">wheel.</span></div>`},
-{bg:'blue',d:2800,h:`<div class="wave a a1">${'<i></i>'.repeat(14)}</div><div class="t2 a a2">"Counter that one at 2,800."</div>`},
-{bg:'ink',d:2800,h:`<div class="sm a a1">Masar drafts it</div><div class="card slide"><b>To:</b> Apex Freight<br><b>Subject:</b> Counter $2,800<br><br>Thanks for the load. Can we do $2,800?</div><span class="btn l a a3">Send</span>`},
-{bg:'lime',d:2400,h:`<div class="chk"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><div class="t2 a a2">Sent. Eyes on the road.</div>`},
-{bg:'ink',d:2800,h:`<div class="sm a a1">Just say it</div><div><span class="chp a a2">Log fuel</span><span class="chp a a3">Weather ahead</span><span class="chp a a4">I'm running late</span><span class="chp a a5">Find a load</span></div>`},
+phone(P.chat(),'Tap. Talk. Done.','At the truck stop','top','ink'),
+{bg:'blue',d:2600,h:`<div class="wave a a1">${'<i></i>'.repeat(14)}</div><div class="t2 a a2">"Counter that one at 3,150."</div>`},
+phone(P.email(),'Masar drafts it.','You check it','top','ink'),
+{bg:'lime',d:2300,h:`<div class="chk"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><div class="t2 a a2">Sent. Eyes on the road.</div>`},
 cta('Your co-driver for the <span class="hl" style="background:var(--ink);color:var(--lime)">office.</span>')]},
-{name:'4 · Get paid',hook:'"Brokers pay when they feel like it."',why:'<b>Pain:</b> late invoices. <b>Shows:</b> the late ring, the reminder and the paid moment. <b>Ask-first:</b> nothing goes out until he taps.',sc:[
-{bg:'coral',d:2600,h:`${ring(80,'#1A0904','8d')}<div class="t2 a a2">Invoice 1012. <br>8 days late.</div>`},
-{bg:'ink',d:2400,h:`<div class="t1 a a1">Brokers pay when they <span class="hl">feel like it.</span></div>`},
-{bg:'blue',d:2800,h:`<div class="sm a a1">Masar spots it</div><div class="card slide"><b>Reminder ready</b><br>Coyote Logistics · $2,450<br>Friendly nudge, your mailbox.</div><div class="t3 a a3">Written for you.</div>`},
-{bg:'ink',d:2200,h:`<div class="t1 slam">You tap <span class="hl">Send.</span></div>`},
-{bg:'lime',d:3000,h:`${conf(18)}<div class="sm a a1">Invoice 1012</div><div class="huge slam">PAID</div><div class="t2 a a3">$2,450</div>`},
+{name:'4 · Get paid',hook:'"Brokers pay when they feel like it."',why:'<b>Pain:</b> late invoices. <b>App shown:</b> the late invoice, the reminder and the paid moment. <b>Ask-first:</b> nothing goes out until he taps.',sc:[
+{bg:'coral',d:2500,h:`${ring(80,'#1A0904','8d')}<div class="t2 a a2">Invoice 1012. <br>8 days late.</div>`},
+{bg:'ink',d:2300,h:`<div class="t1 a a1">Brokers pay when they <span class="hl">feel like it.</span></div>`},
+phone(P.invoice(),'Masar spots it.','In the app','top','blue'),
+phone(P.late().replace('Running late','Reminder').replace("Traffic put me about 40 minutes behind. I'll arrive around 2:40.",'Friendly reminder: invoice 1012 for $2,450 is past due. Can you confirm payment?').replace('Estimate from the map · ','Written for you · '),'You tap <span class="hl">Send.</span>','Your mailbox','top','ink'),
+phone(P.paid(),'Paid. Recorded.','Six days later','top','lime'),
 cta('Get paid <span class="hl" style="background:var(--ink);color:var(--lime)">faster.</span>')]},
-{name:'5 · Your back office, on autopilot',hook:'"Booked. Rolling. Paid."',why:'<b>Pain:</b> doing everything alone. <b>Shows:</b> fast cuts through the app, 2 seconds each. <b>Tone:</b> hyper, upbeat, one big idea.',sc:[
-{bg:'lime',d:2000,h:`${conf(18)}<div class="chk" style="background:var(--ink)"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><div class="t1 a a2">Booked!</div>`},
-{bg:'ink',d:2000,h:`<div class="sm a a1">On the road</div><div class="t2 a a2">Atlanta → Dallas</div><div class="huge a a3" style="font-size:54px;color:#C8F25C">11:30</div><div class="t3 a a4">arrival</div>`},
-{bg:'blue',d:2000,h:`${ring(68,'#C8F25C','68%')}<div class="t2 a a2">$2,720 kept</div>`},
-{bg:'coral',d:2000,h:`<div class="t1 slam">Running late?</div><div class="t3 a a3">Masar writes the note.<br>You tap Send.</div>`},
-{bg:'ink',d:2000,h:`<div class="sm a a1">Hours of service</div><div class="t2 a a2">4:18 left to drive</div><div class="t3 a a3">Break in 1:18. Masar reminds you.</div>`},
-{bg:'lime',d:2000,h:`<div class="t1 slam">One app.<br>Whole office.</div>`},
+{name:'5 · A day with Masar',hook:'"Booked. Rolling. Paid."',why:'<b>Idea:</b> a day on the road in five screens. <b>App shown:</b> offer, Home with ELD hours, running late, paid. <b>Tone:</b> quick cuts, clock stamps.',sc:[
+{bg:'lime',d:2000,h:`<div class="sm a a1">A day with Masar</div><div class="t1 slam">Booked.<br>Rolling.<br>Paid.</div>`},
+phone(P.offer(),'Rate check before coffee.','6:10 am','top','ink'),
+phone(P.home(),'On the road. Hours watched.','8:40 am','top','blue'),
+phone(P.late(),'Running late? One tap.','12:15 pm','top','coral'),
+phone(P.paid(),'Paid. Recorded.','6:45 pm','top','lime'),
 cta('Run the <span class="hl" style="background:var(--ink);color:var(--lime)">business.</span><br>Not the paperwork.')]}
 ];
 const row=document.getElementById('row');const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -90,7 +118,7 @@ ADS.forEach((ad,n)=>{
  row.appendChild(u);
  const box=u.querySelector('.sc'),bars=[...u.querySelectorAll('.prog i')];let i=0,t=null,paused=reduce,raf=null;
  const count=()=>{box.querySelectorAll('[data-count]').forEach(el=>{const to=+el.dataset.count,fr=+el.dataset.from,t0=performance.now();const step=now=>{const k=Math.min(1,(now-t0)/1700);el.textContent='$'+Math.round(fr+(to-fr)*(1-Math.pow(1-k,3))).toLocaleString('en-US');if(k<1)raf=requestAnimationFrame(step)};raf=requestAnimationFrame(step)})};
- const show=(k)=>{i=k;const s=ad.sc[k];box.className='sc bg-'+s.bg;box.innerHTML=s.h;bars.forEach((b,j)=>{b.className=j<k?'done':'';const f=b.firstElementChild;f.style.transition='none';f.style.transform=j<k?'scaleX(1)':'scaleX(0)'});const f=bars[k].firstElementChild;void f.offsetWidth;if(!reduce){f.style.transition=`transform ${s.d}ms linear`;f.style.transform='scaleX(1)'}else{f.style.transform='scaleX(1)'}count();clearTimeout(t);if(!paused)t=setTimeout(()=>show((k+1)%ad.sc.length),s.d)};
+ const show=(k)=>{i=k;const s=ad.sc[k];box.className='sc bg-'+s.bg+(s.cls?' '+s.cls:'');box.innerHTML=s.h;bars.forEach((b,j)=>{b.className=j<k?'done':'';const f=b.firstElementChild;f.style.transition='none';f.style.transform=j<k?'scaleX(1)':'scaleX(0)'});const f=bars[k].firstElementChild;void f.offsetWidth;if(!reduce){f.style.transition=`transform ${s.d}ms linear`;f.style.transform='scaleX(1)'}else{f.style.transform='scaleX(1)'}count();clearTimeout(t);if(!paused)t=setTimeout(()=>show((k+1)%ad.sc.length),s.d)};
  u.querySelector('.ctl').addEventListener('click',e=>{const a=e.target.dataset.a;if(!a)return;if(a==='p'){paused=!paused;e.target.textContent=paused?'Play':'Pause';if(paused){clearTimeout(t)}else show(i)}if(a==='r'){show(0)}if(a==='n'){show((i+1)%ad.sc.length)}});
  if(reduce)u.querySelector('[data-a="p"]').textContent='Play';
  show(0);
