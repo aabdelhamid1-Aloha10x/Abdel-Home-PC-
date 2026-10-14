@@ -141,3 +141,11 @@ Findings:
 4. A&H test company still shows 4,000 credits on a 300-credit plan until reset (expected per owner decision).
 5. Pending: chat redesign (Chat and Activity tabs) awaits owner approval; broker credit research table still not reviewed; code-level review of mailbox connection and send gating still pending; HERE terms for carrier use unconfirmed.
 No rule violations seen in the reports.
+
+## 2026-10-14 06:00 — Full Solo audit (Codex run, A&H demo account) vs Lovable
+- Lovable could NOT start its own audit (sign-in approval card did not open); no Lovable report exists. Codex report (live browser, 50 routes, 43 mobile snapshots, no email/billing/booking actions) is the only audit.
+- P1 (fix first): (1) chat answers "Checking your unpaid invoices…" and never returns the result, 2 credits charged each; (2) Load rules (/s/prefs) edits cannot save, footer says "All saved"; (3) accepted offer banner shows no amount (Apex, $3,300 acceptance; rate still $2,850); (4) keep/miles/fuel/MPG differ across list vs detail (fuel $4.79 vs $6.199, MPG 6.8 vs 6.5, 0 vs 35 dead miles).
+- P2 highlights: inspection drafts shared pre/post and signer defaults to company name; field errors not linked via aria-describedby; dialog focus not restored; small targets (16px close); "No offers yet" shown for empty search; Home "1 active" vs 6 booked; Navigate marks delivery "Next" for Booked; "42+ days without breakdown" claim; Send enabled with no recipient; billing page says Test mode.
+- Already fixed by Lovable earlier (do not re-send): JSON-fence parse error (old row predates fix); 5-minute inbox check while waiting on broker reply.
+- Scope note: Solo is phone-only; desktop-layout recommendations withdrawn.
+- Next: owner approves priorities, then ONE consolidated fix message to Lovable (P1 first). Not yet sent.
