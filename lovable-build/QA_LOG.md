@@ -172,3 +172,8 @@ Verdict: PASS (analysis only; nothing to verify in code, nothing published).
 - Message umsg_01m4wp54haf239yktmqhd8854s, attached lovable-build/mockups/solo_v3.html. Steps: 1 nav+Home (+bell cleanup, revenue next to kept, booked moment), 2 chat tasks/archive + AI plan with S1-S10 safety tests, 3 polish. Not to publish.
 - My review checklist when it finishes: S1 untrusted-text handling and fixed recipient/BCC; S2 RLS client not service key, driver vs owner; S3 memory opt-in, forget really deletes; S4 Gmail data limited use; S5 city-level weather, HERE only on active load, rate limits; S6 no real data to OpenAI path; S7 self-harm/tired/no-excuse; S8 small talk free, caps; S9 advice limits; S10 audit log + eval pass rate; no regression on 44 phrases.
 - Owner note for later: company-driver contests/perks (Q4 prize progress ring) as a later phase, not in this build.
+
+## 2026-10-14 09:00 — Promo ads v3 (lovable-build/mockups/solo_ads.html)
+- Six animated 9:16 ad concepts for Solo owner-operators: sign + truck hooks, in-app screens, synthesized beat/effects (one ad at a time). New: ad 1 new-authority drivers, ad 2 break-even per mile.
+- HOLD on ad 1: needs a "New authority OK" filter and broker authority-age requirement data that are not built or verified; do not run until they exist. Ad 2 needs the driver's real costs entered. All numbers are examples; no earnings or "more loads" promises; no credits mentioned; ask-first shown on every outward action.
+- Final videos still need licensed/generated music, voiceover, and a claims check.

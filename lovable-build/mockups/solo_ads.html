@@ -31,7 +31,7 @@ h1{font:800 30px/1.05 var(--fd);margin:0 0 8px;text-wrap:balance}.lead{color:#9D
 .ln{display:flex;justify-content:space-between;font:700 22px var(--fd);border-bottom:2px solid rgba(255,255,255,.18);padding-bottom:8px}.ln span:last-child{color:var(--coral);font-family:var(--fm)}
 .chp{display:inline-block;background:var(--ink);color:var(--lime);font:700 15px var(--fb);padding:10px 16px;border-radius:99px;margin:3px 4px 3px 0}
 .logo{display:flex;align-items:center;gap:8px;font:800 20px var(--fd)}
-.ctl{display:flex;gap:8px;margin-top:10px}.ctl button{background:#18201A;color:#F1F5EC;border:1px solid #2A372D;border-radius:99px;padding:9px 14px;font:500 13px var(--fb);cursor:pointer;min-height:40px}.ctl button:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+.ctl{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.ctl button{white-space:nowrap;padding:9px 12px;background:#18201A;color:#F1F5EC;border:1px solid #2A372D;border-radius:99px;font:500 13px var(--fb);cursor:pointer;min-height:40px}.ctl button:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
 .why{font-size:12.5px;color:#9DAA9E;line-height:1.45;margin:8px 2px 0}.why b{color:#F1F5EC}
 .fine{font-size:11.5px;color:#7E8B80;margin-top:26px;max-width:70ch;line-height:1.5}
 @media (prefers-reduced-motion:reduce){.a,.slam,.slide,.cf,.chk,.ring circle.v{animation:none;opacity:1}.pulse,.wave i{animation:none}.cf{display:none}}
@@ -48,9 +48,20 @@ h1{font:800 30px/1.05 var(--fd);margin:0 0 8px;text-wrap:balance}.lead{color:#9D
 .mut{color:#9DAA9E;font-size:10px}.pbig{font:800 22px/1 var(--fd);font-variant-numeric:tabular-nums}
 .tap{position:absolute;right:12px;bottom:70px;width:34px;height:34px;border-radius:50%;background:rgba(200,242,92,.35);border:2px solid #C8F25C;animation:tp 1.2s ease-out .9s both infinite}@keyframes tp{0%{transform:scale(.5);opacity:1}100%{transform:scale(1.5);opacity:0}}
 @media (prefers-reduced-motion:reduce){.phn,.tap{animation:none}}
+
+.sgn{align-self:flex-start;background:#0E6B3A;color:#fff;border:3px solid #fff;outline:3px solid #0E6B3A;border-radius:10px;padding:10px 14px;font:800 34px/1 var(--fd);text-transform:uppercase;letter-spacing:.01em}
+.ysg{align-self:flex-start;background:#FFC72C;color:#111;border:4px solid #111;border-radius:8px;padding:10px 14px;font:800 30px/1 var(--fd);text-transform:uppercase}
+.sgn small,.ysg small{display:block;font:700 13px var(--fb);text-transform:none;margin-top:6px;opacity:.9}
+.trk{width:150px;opacity:0;color:#F1F5EC;animation:drv 2s linear forwards}.trk svg{width:100%;display:block}@keyframes drv{from{transform:translateX(-170px);opacity:1}to{transform:translateX(170px);opacity:1}}
+.bub{align-self:flex-start;max-width:88%;background:#26322A;color:#F1F5EC;border-radius:16px 16px 16px 4px;padding:10px 13px;font-size:14px;line-height:1.3}
+.bub.r{align-self:flex-end;background:var(--lime);color:#10200A;border-radius:16px 16px 4px 16px}
+.pchip{display:inline-block;padding:5px 9px;border-radius:99px;background:#1F2A21;font-size:10px;margin-right:4px}.pchip.on{background:#C8F25C;color:#10200A;font-weight:700}
+.tg{font:500 9px var(--fm);padding:2px 6px;border-radius:99px;background:rgba(91,217,139,.2);color:#5BD98B}
+.snd{background:var(--lime)!important;color:#10200A!important;font-weight:700}
+@media (prefers-reduced-motion:reduce){.trk{animation:none}}
 </style>
-<h1>Five ads for Masar Solo</h1>
-<p class="lead">Each ad is a 9:16 video of about 17 seconds, with real app screens in it. A new scene every 2 to 3 seconds, loud type, quick cuts, all about what an owner-operator keeps. They loop on their own. Use Pause or Replay on any of them.</p>
+<h1>Six ads for Masar Solo</h1>
+<p class="lead">Each ad opens on a road sign and a truck so a driver stops scrolling, then names the problem. About 17 seconds, a new scene every 2 to 3 seconds, real app screens inside. Press Sound on under one ad to hear a synthesized beat and effects (one ad at a time). The final videos get real music and a voiceover.</p>
 <div class="row" id="row"></div>
 <p class="fine">Example numbers are for illustration only. Results depend on each driver's loads and costs. Trial: 14 days, card required, cancel anytime.</p>
 <script>
@@ -73,53 +84,82 @@ invoice:()=>hdr('Invoice 1012')+`<div class="pc"><div class="pr"><div style="wid
 paid:()=>hdr('Invoice 1012')+`<div class="pc" style="text-align:center;padding:16px 8px"><div style="font:800 34px var(--fd);color:#C8F25C">PAID</div><div class="pbig">$2,450</div><div class="mut">Coyote Logistics · today</div></div><div class="pc mut">Recorded. Undo for 8 seconds.</div>`,
 late:()=>hdr('Running late')+`<div class="pc"><b>To</b> Apex Freight<br><br>Traffic put me about 40 minutes behind. I'll arrive around 2:40.</div><div class="pc mut">Estimate from the map · BCC quotes@</div><div class="pbn">Send</div><div class="pbn g">Edit</div>`
 };
+
+P.find=()=>hdr('Find')+`<div><span class="pchip">Dry van</span><span class="pchip on">New authority OK</span><span class="pchip">500+ mi</span></div><div class="pc"><div class="pr"><div style="width:36px;height:36px;position:relative">${rg(53,'#C8F25C')}<b style="position:absolute;inset:0;display:grid;place-items:center;font:500 8px var(--fm)">53%</b></div><div style="flex:1"><b style="font-size:10.5px;white-space:nowrap">Dallas → Houston</b><div class="mut">$900 · Apex</div></div><span class="tg">New MC OK</span></div></div><div class="pc"><div class="pr"><div style="width:36px;height:36px;position:relative">${rg(49,'#F2B84B')}<b style="position:absolute;inset:0;display:grid;place-items:center;font:500 8px var(--fm)">49%</b></div><div style="flex:1"><b style="font-size:10.5px;white-space:nowrap">Austin → Atlanta</b><div class="mut">$2,600 · TQL</div></div><span class="tg">New MC OK</span></div></div><div class="pbn">Email broker</div>`;
+P.break=()=>hdr('Your numbers')+`<div class="pc" style="text-align:center"><div class="mut">Break-even</div><div class="pbig">$1.92<span class="mut"> /mile</span></div></div><div class="pc mut" style="line-height:1.6">Fuel $0.62 · Insurance $0.31<br>Truck $0.38 · Repairs $0.24 · Other $0.37</div><div class="pc" style="text-align:center"><div class="mut">This load pays $2.37/mi</div><div class="pbig" style="color:#C8F25C">+$0.45<span class="mut"> /mile kept</span></div></div>`;
+const TRK=`<div class="trk"><svg viewBox="0 0 120 50" fill="currentColor"><rect x="2" y="8" width="72" height="28" rx="3"/><path d="M76 16h22l12 12v8H76z"/><circle cx="20" cy="40" r="7" stroke="#0B0F0C" stroke-width="3"/><circle cx="44" cy="40" r="7" stroke="#0B0F0C" stroke-width="3"/><circle cx="68" cy="40" r="7" stroke="#0B0F0C" stroke-width="3"/><circle cx="98" cy="40" r="7" stroke="#0B0F0C" stroke-width="3"/></svg></div>`;
+const GSG=(t,sub='')=>`<div class="sgn slam">${t}${sub?`<small>${sub}</small>`:''}</div>`;
+const YSG=(t,sub='')=>`<div class="ysg slam">${t}${sub?`<small>${sub}</small>`:''}</div>`;
 const ADS=[
-{name:'1 · Do the math before you book',hook:'"Diesel climbs. Is that load still worth it?"',why:'<b>Pain:</b> fuel costs. <b>App shown:</b> the offer with the keep ring, the counter and the email preview. <b>Ends:</b> know what you keep before you book.',sc:[
-{bg:'ink',d:2300,h:`<div class="sm a a1">Owner-operators</div><div class="t1 a a2">Diesel keeps <span class="hl">climbing.</span></div>`},
-{bg:'lime',d:2100,h:`<div class="sm a a1">That load pays</div><div class="huge slam">$2,850</div><div class="t2 a a3">Great rate?</div>`},
+{name:'1 · New authority? Keep the wheels turning',hook:'"Brand-new MC? Brokers keep saying come back in six months."',why:'<b>Audience:</b> owner-operators with a new authority. <b>Pain:</b> brokers that want months of authority. <b>App shown:</b> Find with a "New authority OK" filter, then the offer. <b style="color:#FFC72C">Hold:</b> the filter and the broker requirement data are not built or verified. Do not run this ad until they exist.',sc:[
+{bg:'ink',d:2000,h:`${TRK}${GSG('New MC?','Brand-new authority?')}`,sfx:'whoosh'},
+{bg:'ink',d:3000,h:`<div class="sm a a1">Every broker, every call</div><div class="bub slide" style="animation-delay:.1s">Sorry, we need 6 months of authority.</div><div class="bub slide" style="animation-delay:.8s">Authority too new. Pass.</div><div class="bub slide" style="animation-delay:1.5s">Call us back later.</div>`},
+{bg:'coral',d:2000,h:`<div class="t1 slam">Truck parked.<br>Bills running.</div>`},
+phone(P.find(),'Loads that will <span class="hl">book you.</span>','In the app','top','ink'),
+phone(P.offer(),'And you see what you keep.','In the app','top','blue'),
+{bg:'lime',d:2000,h:`<div class="t1 slam">Keep the wheels <span class="hl">turning.</span></div>`,sfx:'ding'},
+cta('Find loads that fit <span class="hl" style="background:var(--ink);color:var(--lime)">your authority.</span>')]},
+{name:'2 · Know your break-even',hook:'"Running day and night. Where is the money?"',why:'<b>Audience:</b> every owner-operator. <b>Pain:</b> busy truck, nothing left. <b>App shown:</b> break-even per mile, and what this load leaves. <b>Needs:</b> the driver has entered their real costs. Numbers are examples.',sc:[
+{bg:'ink',d:2000,h:`${TRK}${YSG('Running day and night?')}`,sfx:'whoosh'},
+{bg:'coral',d:2500,h:`<div class="sm a a1">Taking home</div><div class="huge slam">$ ???</div>`},
+{bg:'ink',d:2500,h:`<div class="t1 a a1">Know your <span class="hl">break-even?</span></div><div class="t3 a a3">Per mile. To the cent.</div>`},
+phone(P.break(),'Your number. <span class="hl">Every load.</span>','In the app','top','blue'),
+{bg:'lime',d:3000,h:`<div class="sm a a1">$4,000 revenue. You kept</div><div class="huge" data-count="2720" data-from="4000">$4,000</div>`,sfx:'ding'},
+cta('Know your number <span class="hl" style="background:var(--ink);color:var(--lime)">before</span> you book.')]},
+{name:'3 · Fuel went up. Do the math',hook:'"Diesel climbs. Is that load still worth it?"',why:'<b>Pain:</b> fuel costs. <b>App shown:</b> the offer with the keep ring, the counter and the email preview.',sc:[
+{bg:'ink',d:2000,h:`${TRK}${YSG('Fuel just went up?')}`,sfx:'whoosh'},
+{bg:'lime',d:2000,h:`<div class="sm a a1">That load pays</div><div class="huge slam">$2,850</div><div class="t2 a a3">Great rate?</div>`},
 phone(P.offer(),'Check what you <span class="hl">keep.</span>','In the app'),
 phone(P.counter(),'Counter in <span class="hl">two taps.</span>','In the app','top','blue'),
 phone(P.email(),'You review. You tap Send.','In the app'),
-{bg:'blue',d:2500,h:`${ring(51,'#C8F25C','51%')}<div class="t2 a a2">Now you keep <span style="color:#C8F25C">$1,610</span></div><div class="t3 a a3">Same miles. Better rate.</div>`},
+{bg:'blue',d:2500,h:`${ring(51,'#C8F25C','51%')}<div class="t2 a a2">Now you keep <span style="color:#C8F25C">$1,610</span></div><div class="t3 a a3">Same miles. Better rate.</div>`,sfx:'ding'},
 cta('Know what you keep <span class="hl" style="background:var(--ink);color:var(--lime)">before</span> you book.')]},
-{name:'2 · Revenue is not money',hook:'"You made $4,000. Did you?"',why:'<b>Pain:</b> chasing revenue. <b>App shown:</b> Home money card, kept big with revenue next to it. <b>Teaches:</b> keep pays the bills.',sc:[
-{bg:'ink',d:2300,h:`<div class="sm a a1">This week</div><div class="huge slam">$4,000</div><div class="t2 a a3">in revenue. Nice.</div>`},
-{bg:'coral',d:2000,h:`<div class="t1 slam">…but did you keep it?</div>`},
-{bg:'ink',d:2800,h:`<div class="sm a a1">Where it went</div><div class="ln slide" style="animation-delay:.1s"><span>Fuel</span><span>−$890</span></div><div class="ln slide" style="animation-delay:.45s"><span>Tolls</span><span>−$140</span></div><div class="ln slide" style="animation-delay:.8s"><span>Repairs</span><span>−$250</span></div><div class="t3 a a4" style="opacity:.8">$4,000 − $1,280 = ?</div>`},
-phone(P.money(),'See both. <span class="hl">Every week.</span>','In the app','top','lime'),
-{bg:'lime',d:2800,h:`<div class="sm a a1">You kept</div><div class="huge" data-count="2720" data-from="4000">$4,000</div><div class="t3 a a3">That is the number that pays your bills.</div>`},
-cta('Revenue is for <span class="hl" style="background:var(--ink);color:var(--lime)">bragging.</span> Kept is for bills.')]},
-{name:'3 · Talk, don\u2019t type',hook:'"Hands on the wheel. Masar handles the rest."',why:'<b>Pain:</b> paperwork on the road. <b>App shown:</b> the Masar ball, Tap and talk, the email preview. <b>Safety:</b> eyes stay on the road.',sc:[
-{bg:'ink',d:2200,h:`<div class="t1 a a1">Hands on the <span class="hl">wheel.</span></div>`},
+{name:'4 · Talk, don\u2019t type',hook:'"Hands on the wheel. Masar handles the rest."',why:'<b>Pain:</b> paperwork on the road. <b>App shown:</b> the Masar ball, Tap and talk, the email preview. <b>Safety:</b> eyes stay on the road.',sc:[
+{bg:'ink',d:2000,h:`${TRK}${GSG('Hands on the wheel')}`,sfx:'whoosh'},
 phone(P.chat(),'Tap. Talk. Done.','At the truck stop','top','ink'),
-{bg:'blue',d:2600,h:`<div class="wave a a1">${'<i></i>'.repeat(14)}</div><div class="t2 a a2">"Counter that one at 3,150."</div>`},
+{bg:'blue',d:2500,h:`<div class="wave a a1">${'<i></i>'.repeat(14)}</div><div class="t2 a a2">"Counter that one at 3,150."</div>`},
 phone(P.email(),'Masar drafts it.','You check it','top','ink'),
-{bg:'lime',d:2300,h:`<div class="chk"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><div class="t2 a a2">Sent. Eyes on the road.</div>`},
+{bg:'lime',d:2500,h:`<div class="chk"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><div class="t2 a a2">Sent. Eyes on the road.</div>`,sfx:'ding'},
 cta('Your co-driver for the <span class="hl" style="background:var(--ink);color:var(--lime)">office.</span>')]},
-{name:'4 · Get paid',hook:'"Brokers pay when they feel like it."',why:'<b>Pain:</b> late invoices. <b>App shown:</b> the late invoice, the reminder and the paid moment. <b>Ask-first:</b> nothing goes out until he taps.',sc:[
+{name:'5 · Get paid',hook:'"Brokers pay when they feel like it."',why:'<b>Pain:</b> late invoices. <b>App shown:</b> the late invoice, the reminder and the paid moment. <b>Ask-first:</b> nothing goes out until he taps.',sc:[
+{bg:'ink',d:2000,h:`${TRK}${YSG('Invoice late?')}`,sfx:'whoosh'},
 {bg:'coral',d:2500,h:`${ring(80,'#1A0904','8d')}<div class="t2 a a2">Invoice 1012. <br>8 days late.</div>`},
-{bg:'ink',d:2300,h:`<div class="t1 a a1">Brokers pay when they <span class="hl">feel like it.</span></div>`},
 phone(P.invoice(),'Masar spots it.','In the app','top','blue'),
 phone(P.late().replace('Running late','Reminder').replace("Traffic put me about 40 minutes behind. I'll arrive around 2:40.",'Friendly reminder: invoice 1012 for $2,450 is past due. Can you confirm payment?').replace('Estimate from the map · ','Written for you · '),'You tap <span class="hl">Send.</span>','Your mailbox','top','ink'),
 phone(P.paid(),'Paid. Recorded.','Six days later','top','lime'),
 cta('Get paid <span class="hl" style="background:var(--ink);color:var(--lime)">faster.</span>')]},
-{name:'5 · A day with Masar',hook:'"Booked. Rolling. Paid."',why:'<b>Idea:</b> a day on the road in five screens. <b>App shown:</b> offer, Home with ELD hours, running late, paid. <b>Tone:</b> quick cuts, clock stamps.',sc:[
-{bg:'lime',d:2000,h:`<div class="sm a a1">A day with Masar</div><div class="t1 slam">Booked.<br>Rolling.<br>Paid.</div>`},
+{name:'6 · A day with Masar',hook:'"Booked. Rolling. Paid."',why:'<b>Idea:</b> a day on the road in five screens. <b>App shown:</b> offer, Home with ELD hours, running late, paid.',sc:[
+{bg:'ink',d:2000,h:`${TRK}${GSG('A day with Masar')}`,sfx:'whoosh'},
 phone(P.offer(),'Rate check before coffee.','6:10 am','top','ink'),
 phone(P.home(),'On the road. Hours watched.','8:40 am','top','blue'),
 phone(P.late(),'Running late? One tap.','12:15 pm','top','coral'),
 phone(P.paid(),'Paid. Recorded.','6:45 pm','top','lime'),
 cta('Run the <span class="hl" style="background:var(--ink);color:var(--lime)">business.</span><br>Not the paperwork.')]}
 ];
+
+let AC=null,snd=null,beat=null,step=0;
+const ac=()=>{if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}return AC};
+const nz=(c,d)=>{const b=c.createBuffer(1,c.sampleRate*d,c.sampleRate),a=b.getChannelData(0);for(let i=0;i<a.length;i++)a[i]=Math.random()*2-1;return b};
+const env=(c,g,t,a,d,v)=>{g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(v,t+a);g.gain.exponentialRampToValueAtTime(0.0001,t+a+d)};
+const fx={
+ whoosh(){const c=ac();if(!c)return;const t=c.currentTime,s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();s.buffer=nz(c,.5);f.type='bandpass';f.Q.value=1.2;f.frequency.setValueAtTime(300,t);f.frequency.exponentialRampToValueAtTime(3500,t+.35);env(c,g,t,.1,.3,.22);s.connect(f).connect(g).connect(c.destination);s.start(t)},
+ ding(){const c=ac();if(!c)return;const t=c.currentTime;[880,1318].forEach((fr,i)=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=fr;env(c,g,t+i*.06,.01,.6,.18);o.connect(g).connect(c.destination);o.start(t+i*.06);o.stop(t+1)})},
+ kick(){const c=ac(),t=c.currentTime,o=c.createOscillator(),g=c.createGain();o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(40,t+.14);env(c,g,t,.005,.2,.5);o.connect(g).connect(c.destination);o.start(t);o.stop(t+.3)},
+ hat(){const c=ac(),t=c.currentTime,s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();s.buffer=nz(c,.08);f.type='highpass';f.frequency.value=7000;env(c,g,t,.002,.05,.12);s.connect(f).connect(g).connect(c.destination);s.start(t)},
+ bass(fr){const c=ac(),t=c.currentTime,o=c.createOscillator(),f=c.createBiquadFilter(),g=c.createGain();o.type='sawtooth';o.frequency.value=fr;f.type='lowpass';f.frequency.value=420;env(c,g,t,.01,.22,.22);o.connect(f).connect(g).connect(c.destination);o.start(t);o.stop(t+.35)}
+};
+const NOTES=[55,0,0,55,0,0,65.4,0,55,0,0,73.4,0,0,65.4,0];
+function startBeat(){stopBeat();step=0;beat=setInterval(()=>{const k=step%16;if(k%4===0)fx.kick();if(k%4===2)fx.hat();if(NOTES[k])fx.bass(NOTES[k]);step++},125)}
+function stopBeat(){clearInterval(beat);beat=null}
 const row=document.getElementById('row');const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 ADS.forEach((ad,n)=>{
  const u=document.createElement('div');u.className='unit';
- u.innerHTML=`<span class="tag">${ad.name}</span><p class="hook">${ad.hook}</p><div class="ad"><div class="prog">${ad.sc.map(()=>'<i><b></b></i>').join('')}</div><div class="sc" role="img" aria-label="${ad.name}"></div></div><div class="ctl"><button type="button" data-a="p">Pause</button><button type="button" data-a="r">Replay</button><button type="button" data-a="n">Next ›</button></div><p class="why">${ad.why}</p>`;
+ u.innerHTML=`<span class="tag">${ad.name}</span><p class="hook">${ad.hook}</p><div class="ad"><div class="prog">${ad.sc.map(()=>'<i><b></b></i>').join('')}</div><div class="sc" role="img" aria-label="${ad.name}"></div></div><div class="ctl"><button type="button" data-a="p">Pause</button><button type="button" data-a="r">Replay</button><button type="button" data-a="n">Next ›</button><button type="button" data-a="s">Sound on</button></div><p class="why">${ad.why}</p>`;
  row.appendChild(u);
  const box=u.querySelector('.sc'),bars=[...u.querySelectorAll('.prog i')];let i=0,t=null,paused=reduce,raf=null;
  const count=()=>{box.querySelectorAll('[data-count]').forEach(el=>{const to=+el.dataset.count,fr=+el.dataset.from,t0=performance.now();const step=now=>{const k=Math.min(1,(now-t0)/1700);el.textContent='$'+Math.round(fr+(to-fr)*(1-Math.pow(1-k,3))).toLocaleString('en-US');if(k<1)raf=requestAnimationFrame(step)};raf=requestAnimationFrame(step)})};
- const show=(k)=>{i=k;const s=ad.sc[k];box.className='sc bg-'+s.bg+(s.cls?' '+s.cls:'');box.innerHTML=s.h;bars.forEach((b,j)=>{b.className=j<k?'done':'';const f=b.firstElementChild;f.style.transition='none';f.style.transform=j<k?'scaleX(1)':'scaleX(0)'});const f=bars[k].firstElementChild;void f.offsetWidth;if(!reduce){f.style.transition=`transform ${s.d}ms linear`;f.style.transform='scaleX(1)'}else{f.style.transform='scaleX(1)'}count();clearTimeout(t);if(!paused)t=setTimeout(()=>show((k+1)%ad.sc.length),s.d)};
- u.querySelector('.ctl').addEventListener('click',e=>{const a=e.target.dataset.a;if(!a)return;if(a==='p'){paused=!paused;e.target.textContent=paused?'Play':'Pause';if(paused){clearTimeout(t)}else show(i)}if(a==='r'){show(0)}if(a==='n'){show((i+1)%ad.sc.length)}});
+ const show=(k)=>{i=k;const s=ad.sc[k];if(snd===u&&s.sfx&&fx[s.sfx])fx[s.sfx]();box.className='sc bg-'+s.bg+(s.cls?' '+s.cls:'');box.innerHTML=s.h;bars.forEach((b,j)=>{b.className=j<k?'done':'';const f=b.firstElementChild;f.style.transition='none';f.style.transform=j<k?'scaleX(1)':'scaleX(0)'});const f=bars[k].firstElementChild;void f.offsetWidth;if(!reduce){f.style.transition=`transform ${s.d}ms linear`;f.style.transform='scaleX(1)'}else{f.style.transform='scaleX(1)'}count();clearTimeout(t);if(!paused)t=setTimeout(()=>show((k+1)%ad.sc.length),s.d)};
+ u.querySelector('.ctl').addEventListener('click',e=>{const a=e.target.dataset.a;if(!a)return;if(a==='p'){paused=!paused;e.target.textContent=paused?'Play':'Pause';if(paused){clearTimeout(t)}else show(i)}if(a==='r'){show(0)}if(a==='n'){show((i+1)%ad.sc.length)}if(a==='s'){const on=snd!==u;document.querySelectorAll('[data-a="s"]').forEach(x=>{x.textContent='Sound on';x.classList.remove('snd')});if(on){ac()&&ac().resume();snd=u;e.target.textContent='Sound off';e.target.classList.add('snd');startBeat();if(paused){paused=false;u.querySelector('[data-a="p"]').textContent='Pause'}show(0)}else{snd=null;stopBeat()}}});
  if(reduce)u.querySelector('[data-a="p"]').textContent='Play';
  show(0);
 });
