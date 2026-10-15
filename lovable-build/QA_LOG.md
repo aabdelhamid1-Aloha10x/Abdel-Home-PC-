@@ -275,3 +275,8 @@ Reviewed from the Codex handoff plus the pasted source (not read directly by thi
 
 ## 2026-10-15 01:45 — Phase 1 of the load agent sent (umsg_01m4ym9rgtevssjb39yh9fbj57)
 Owner said go. Sent: AGENTS.md rule fix (reseller browser search only with written-permission entitlement; customers never enter load-board passwords; platform login only on worker host), 18 defect fixes with tests, Vapi variables, broker_quote vs owner_accepted, removed invented defaults, role-aware persona. Assumption to confirm with owner: one platform login on the worker host. Follow-up check scheduled in about 30 minutes. Phases 2-5 wait for owner go.
+
+## 2026-10-15 09:30 — Phase 1 verification (commit 093ef3b "Fixed Phase 1 foundation defects")
+Verdict: PASS WITH GAPS (code read by subagent, tests not run). Most important: A) rememberBasis upsert creates hub_prefs rows with invented NOT NULL defaults (min_rpm 2, max_deadhead 150, max_weight 45000).
+Others: B load_offers.deadhead NOT NULL DEFAULT 0; C datexpert `choice.dhd ?? 100`; D timezone has hard America/Chicago fallback and no driver tz; E no rememberBasis test; F defect 12 not settable from UI (Phase 2); G stale providers.ts comment, no test for entitlement without approval_ref; H calls readiness is platform-wide env; I runbook not updated; J no cross-company assertions, lsc_enqueue/lsc_approve write no audit_log, 0069 snapshot is an empty stub.
+Sent Lovable ONE follow-up A-J (umsg_01m4zgcf8pe3wt1r0a7wxp8jvz). Phase 2 waits for the owner's go.
