@@ -314,3 +314,6 @@ Owner: remove Spanish entirely. Sent (umsg_01m4zrq7f6f36sx6ve93ctpre2). Reminder
 
 ## 2026-10-15 13:00 — SEO research reviewed (owner pasted marketing/research.md); plan saved
 lovable-build/marketing/SEO_PLAN.md. Recommendations: merge site + app into one project (app project as base), fix canonical/redirect (www vs bare, 302 vs 301), single TMS page, retitle home, remove Spanish claims (Spanish removed from app today), one Core plan rule, free tool pages, comparison pages, review-site listings only after launch, sister-fleet testimonials need permission + disclosure. Owner: posting/publishing waits until the app is finished. Nothing sent to Lovable.
+
+## 2026-10-15 13:20 — Pricing direction from owner (not sent to Lovable)
+Solo $39 / Core $97 up to 3 trucks / Growth $297 for 4-10 / new tier $497 for 11-25 / Enterprise by quote. Per-truck price at the top of each tier falls ($32.33 -> $29.70 -> $19.88) but jumps at tier edges (3->4: +$200; 10->11: +$200). Open checks: cost per truck, existing Growth $249 customers, Stripe + plan limits in app, site copy. Saved in SEO_PLAN.md section 5.

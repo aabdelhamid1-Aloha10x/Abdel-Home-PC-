@@ -44,7 +44,7 @@ Owner direction (Oct 15): finish the application first; marketing/posting starts
 
 ## 5. Owner decisions needed
 1. Domain layout after the merge: marketing on masar10x.io and app on app.masar10x.io (recommended), or everything on one host?
-2. Core plan: "up to 3 trucks" or "2 to 10"? (must match everywhere)
+2. Pricing (owner direction Oct 15, pending final check): Solo $39 (1 truck, phone), Core $97 (up to 3), Growth $297 (4-10), third tier $497 (11-25), Enterprise by quote. Open: the jump at tier edges (3 -> 4 trucks = $97 -> $297; 10 -> 11 = $297 -> $497), cost per truck of AI/voice, existing $249 Growth customers, Stripe/plan-limit changes in the app, site copy. Must match everywhere.
 3. Trial: keep "card required"?
 4. Sister-fleet quotes: written permission and disclosure OK? Which names may be used?
 5. Who owns the Search Console, Capterra and G2 accounts (owner email)?
