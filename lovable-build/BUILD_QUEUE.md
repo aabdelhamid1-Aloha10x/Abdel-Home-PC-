@@ -10,7 +10,8 @@ Credit/pricing system and the website merge WAIT until the app is finished and s
 | S2b | Owner feedback fixes | DONE with gaps (leftovers moved into S3) |
 | S3 | Solo: missing chat tools + L1-L5 | DONE with gaps (leftovers A-F bundled into S4) |
 | S4 | Spend limit + autonomy tests + S3 leftovers | DONE with gaps (B, C, G, H moved to S5; F dropped) |
-| S5 | Hire Masar completion + orphan cleanup + leftovers B, C, G, H | SENT 18:35 (umsg_01m50cwxrwekss3yz3nac0fqhg) |
+| S5 | Hire Masar + orphan cleanup + leftovers | DONE with gaps and 3 unrequested screen removals (X1-X6 moved to S6) |
+| S6 | Shared keep/deadhead calc + S5 corrections X1-X6 | SENT 19:20 (umsg_01m50dvfzmf4qbnn68kjq2ezhk) |
 | S4 | Solo: spend limits in Rules + autonomy class A-D server tests | queued |
 | S5 | Solo: finish Hire Masar (comfort dial, first job) + remove orphan routes | queued |
 | S6 | Solo: one shared keep/deadhead calculation across list and detail screens | queued |
