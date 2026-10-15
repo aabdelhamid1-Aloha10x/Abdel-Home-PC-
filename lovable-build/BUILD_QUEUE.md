@@ -12,7 +12,8 @@ Credit/pricing system and the website merge WAIT until the app is finished and s
 | S4 | Spend limit + autonomy tests + S3 leftovers | DONE with gaps (B, C, G, H moved to S5; F dropped) |
 | S5 | Hire Masar + orphan cleanup + leftovers | DONE with gaps and 3 unrequested screen removals (X1-X6 moved to S6) |
 | S6 | Shared keep/deadhead calc + X1-X6 | DONE with gaps (case screen restored); remaining items in S6b |
-| S6b | 7 small leftovers (expense/assistants, wording sweep, Vapi test, standing rules in AGENTS.md, A&H fixtures, Earnings callers, parity test) | SENT 19:55 (umsg_01m50erstweavt9nr9ra2zk85s) |
+| S6b | 7 small leftovers | DONE with small gaps (accepted) |
+| P4 | Vapi broker call app side | SENT 20:10 |
 | S4 | Solo: spend limits in Rules + autonomy class A-D server tests | queued |
 | S5 | Solo: finish Hire Masar (comfort dial, first job) + remove orphan routes | queued |
 | S6 | Solo: one shared keep/deadhead calculation across list and detail screens | queued |
