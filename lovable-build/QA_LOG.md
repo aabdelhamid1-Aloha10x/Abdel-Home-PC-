@@ -272,3 +272,6 @@ Minor, batch into the next round (nothing sent): driver-block text says "Ask you
 
 ## 2026-10-15 01:30 — Load search build (commit 46d5caf "Moved rules to folder files", Codex-driven; migrations 0067, 0068)
 Reviewed from the Codex handoff plus the pasted source (not read directly by this session). Verdict: PASS WITH GAPS as a foundation; the voice-first agent, browser worker, Vapi assistant and knowledge base are NOT built. Full audit (11 requirements, 22 defects), KB design, prompts, schemas, role matrix and release checklist: lovable-build/LOAD_AGENT_DESIGN.md. Phased Lovable prompts: lovable-build/LOAD_AGENT_LOVABLE_PHASES.md. Nothing sent to Lovable; waiting for owner go on Phase 1 and answers to decisions G1-G10. Release blocker: written reseller/DAT permission for automated multi-company search.
+
+## 2026-10-15 01:45 — Phase 1 of the load agent sent (umsg_01m4ym9rgtevssjb39yh9fbj57)
+Owner said go. Sent: AGENTS.md rule fix (reseller browser search only with written-permission entitlement; customers never enter load-board passwords; platform login only on worker host), 18 defect fixes with tests, Vapi variables, broker_quote vs owner_accepted, removed invented defaults, role-aware persona. Assumption to confirm with owner: one platform login on the worker host. Follow-up check scheduled in about 30 minutes. Phases 2-5 wait for owner go.
