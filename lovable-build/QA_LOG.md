@@ -348,3 +348,8 @@ Paused: hourly QA monitor (trig_011N7RyjCvobNQT6mKwai4ed) disabled, continuous t
 
 ## 2026-10-15 15:45 — Logged-in smoke test blocked (owner wants an account session)
 Cloud container has no inbound access, so no live browser window can be opened for the owner to log in. Options given: screenshots from the phone; MASAR_TEST_EMAIL/MASAR_TEST_PASSWORD as cloud environment variables (new session); or a local Claude Code session with a desktop browser using lovable-build/smoke/SMOKE_TEST_PLAN.md. Rounds still paused (monitor + tick disabled). S2 unverified.
+
+## 2026-10-15 17:10 — Owner feedback after S2 (commit 05e7061 "Completed S2 en Home"); S2b sent (umsg_01m508pvdjfqcs39fshnmw8a6n)
+Read-only check: S2 changed only Home (GoalCard, DoneToday), weekly review, week helpers, migration 0078, Vapi route/tests; it did NOT touch s.money.tsx or any Earnings component. Earnings is still the v3 design in code; owner perceives an older look: possibly cached/unpublished build or different screen (asked for a screenshot, unresolved).
+Owner points: (1) My loads lists every Delivered load: want only current + upcoming, "Past loads" button with monthly folders; (2) "Done for you today" not useful, detail font small: remove, put undoable actions in notifications; (3) some notifications will not clear ("Load email needs a look" ingestInbound, inbound_email); (4) tapping it opens the long Quotes-address/forwarder instructions: simplify, hide for connected Gmail, move forwarding to a backup page.
+S2b also asks status of S2 leftovers a-e. Monitor re-enabled, tick set (12 min). Rounds resume per BUILD_QUEUE.md (S3.. next).
