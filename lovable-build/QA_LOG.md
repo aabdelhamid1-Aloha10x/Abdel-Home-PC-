@@ -287,3 +287,8 @@ PARTIAL: G (comment fixed; approval_ref CHECK is NOT VALID; tests are string mat
 Extra: each approval writes two audit rows (TS + trigger). Trigger audit_log column names unchecked.
 No rule violations: no load-board passwords, no credit prices, money record-only, no new tables.
 Sent Lovable ONE small follow-up (umsg_01m4zhyshjfj9r9tmjn4wxhext): H colon, J snapshot, duplicate audit, G validation + behavioural test, confirm audit columns. Phase 2 still waits for the owner's go.
+
+## 2026-10-15 11:10 — Phase 2 sent (umsg_01m4zm6waeed7rejek6ew5hs5z)
+Owner said send. Lovable had finished the small Phase 1 follow-up (commit 401cc4e "Audit remediation Phase 1 done"), NOT yet verified (H colon, 0070 snapshot, duplicate audit, approval_ref validation, audit columns).
+Phase 2 scope: Find a load opens with "what the system knows" (location, ETA vs appointment or FCFS, HOS, empty time) + short-vs-long suggestion and tips (marked advice, no invented numbers) + one question with mic; ranked offers with same ids; no link to another tab; Loads tab clean-up; 12 server functions; background search with pushed results; honest "not connected" while no worker; negotiation states (Accept/Counter/Decline, ~20s -> "check with management", spoken yes never binding); kb/ folder; 30-scenario eval set; isolation tests.
+Known: browser worker is not built (contract + queue only). Reseller written approval reported by owner (not seen, not recorded). Open: verify 401cc4e and Phase 2 when Lovable replies; check bsj_complete stores missing deadhead as NULL not 0 (two reviews disagreed).
