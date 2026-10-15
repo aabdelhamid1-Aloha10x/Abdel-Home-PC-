@@ -260,3 +260,8 @@ Sent Lovable ONE short follow-up (umsg_01m4xwn8q9f0msce7d62pjha69): lookbehind/l
 
 ## 2026-10-14 19:30 — Last small follow-up (commit 63049ef "Fixed 3 minor items, DONE")
 Verified in code: web.ts webQuery now uses (?<!\w)...(?!\w) so "Acme Inc." and "C.H. Robinson" are stripped and "Samsung" is kept; migration 0066 has the intent comment. NOT read: the new tests, the alreadySent-by-status_key change, the docs line (taken from Lovable's report). Verdict: PASS. Nothing outstanding on Lovable. Owner to-dos unchanged: PERPLEXITY_API_KEY via secure form, Perplexity retention terms, confirm 0066 applied, carrier setup step (paused).
+
+## 2026-10-15 00:10 — Spending chart edit (commit c28d9e5 "Added spending chart response", not requested by this session)
+Verdict: PASS WITH GAPS. New chat lookup "spending {category?, days?, period?}" with a bar-chart card. OK: company_id filters (RLS backs it), numbers computed server-side from the database, zod-validated args, money record-only, no credit prices, theme tokens, no secrets.
+Gaps: (1) money gate is only "not a driver", so any dispatcher or ops manager can see company spend; must be owner or can_see_pay_details like businessSnapshot; (2) "today" and windows use UTC (off by a day in a US evening); (3) .limit(5000) silently truncates totals; (4) chart a11y: aria-label has no bar values, title/note/labels not through t(), m-enter reduced-motion unchecked; tests cover pure functions only (6 cases).
+Sent Lovable ONE fix message (umsg_01m4yecykgf7pry4gphevm9b6s) for 1-4 with tests. Open items unchanged: PERPLEXITY_API_KEY via secure form, Perplexity retention terms, confirm 0066 applied, carrier setup step (paused).
