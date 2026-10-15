@@ -1,0 +1,16 @@
+import { chromium } from "/opt/node22/lib/node_modules/playwright/index.mjs";
+const b = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium-1194/chrome-linux/chrome", args: ["--no-sandbox"] });
+const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
+const p = await ctx.newPage();
+await p.goto("https://app.masar10x.io", { waitUntil: "networkidle", timeout: 45000 });
+const before = await p.evaluate(() => ({ cls: document.documentElement.className, bg: getComputedStyle(document.body).backgroundColor }));
+await p.getByRole("button", { name: /dark/i }).first().tap().catch(async () => { await p.locator("button").nth(1).tap(); });
+await p.waitForTimeout(600);
+const after = await p.evaluate(() => ({ cls: document.documentElement.className, bg: getComputedStyle(document.body).backgroundColor }));
+console.log("before", JSON.stringify(before)); console.log("after", JSON.stringify(after));
+await p.screenshot({ path: "dark-390.png" });
+await p.getByText("Start your free trial").tap();
+await p.waitForTimeout(1500);
+console.log("after tap trial ->", p.url(), "|", await p.title());
+await p.screenshot({ path: "trial-390.png" });
+await b.close();
