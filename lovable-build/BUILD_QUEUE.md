@@ -13,7 +13,7 @@ Credit/pricing system and the website merge WAIT until the app is finished and s
 | S5 | Hire Masar + orphan cleanup + leftovers | DONE with gaps and 3 unrequested screen removals (X1-X6 moved to S6) |
 | S6 | Shared keep/deadhead calc + X1-X6 | DONE with gaps (case screen restored); remaining items in S6b |
 | S6b | 7 small leftovers | DONE with small gaps (accepted) |
-| P4 | Vapi broker call app side | SENT 20:10 |
+| P4 | Vapi broker call app side | DONE with gaps (P4b sent 19:50, umsg_01m50gybkfe3evckrac84y19s8) |
 | S4 | Solo: spend limits in Rules + autonomy class A-D server tests | queued |
 | S5 | Solo: finish Hire Masar (comfort dial, first job) + remove orphan routes | queued |
 | S6 | Solo: one shared keep/deadhead calculation across list and detail screens | queued |
