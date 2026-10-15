@@ -311,3 +311,6 @@ Verdict: PASS WITH GAPS (static review by subagent; tests and SQL not run). DONE
 NOT DONE: drizzle meta snapshots 0070-0074 are all empty stubs (not made real, not removed). Minor: orchestration rules live in agent.ts not kb/; 0074 duplicates 0073.
 No rule violations found. Not verified live: any real voice/ElevenLabs path beyond in-app lookups.
 Owner: remove Spanish entirely. Sent (umsg_01m4zrq7f6f36sx6ve93ctpre2). Reminder trigger for it deleted.
+
+## 2026-10-15 13:00 — SEO research reviewed (owner pasted marketing/research.md); plan saved
+lovable-build/marketing/SEO_PLAN.md. Recommendations: merge site + app into one project (app project as base), fix canonical/redirect (www vs bare, 302 vs 301), single TMS page, retitle home, remove Spanish claims (Spanish removed from app today), one Core plan rule, free tool pages, comparison pages, review-site listings only after launch, sister-fleet testimonials need permission + disclosure. Owner: posting/publishing waits until the app is finished. Nothing sent to Lovable.
