@@ -280,3 +280,10 @@ Owner said go. Sent: AGENTS.md rule fix (reseller browser search only with writt
 Verdict: PASS WITH GAPS (code read by subagent, tests not run). Most important: A) rememberBasis upsert creates hub_prefs rows with invented NOT NULL defaults (min_rpm 2, max_deadhead 150, max_weight 45000).
 Others: B load_offers.deadhead NOT NULL DEFAULT 0; C datexpert `choice.dhd ?? 100`; D timezone has hard America/Chicago fallback and no driver tz; E no rememberBasis test; F defect 12 not settable from UI (Phase 2); G stale providers.ts comment, no test for entitlement without approval_ref; H calls readiness is platform-wide env; I runbook not updated; J no cross-company assertions, lsc_enqueue/lsc_approve write no audit_log, 0069 snapshot is an empty stub.
 Sent Lovable ONE follow-up A-J (umsg_01m4zgcf8pe3wt1r0a7wxp8jvz). Phase 2 waits for the owner's go.
+
+## 2026-10-15 10:35 — Phase 1 follow-up A-J verified (commit 234f6d0 "Committed Phase 1 follow-ups")
+Verdict: PASS WITH GAPS (code read by subagent, tests and SQL not run). DONE: A (migration 0070 drops NOT NULL/DEFAULT; rememberBasis writes only confirmed rate_basis), B, C, D (device > company > UTC, flagged), E (helper unit test), F (server fn takes choices; no UI yet), I.
+PARTIAL: G (comment fixed; approval_ref CHECK is NOT VALID; tests are string matches, plus one SQL empty-ref assertion). H (label renders "Calls: platform setting:" double colon, s.case.$id.tsx:106). J (cross-company and audit assertions added; 0070_snapshot.json still an empty stub).
+Extra: each approval writes two audit rows (TS + trigger). Trigger audit_log column names unchecked.
+No rule violations: no load-board passwords, no credit prices, money record-only, no new tables.
+Sent Lovable ONE small follow-up (umsg_01m4zhyshjfj9r9tmjn4wxhext): H colon, J snapshot, duplicate audit, G validation + behavioural test, confirm audit columns. Phase 2 still waits for the owner's go.
