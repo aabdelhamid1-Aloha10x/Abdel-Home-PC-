@@ -7,8 +7,8 @@ Credit/pricing system and the website merge WAIT until the app is finished and s
 | R1 | Usage metering | DONE with gaps; follow-ups bundled into S1 |
 | S1 | Solo: time and wording cleanup + R1 follow-ups | DONE with small gaps (bundled into S2) |
 | S2 | Done-for-you strip + goal line + weekly_review + uptime + S1 leftovers | DONE (strip to be removed by owner request) |
-| S2b | Owner feedback: My loads current/upcoming + Past loads monthly folders; remove Done-for-you strip; notifications clear + one alert per email; simplify Quotes address; S2 leftovers status | SENT 17:10 (umsg_01m508pvdjfqcs39fshnmw8a6n) |
-| S3 | Solo: missing chat tools (mark paid, IFTA report, schedule PM, renewal lookups, weekly review) | queued |
+| S2b | Owner feedback fixes | DONE with gaps (leftovers moved into S3) |
+| S3 | Solo: missing chat tools + S2 leftovers L1-L5 | SENT 17:45 (umsg_01m509k6p0e3xtn8xxmpk27t3h) |
 | S4 | Solo: spend limits in Rules + autonomy class A-D server tests | queued |
 | S5 | Solo: finish Hire Masar (comfort dial, first job) + remove orphan routes | queued |
 | S6 | Solo: one shared keep/deadhead calculation across list and detail screens | queued |
