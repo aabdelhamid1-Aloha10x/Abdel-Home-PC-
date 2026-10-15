@@ -4,8 +4,8 @@ Credit/pricing system and the website merge WAIT until the app is finished and s
 
 | # | Round | State |
 |---|---|---|
-| R1 | Usage metering (cost-only, per component, calls per second/minute, provider-reported Vapi cost breakdown, unit_economics) | SENT 14:25 (umsg_01m4zwg7tmfsdtcarzp3dk2mm5) |
-| S1 | Solo: time and wording cleanup (UTC "today" spots, tz test) | next (spec in SOLO_COMPLETENESS_AUDIT.md) |
+| R1 | Usage metering | DONE with gaps; follow-ups bundled into S1 |
+| S1 | Solo: time and wording cleanup + R1 follow-ups | SENT 14:55 (umsg_01m4zxdtjhev6tcry3s22mg5r0) |
 | S2 | Solo: "Done for you today" strip + goal line on Home | queued |
 | S3 | Solo: missing chat tools (mark paid, IFTA report, schedule PM, renewal lookups, weekly review) | queued |
 | S4 | Solo: spend limits in Rules + autonomy class A-D server tests | queued |

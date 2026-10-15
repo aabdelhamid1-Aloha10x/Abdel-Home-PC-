@@ -328,3 +328,9 @@ Unchecked: phase2b.test.ts fillMsg call without translator; any other importer o
 
 ## 2026-10-15 14:25 — Continuous mode + R1 usage metering sent (umsg_01m4zwg7tmfsdtcarzp3dk2mm5)
 Owner: finish the whole app first, credit system later via scenario tests; calls must be metered per second/minute with itemized components (transcription, inbound, outbound, LLM, etc.). Queue in lovable-build/BUILD_QUEUE.md. Solo completeness audit launched (read-only).
+
+## 2026-10-15 14:55 — R1 usage metering verified (commit 629edff, message says "Trimmed project rules text")
+Verdict: PASS WITH GAPS (static read by subagent; tests not run). DONE: usage_events (0075) with all columns/CHECKs, append-only trigger, admin-only SELECT, no INSERT policy; Vapi report stored as 5 provider_reported parts (transport, stt, llm, tts, platform) + duration marker, missing parts marked configured_estimate; unit_costs table (unverified seeds); admin screen app.admin.usage + unit_economics (platform admin only); idempotency unique (component, external_id, part); credits/plans/customer UI untouched; AGENTS.md trim kept the standing rules it contained (credit-price/publish/ANH/English-only/voice-note rules are not in AGENTS.md; confirm they live in project knowledge).
+GAPS: audit trail thin; null external_id rows not deduped; occurred_at = now not call end; estimate vs reported only totals; webhook replay test does not post twice; consume_credits replay safety unchecked; static scan limited to routes/components.
+Commit message understated the content (misleading) — asked Lovable to name commits properly.
+Sent S1 (time/wording cleanup from SOLO_COMPLETENESS_AUDIT) + R1 follow-ups a-f in ONE message (umsg_01m4zxdtjhev6tcry3s22mg5r0).
