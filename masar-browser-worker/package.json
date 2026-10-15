@@ -1,0 +1,14 @@
+{
+  "name": "masar-browser-worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Search worker for the Masar load agent (DAT Expert reseller site). Runs on its own host, talks to the Masar app queue.",
+  "scripts": {
+    "start": "node src/run.js",
+    "inspect": "node src/inspect.js",
+    "test": "node --test test/worker.test.js"
+  },
+  "dependencies": { "playwright": "1.56.1" },
+  "engines": { "node": ">=20" }
+}
