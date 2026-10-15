@@ -21,3 +21,4 @@ Credit/pricing system and the website merge WAIT until the app is finished and s
 | W1.. | Web system (office /app): fleet entry to cases, Core/Growth/Enterprise screens | after Solo |
 Solo audit: lovable-build/SOLO_COMPLETENESS_AUDIT.md (static read, 20+ files unread; statuses rely on QA_LOG for those).
 Owner to-dos: Hostinger VM RAM/OS (worker host), Vapi account + keys via Lovable secure form, PERPLEXITY_API_KEY via secure form, reseller approval_ref recorded in app, pricing decisions (PRICING_PROPOSAL.md) later.
+| P4c | Small app round: add spoken variables to the Vapi call variableValues: lane_spoken, near_spoken, pickup_spoken, posted_rate_spoken (full state names, money as people say it); keep old variables. Send AFTER the Vapi assistant tuning is accepted and the owner says go on web rounds | queued |
