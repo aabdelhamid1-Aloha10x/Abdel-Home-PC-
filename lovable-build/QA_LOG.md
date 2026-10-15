@@ -320,3 +320,8 @@ Solo $39 / Core $97 up to 3 trucks / Growth $297 for 4-10 / new tier $497 for 11
 
 ## 2026-10-15 13:45 — Premium pricing + credit sizing proposal (draft, not sent)
 lovable-build/PRICING_PROPOSAL.md: heavy-usage model (assumptions, unverified), included credits per tier = heavy day x 15 days x max trucks (1,100 / 3,500 / 18,500 / 46,000), est. cost, two price options (A premium $79/$199/$499/$999; B $59/$149/$397/$797), edge-jump warning, owner decisions. Phone cost still not verified against a Vapi/Twilio invoice.
+
+## 2026-10-15 14:10 — Spanish removal verified (commit f9ce6f1 "Removed Spanish from app")
+Verdict: PASS WITH ONE DECISION (static review; tests not run; repo not fully grepped). DONE: i18n is English only (t() and keys kept), language toggles and profile/language fields removed, chat translate button and chat.functions.ts removed, Masar prompt English only, speech en-US, email templates English, es-only tests replaced, marketing/docs copy cleaned. No migrations touched: language and translated columns stay, no user data deleted.
+Remaining: talk.ts:5 self-harm regex still matches Spanish phrases (quiero morir...) and its test; reply is English 988. Recommendation: keep as a safety net unless the owner says remove.
+Unchecked: phase2b.test.ts fillMsg call without translator; any other importer of chat.functions.ts; unread routes/prompts. Site copy must also drop "EN/ES" (see SEO_PLAN.md).
