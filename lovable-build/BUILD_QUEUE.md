@@ -5,8 +5,8 @@ Credit/pricing system and the website merge WAIT until the app is finished and s
 | # | Round | State |
 |---|---|---|
 | R1 | Usage metering | DONE with gaps; follow-ups bundled into S1 |
-| S1 | Solo: time and wording cleanup + R1 follow-ups | SENT 14:55 (umsg_01m4zxdtjhev6tcry3s22mg5r0) |
-| S2 | Solo: "Done for you today" strip + goal line on Home | queued |
+| S1 | Solo: time and wording cleanup + R1 follow-ups | DONE with small gaps (bundled into S2) |
+| S2 | Solo: Done for you today strip + goal line + weekly_review + uptime goal + S1 leftovers | SENT 15:10 (umsg_01m4zyh840e4bv55hf8jseqb7b) |
 | S3 | Solo: missing chat tools (mark paid, IFTA report, schedule PM, renewal lookups, weekly review) | queued |
 | S4 | Solo: spend limits in Rules + autonomy class A-D server tests | queued |
 | S5 | Solo: finish Hire Masar (comfort dial, first job) + remove orphan routes | queued |

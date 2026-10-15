@@ -334,3 +334,9 @@ Verdict: PASS WITH GAPS (static read by subagent; tests not run). DONE: usage_ev
 GAPS: audit trail thin; null external_id rows not deduped; occurred_at = now not call end; estimate vs reported only totals; webhook replay test does not post twice; consume_credits replay safety unchecked; static scan limited to routes/components.
 Commit message understated the content (misleading) — asked Lovable to name commits properly.
 Sent S1 (time/wording cleanup from SOLO_COMPLETENESS_AUDIT) + R1 follow-ups a-f in ONE message (umsg_01m4zxdtjhev6tcry3s22mg5r0).
+
+## 2026-10-15 15:10 — S1 + R1 follow-ups verified (commit b2c803e "Added local date helpers & tests")
+Verdict: PASS WITH SMALL GAPS (static read; tests and migration 0077 not run/applied by us). DONE: unpaid_invoices, add_expense/today(ctx), actuals/periodStart, s.late received_on, s.garage inDays use ctx tz > company tz > UTC; Pacific vs Chicago test incl. 21:00 acceptance; usage_events created_by/actor + audit trigger for unit_costs; dedupe hash for null external_id; Vapi occurred_at = endedAt; admin per part/source table + price table with Verified; METERING.md + test; static scan over all src.
+PARTIAL/gaps: UTC flag not surfaced to Masar/UI; "Ask your owner or dispatcher" fixed in 3 spots (repo-wide unverified); Vapi replay with missing call id would charge again; route passes _at to unit_cost rpc (unchecked); no audit row when no signed-in admin; route test uses mocked DB.
+Commit message again understates content (included the whole R1 follow-up migration 0077, Vapi route, admin screen).
+No rule violations. Sent S2 (Done-for-you strip, goal line, weekly_review, uptime goal) + 5 leftovers in ONE message (umsg_01m4zyh840e4bv55hf8jseqb7b).
