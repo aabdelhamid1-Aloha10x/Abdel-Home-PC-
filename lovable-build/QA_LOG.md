@@ -325,3 +325,6 @@ lovable-build/PRICING_PROPOSAL.md: heavy-usage model (assumptions, unverified), 
 Verdict: PASS WITH ONE DECISION (static review; tests not run; repo not fully grepped). DONE: i18n is English only (t() and keys kept), language toggles and profile/language fields removed, chat translate button and chat.functions.ts removed, Masar prompt English only, speech en-US, email templates English, es-only tests replaced, marketing/docs copy cleaned. No migrations touched: language and translated columns stay, no user data deleted.
 Remaining: talk.ts:5 self-harm regex still matches Spanish phrases (quiero morir...) and its test; reply is English 988. Recommendation: keep as a safety net unless the owner says remove.
 Unchecked: phase2b.test.ts fillMsg call without translator; any other importer of chat.functions.ts; unread routes/prompts. Site copy must also drop "EN/ES" (see SEO_PLAN.md).
+
+## 2026-10-15 14:25 — Continuous mode + R1 usage metering sent (umsg_01m4zwg7tmfsdtcarzp3dk2mm5)
+Owner: finish the whole app first, credit system later via scenario tests; calls must be metered per second/minute with itemized components (transcription, inbound, outbound, LLM, etc.). Queue in lovable-build/BUILD_QUEUE.md. Solo completeness audit launched (read-only).
