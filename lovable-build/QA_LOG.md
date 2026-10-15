@@ -305,3 +305,9 @@ Tests (6, run here against a fake site and fake queue): full job, CAPTCHA/2FA/wr
 NOT verified: the real datexpert.app (selectors, date format, equipment picker, table headers, session limits). Owner must run `npm run inspect` on the host first. Host + secrets + approval_ref entry still owner tasks.
 App-side note: bsj_complete in 0068 stores a missing deadhead as 0 (coalesce(...,0)); item 8 of the Phase 2 follow-up asks Lovable to fix it.
 Owner also said: remove Spanish from the app entirely. Queued to send when Lovable is idle (it supersedes item 6 of the Phase 2 follow-up).
+
+## 2026-10-15 12:45 — Phase 2 follow-up verified (commit 6df4470 "Fixed load data & tools")
+Verdict: PASS WITH GAPS (static review by subagent; tests and SQL not run). DONE: appointment type edit UI + driver answer via lsc_set_appt_type (0073); trailer length from load/truck/active trailer + truck input; offer cards use offer ids, no outgoing links; chat/voice lookups wired to the 12 tools (tools.server.ts, findLoads, spokenOffers; proven by test with mocked agent.server, no live log); approval_request creates a real request (load_case_approval_requests, RLS, audit, idempotent, driver can request not approve, owner UI); kb/ rewritten from section B; SearchHome dead code, comments, FindList removed; attack evals assert outcomes; Phase 1 items: double colon, duplicate audit row, approval_ref check + validated, audit columns, bsj_complete stores missing deadhead as NULL (0070).
+NOT DONE: drizzle meta snapshots 0070-0074 are all empty stubs (not made real, not removed). Minor: orchestration rules live in agent.ts not kb/; 0074 duplicates 0073.
+No rule violations found. Not verified live: any real voice/ElevenLabs path beyond in-app lookups.
+Owner: remove Spanish entirely. Sent (umsg_01m4zrq7f6f36sx6ve93ctpre2). Reminder trigger for it deleted.
