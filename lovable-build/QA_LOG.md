@@ -317,3 +317,6 @@ lovable-build/marketing/SEO_PLAN.md. Recommendations: merge site + app into one 
 
 ## 2026-10-15 13:20 — Pricing direction from owner (not sent to Lovable)
 Solo $39 / Core $97 up to 3 trucks / Growth $297 for 4-10 / new tier $497 for 11-25 / Enterprise by quote. Per-truck price at the top of each tier falls ($32.33 -> $29.70 -> $19.88) but jumps at tier edges (3->4: +$200; 10->11: +$200). Open checks: cost per truck, existing Growth $249 customers, Stripe + plan limits in app, site copy. Saved in SEO_PLAN.md section 5.
+
+## 2026-10-15 13:45 — Premium pricing + credit sizing proposal (draft, not sent)
+lovable-build/PRICING_PROPOSAL.md: heavy-usage model (assumptions, unverified), included credits per tier = heavy day x 15 days x max trucks (1,100 / 3,500 / 18,500 / 46,000), est. cost, two price options (A premium $79/$199/$499/$999; B $59/$149/$397/$797), edge-jump warning, owner decisions. Phone cost still not verified against a Vapi/Twilio invoice.
