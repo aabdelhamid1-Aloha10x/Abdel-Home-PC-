@@ -75,3 +75,18 @@ test("missing selector fails the job without pausing (never guesses)", async () 
     assert.equal(fail.pause, false); assert.match(fail.error, /Selector missing: search/);
   } finally { await t.done(); }
 });
+
+for (const mode of ['stale','empty']) {
+  test(`${mode}: completion uses the finished query, not pre-existing rows`, async()=>{
+    const t=await setup(mode);
+    try {
+      const job=await t.api.lease(ACCT.id);
+      assert.equal(await handleJob(t.api,t.cfg,ACCT,job,t.session,CREDS),'done');
+      const complete=t.app.calls.find(c=>c.action==='complete');
+      assert.ok(complete);
+      assert.equal(complete.rows.length,mode==='empty'?0:2);
+      assert.equal(complete.rows.some(r=>r.origin==='Old City, TX'),false);
+      if(mode==='stale') assert.equal(complete.rows[0].origin,'Nashville, TN');
+    } finally {await t.done();}
+  });
+}
