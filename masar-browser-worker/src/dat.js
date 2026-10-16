@@ -2,6 +2,7 @@
 // approval screen throw AuthPause, which pauses the account and asks the owner. A missing selector throws a plain
 // error (job fails, never guessed).
 import { scrapeRows } from "./rows.js";
+import { enrichDetails } from "./details.js";
 
 export class AuthPause extends Error {}
 const CHALLENGE_TEXT = /captcha|verification code|two-?factor|2fa|verify (that )?it'?s you|approve (this )?(sign.?in|login|device)|unusual (activity|sign.?in)|account (locked|suspended)|too many attempts/i;
@@ -163,5 +164,10 @@ export async function runSearch(page, cfg, job) {
   if (reason) throw new AuthPause(reason);
   const body = await page.locator(sel.results).count();
   if (!body) return { rows: [], truncated: false };
-  return scrapeRows(page, sel.results);
+  const result = await scrapeRows(page, sel.results);
+  await enrichDetails(page, sel.results, result.rows, { check: async () => {
+    const reason = await challengeReason(page);
+    if (reason) throw new AuthPause(reason);
+  } });
+  return result;
 }

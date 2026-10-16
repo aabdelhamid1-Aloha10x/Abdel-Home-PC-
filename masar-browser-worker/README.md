@@ -34,3 +34,9 @@ full job, CAPTCHA, 2FA, wrong password (all pause), missing selector (fails, no 
 - Exact selectors, the date format of the read-only date fields, how the equipment dropdown is picked, and the results table headers.
 - Whether the reseller limits simultaneous tabs/sessions per login (ask them before running more than one account worker).
 - bsj_complete in the app stores a missing deadhead as 0 (app-side fix requested separately).
+
+## October 16 verified board behavior
+
+The live board uses exact city autocomplete, equipment chips, readonly calendar selection and a search progress lifecycle. The worker now waits for a new search lifecycle before reading rows. Hidden padding rows are ignored; nested posted rates are separated from RPM.
+
+Broker MC numbers appear in the expanded load row's Company section. After scraping, the worker opens up to 50 detail rows within a 60-second budget, matches posting reference and company, and reads only the explicit MC# identity. Missing or ambiguous identities remain unknown. It never treats the board's authority badge as independent verification; Masar's existing FMCSA/booking checks remain authoritative. This detail extraction has isolated browser tests; the deployed worker still requires a real end-to-end run.
