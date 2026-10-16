@@ -8,7 +8,7 @@ import { handleJob, openAccount } from "../src/run.js";
 import { mapHeaders } from "../src/rows.js";
 import { fmtDate } from "../src/dat.js";
 
-const CHROME = process.env.CHROME_PATH ?? "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
+const CHROME = process.env.CHROME_PATH ?? chromium.executablePath();
 const JOB = { id: "11111111-1111-4111-8111-111111111111", token: "22222222-2222-4222-8222-222222222222", filtersHash: "a".repeat(32),
   filters: { origin: "Nashville, TN", dho: 75, destination: "Atlanta, GA", dhd: 50, equipment: "Vans(Standard)", loadType: "Full Only", length: 53, weight: 45000, startDate: "2026-10-16", endDate: "2026-10-18", tz: "America/Chicago" } };
 const ACCT = { id: "33333333-3333-4333-8333-333333333333", prefix: "TEST_ACCT" };
@@ -17,7 +17,9 @@ const CREDS = { username: "u@example.com", password: "secret-pass-123" };
 async function setup(mode) {
   const site = await mockSite(mode), app = await mockApp(JOB);
   const cfg = loadConfig({ APP_URL: app.url, BROWSER_WORKER_SECRET: "shh", ACCOUNTS: `${ACCT.id}=${ACCT.prefix}`, DATEXPERT_LOGIN_URL: `${site.url}/login`, DATEXPERT_SEARCH_URL: `${site.url}/search`, STATE_DIR: `/tmp/mbw-test-state-${Math.random().toString(36).slice(2)}`, CHROME_PATH: CHROME, JOB_TIMEOUT_MS: "60000" });
-  const browser = await chromium.launch({ executablePath: CHROME, args: ["--no-sandbox"] });
+  let browser;
+  try { browser = await chromium.launch({ executablePath: CHROME, args: ["--no-sandbox"] }); }
+  catch (error) { site.server.close(); app.server.close(); throw error; }
   const session = await openAccount(browser, cfg, ACCT);
   const done = async () => { await browser.close(); site.server.close(); app.server.close(); };
   return { site, app, cfg, session, api: makeApi(cfg), done };
