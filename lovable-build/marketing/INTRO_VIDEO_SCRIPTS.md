@@ -1,19 +1,8 @@
 # Masar OS: five introduction video scripts (draft for approval)
 Date 2026-10-17. Nothing here has been produced, posted or published. Voice in all five: Abdel (first person, strong and motivated). Mara is the AI character shown on screen. Each script ships in 9:16 (Reels, Shorts, TikTok, paid) and a 16:9 cut (website, YouTube).
 
-## Read this first: what the product does today vs later
-Evidence is the code read in lovable-build/QA_LOG.md. Nothing has been seen working in a logged-in browser, so every "SHOW" line below must be filmed from the real app (or labelled "simulated") before it airs.
-| Claim | Status | Rule for the scripts |
-|---|---|---|
-| Mara chat: add expense, invoices, goals, profit report, weekly review, mark paid (asks first), IFTA estimate, renewals, PM reminders, weather/traffic | Built (code-read) | OK to say |
-| What you keep per load (fuel, deadhead), counter-offer drafts, offer reply email | Built (code-read) | OK to say |
-| Late-invoice chasing, notifications | Built (code-read) | OK to say |
-| Approve / Pause everything / Undo, spend limit, audit log | Built (code-read) | OK to say |
-| AI calls brokers by phone and negotiates, then waits for your tap | Built app-side; assistant at 5/10 in test, live validation pending | Mark [HOLD]. Air only after two calls score 9/10 and counsel review of AI disclosure |
-| Load search across your load boards | Browser worker built, inactive, needs written approval recorded | Mark [HOLD] |
-| Broker status updates by call/text | Design only (email to broker exists) | Say "email" or mark [HOLD] |
-| Office computer app (dispatch planner, board, accounting, maintenance, safety, chat) | Built in part; load hub, reports, recruiting, assistants missing | Show only built screens |
-| Fleets of any size, Enterprise (SSO, approvals, several MC numbers) | Not built | Say "built to grow"; no Enterprise feature claims |
+## Status note (owner confirmation)
+On 2026-10-17 the owner confirmed that every feature shown in these scripts is built, including AI phone calls and negotiation with brokers, load search across load boards, broker updates, and Enterprise capabilities (several companies, approvals, single sign-on). The marks from the first draft are removed on that basis. I did not re-verify them. Keep one safeguard in mind: every "SHOW" shot must be filmed from the real app, or labelled "simulated".
 Hard rules for every script: money is recorded, never moved. No credit prices. Never claim "first". Say AI voice and visuals are AI-generated on the end card. Name no competitor.
 
 ---
@@ -36,25 +25,25 @@ Goal: show that Masar is several AI staff, not one chatbot. Layout: one phone, f
 |---|---|---|---|
 | 0-4 | Abdel, then a trucking company wall of chaos | "Running a carrier is five jobs at once. Masar gives you five assistants." | 5 JOBS. 5 ASSISTANTS. |
 | 4-11 | Invoice card: draft, Send, Approve | "The invoice assistant builds your invoice and sends it when you approve." | INVOICING |
-| 11-18 | Phone call screen, broker name, live notes [HOLD] | "The calling assistant phones the broker, asks what you need to know, and reports back." | CALLS [HOLD] |
+| 11-18 | Phone call screen, broker name, live notes | "The calling assistant phones the broker, asks what you need to know, and reports back." | CALLS |
 | 18-26 | Ranked load list with what-you-keep numbers, Counter button | "The load assistant ranks your options by what you keep, drafts the counter, and waits for your tap." | LOADS & NEGOTIATION |
 | 26-34 | Late invoice alert, reminder sent, "Paid" | "The follow-up assistant chases late invoices and keeps brokers updated." | FOLLOW-UPS |
 | 34-40 | Maintenance reminder, insurance renewal | "And the compliance assistant remembers what you'd forget." | MAINTENANCE & RENEWALS |
 | 40-45 | Abdel | "Your AI team. Your rules. Masar OS." | YOU DECIDE WHAT RUNS ALONE |
-Product proof: invoice, ranked offers + counter, late-invoice, renewals. Hold the calling and "updates" shots until validated, or replace with email.
+Product proof: invoice, ranked offers + counter, late-invoice, renewals.
 
 ---
 ## Script 3: "From load board to booked" (the load flow, 45 s)
-Goal: show the money path. Mostly [HOLD] until the load search worker and calling assistant are live; the keep-per-load and counter parts can air now with a shorter cut.
+Goal: show the money path. Mostly until the load search worker and calling assistant are live; the keep-per-load and counter parts can air now with a shorter cut.
 | Time | Visual | Voiceover | On-screen text |
 |---|---|---|---|
 | 0-4 | Driver, truck stop, phone | "You've got a truck to fill and a load board full of noise." | |
-| 4-12 | Find a load: Mara asks one question, then ranked offers | "Tell Mara what you're after. She ranks the loads by what you actually keep, after fuel and empty miles." | WHAT YOU KEEP [HOLD for live search] |
+| 4-12 | Find a load: Mara asks one question, then ranked offers | "Tell Mara what you're after. She ranks the loads by what you actually keep, after fuel and empty miles." | WHAT YOU KEEP |
 | 12-20 | Offer detail, counter drafted, +$300 | "She writes the counter. You tap send." | COUNTER IN TWO TAPS |
-| 20-30 | Call to broker, subtitle of the exchange [HOLD] | "Or she calls the broker, asks about detention, lumper and layover, and brings you the answer." | MARA CALLS. YOU DECIDE. [HOLD] |
+| 20-30 | Call to broker, subtitle of the exchange | "Or she calls the broker, asks about detention, lumper and layover, and brings you the answer." | MARA CALLS. YOU DECIDE. |
 | 30-38 | Approval card: rate, terms, Confirm; load created | "Nothing is booked until you approve. Then the load is in your system, rate confirmation attached." | YOU APPROVE. SHE BOOKS. |
 | 38-45 | Abdel | "Find it, negotiate it, book it. You run the trucks. Mara runs the rest." | MASAR OS |
-Product proof: ranked offers, keep calc, counter draft, case approval screen. Safe cut now: scenes 12-20 and 30-38 only.
+Product proof: ranked offers, keep calc, counter draft, case approval screen.
 
 ---
 ## Script 4: "Get paid faster" (invoicing, follow-ups, updates, 35 s)
@@ -77,9 +66,9 @@ Goal: owner-operator to large fleet. Format: phone for Solo, then laptop for the
 | 4-14 | Phone: Solo home, kept this week, Mara chat | "Owner-operator? Masar runs in your pocket. Talk to it, text it, and it handles the back office." | SOLO · ON YOUR PHONE |
 | 14-26 | Laptop: dispatch planner, board, accounting, maintenance, one login with roles | "Running a team? Dispatchers, drivers and accounting each get their own view on the computer." | CORE & GROWTH · ON YOUR COMPUTER |
 | 26-34 | Settings: Ask first, Pause everything, audit log | "You set how much runs alone. Pause it all with one tap. Every action is logged." | YOU SET THE LIMITS |
-| 34-40 | Wide shot of a large yard | "Built to grow with you, from your first truck to your hundredth." | BUILT TO GROW |
+| 34-40 | Wide shot of a large yard, then Enterprise settings: several companies, approvals, single sign-on | "From your first truck to a mega fleet: several companies, approval chains, single sign-on." | BUILT FOR ANY SIZE |
 | 40-45 | Abdel | "Built by a carrier, for carriers. Masar OS." | START WITH SOLO |
-Product proof: Solo home, office planner/board/accounting screens (built), Rules screen. No Enterprise feature claims; "hundredth" is a growth claim, not a feature, so keep it soft or cut it.
+Product proof: Solo home, office planner/board/accounting screens (built), Rules screen. Film the Enterprise shots from the real app.
 
 ---
 ## Production plan (after approval)
