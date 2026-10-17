@@ -1,0 +1,147 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Masar OS ad v4</title>
+<style>
+@font-face{font-family:Inter;font-weight:500;src:url(inter-latin-500-normal.woff2)}
+@font-face{font-family:Inter;font-weight:700;src:url(inter-latin-700-normal.woff2)}
+@font-face{font-family:Inter;font-weight:800;src:url(inter-latin-800-normal.woff2)}
+@font-face{font-family:Anton;src:url(anton-latin-400-normal.woff2)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:transparent}
+#stage{position:absolute;inset:0;font-family:Inter,Arial,sans-serif;color:#F2F0EA;overflow:hidden}
+.abs{position:absolute}
+.dark{inset:0;background:radial-gradient(1100px 1000px at 50% 42%,#13190d 0%,#06080B 74%)}
+.cap{left:0;width:1080px;text-align:center;text-transform:uppercase;letter-spacing:12px;font-weight:700;font-size:32px;color:#C8F25C}
+.anton{font-family:Anton,Impact,sans-serif;text-transform:uppercase;text-align:center;left:0;width:1080px;line-height:1.02;letter-spacing:2px}
+.lime{color:#C8F25C}
+.orb{border-radius:50%;background:radial-gradient(circle at 35% 30%,#F1FFC0 0%,#C8F25C 38%,#5f8d12 100%);box-shadow:0 0 70px #C8F25Caa,0 0 160px #C8F25C55}
+/* scene 1 */
+#photo{left:0;top:0;width:1080px;height:1100px;overflow:hidden}
+#photo img{width:1080px;height:1060px;display:block;transform-origin:50% 22%}
+#photoFade{left:0;top:620px;width:1080px;height:500px;background:linear-gradient(#0000,#06080B 85%)}
+/* scene 2 shade */
+#shade2{inset:0;background:linear-gradient(#000b 0%,#0000 30%,#0000 50%,#000d 100%);opacity:0}
+/* iPhone */
+#phoneWrap{left:260px;top:330px;width:560px;height:1180px;opacity:0;perspective:2400px}
+#phone{position:absolute;inset:0;border-radius:112px;background:linear-gradient(135deg,#8d9096 0%,#4a4d53 18%,#2a2d32 50%,#55595f 82%,#8a8d93 100%);padding:9px;box-shadow:0 70px 150px #000e,0 0 0 2px #15171a inset}
+#bezel{position:absolute;inset:9px;border-radius:104px;background:#050607;padding:13px}
+#screen{position:absolute;inset:13px;border-radius:92px;background:#0B0F14;overflow:hidden}
+.island{position:absolute;left:50%;top:22px;width:168px;height:48px;margin-left:-84px;border-radius:26px;background:#000;z-index:6}
+.sb{position:absolute;top:26px;left:0;right:0;height:40px;z-index:5;font-weight:700;font-size:25px}
+.sb .t{position:absolute;left:62px;top:4px}
+.sb .r{position:absolute;right:50px;top:7px;display:flex;gap:9px;align-items:center}
+.hb{position:absolute;bottom:14px;left:50%;width:180px;height:7px;margin-left:-90px;border-radius:4px;background:#e8e8e8;opacity:.9;z-index:6}
+.btn-l,.btn-r{position:absolute;background:linear-gradient(#6a6d73,#3a3d42);border-radius:4px}
+.glare{position:absolute;inset:0;border-radius:92px;background:linear-gradient(115deg,#ffffff14 0%,#ffffff00 32%);z-index:7;pointer-events:none}
+.chat{position:absolute;left:0;right:0;top:92px;bottom:40px;padding:22px 24px}
+.hd{display:flex;align-items:center;gap:18px;padding:16px 8px 22px;border-bottom:2px solid #1d2530}
+.hd .o{width:60px;height:60px}
+.hd b{font-size:34px;font-weight:800}.hd span{display:block;font-size:22px;color:#7d8896;margin-top:2px}
+.msg{margin-top:24px;padding:26px 28px;border-radius:32px;background:#141b24;border:2px solid #1f2a37;font-size:30px;line-height:1.28;font-weight:500;opacity:0}
+.msg small{display:block;font-size:21px;color:#7d8896;margin-bottom:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase}
+.btns{display:flex;gap:16px;margin-top:20px}
+.b{padding:16px 30px;border-radius:999px;font-size:26px;font-weight:800}
+.b.p{background:#C8F25C;color:#0A0E13}.b.s{background:#1d2530;color:#F2F0EA}.b.d{background:#1d2a12;color:#C8F25C}
+.lbl{left:0;width:1080px;text-align:center;font-weight:800;font-size:66px;letter-spacing:1px;opacity:0;line-height:1.08}
+/* end */
+#end{inset:0;opacity:0}
+.fine{left:0;width:1080px;text-align:center;font-size:25px;color:#8b94a0;font-weight:500;letter-spacing:.5px}
+</style></head>
+<body><div id="stage">
+<div class="abs dark" id="dark"></div>
+
+<!-- S1: Abdel -->
+<div class="abs" id="s1">
+ <div class="abs" id="photo"><img id="pimg" src="abdel_face.jpg"></div>
+ <div class="abs" id="photoFade"></div>
+ <div class="abs cap" id="s1cap" style="top:1115px;opacity:0">Founder · Masar OS</div>
+ <div class="abs anton" id="s1a" style="top:1180px;font-size:150px;opacity:0">I’m Abdel.</div>
+ <div class="abs anton lime" id="s1b" style="top:1360px;font-size:92px;opacity:0">I run a trucking company.</div>
+</div>
+
+<!-- S2: truck -->
+<div class="abs" id="shade2"></div>
+<div class="abs cap" id="s2cap" style="top:200px;opacity:0">The truth about freight tech</div>
+<div class="abs anton" id="s2a" style="top:1040px;font-size:112px;opacity:0">Most freight tech<br>is built for<br><span style="color:#ff6b6b">brokers.</span></div>
+<div class="abs anton" id="s2b" style="top:1000px;font-size:200px;opacity:0"><span class="lime">Built for<br>carriers.</span></div>
+<div class="abs anton" id="s2c" style="top:1560px;font-size:84px;opacity:0">By a carrier.</div>
+
+<!-- S3: iPhone -->
+<div class="abs anton" id="meet" style="top:130px;font-size:150px;opacity:0">Meet <span class="lime">Mara.</span></div>
+<div id="phoneWrap" class="abs"><div id="phone">
+ <div class="btn-l" style="left:-5px;top:210px;width:7px;height:58px"></div>
+ <div class="btn-l" style="left:-5px;top:300px;width:7px;height:100px"></div>
+ <div class="btn-l" style="left:-5px;top:420px;width:7px;height:100px"></div>
+ <div class="btn-r" style="right:-5px;top:340px;width:7px;height:150px"></div>
+ <div id="bezel"><div id="screen">
+  <div class="island"></div>
+  <div class="sb"><div class="t">9:41</div><div class="r">
+   <svg width="34" height="22" viewBox="0 0 34 22"><rect x="0" y="14" width="6" height="8" rx="2" fill="#fff"/><rect x="9" y="9" width="6" height="13" rx="2" fill="#fff"/><rect x="18" y="4" width="6" height="18" rx="2" fill="#fff"/><rect x="27" y="0" width="6" height="22" rx="2" fill="#fff"/></svg>
+   <svg width="32" height="24" viewBox="0 0 32 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round"><path d="M3 9a18 18 0 0 1 26 0"/><path d="M8 14a11 11 0 0 1 16 0"/><circle cx="16" cy="19.5" r="2" fill="#fff" stroke="none"/></svg>
+   <svg width="50" height="24" viewBox="0 0 50 24"><rect x="1" y="1" width="42" height="22" rx="7" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="2"/><rect x="4" y="4" width="32" height="16" rx="4.5" fill="#fff"/><rect x="45" y="8" width="3.5" height="8" rx="1.5" fill="#fff" fill-opacity=".5"/></svg>
+  </div></div>
+  <div class="chat">
+   <div class="hd"><div class="orb o"></div><div><b>Mara</b><span>Your AI back office</span></div></div>
+   <div class="msg" id="m1"><small>Invoice ready</small>Invoice #1042 for Rivera Freight is ready. $2,850.<div class="btns"><div class="b p" id="ap">Approve</div><div class="b s">Edit</div></div></div>
+   <div class="msg" id="m2"><small>Fuel logged</small>$412.18 diesel, Memphis. Added to this week’s expenses.</div>
+   <div class="msg" id="m3"><small>Reminder</small>Insurance renews Nov 20. Set a reminder?</div>
+  </div>
+  <div class="hb"></div><div class="glare"></div>
+ </div></div>
+</div></div>
+<div class="abs lbl" id="l1" style="top:1600px">Invoices. Expenses. Reminders.</div>
+<div class="abs lbl lime" id="l2" style="top:1600px">You approve.</div>
+<div class="abs lbl" id="l3" style="top:1600px">You stay in charge.</div>
+
+<!-- S4: end -->
+<div class="abs" id="end">
+ <svg class="abs" style="left:420px;top:300px" width="240" height="240" viewBox="0 0 48 48" fill="none"><path d="M9 38V14.5c0-1.3 1.6-2 2.5-1L24 26.5l12.5-13c.9-1 2.5-.3 2.5 1V30" stroke="#C8F25C" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="39" r="3.2" fill="#0A0E13" stroke="#C8F25C" stroke-width="2.4"/><circle cx="39" cy="37" r="4" fill="#C8F25C"/></svg>
+ <div class="abs anton" id="e1" style="top:600px;font-size:150px;opacity:0">Masar <span class="lime">OS</span></div>
+ <div class="abs anton" id="e2" style="top:790px;font-size:86px;opacity:0">Built by a carrier.</div>
+ <div class="abs anton lime" id="e3" style="top:900px;font-size:86px;opacity:0">For carriers.</div>
+ <div class="abs" id="e4" style="left:300px;top:1130px;width:480px;padding:30px 0;border-radius:999px;background:#C8F25C;color:#0A0E13;font-weight:800;font-size:44px;text-align:center;opacity:0">Start with Solo</div>
+ <div class="abs anton" id="e5" style="top:1330px;font-size:120px;opacity:0;color:#fff">Let’s go.</div>
+</div>
+<div class="abs fine" id="fine1" style="bottom:56px;opacity:0">Simulated screen. Example data.</div>
+<div class="abs fine" id="fine2" style="bottom:56px;opacity:0">Voice and some visuals are AI-generated.</div>
+</div>
+<script src="gsap.min.js"></script>
+<script>
+const tl=gsap.timeline({paused:true});
+const fi=(s,t,d=.5,y=0)=>tl.fromTo(s,{opacity:0,y:y},{opacity:1,y:0,duration:d,ease:'power3.out'},t);
+const fo=(s,t,d=.4)=>tl.to(s,{opacity:0,duration:d,ease:'power2.in'},t);
+// S1 (0 - 3.1)
+tl.fromTo('#pimg',{scale:1.0},{scale:1.1,duration:3.4,ease:'none'},0);
+fi('#s1cap',.3,.5); fi('#s1a',.5,.6,30); fi('#s1b',1.3,.6,30);
+tl.to('#dark',{opacity:0,duration:.35},2.8);
+fo('#s1',2.85,.35);
+// S2 (2.9 - 9.0)
+tl.to('#shade2',{opacity:1,duration:.4},3.0);
+fi('#s2cap',3.1,.5); fi('#s2a',3.3,.6,30);
+fo('#s2a',6.0,.35); fo('#s2cap',6.0,.3);
+tl.fromTo('#s2b',{opacity:0,scale:1.25},{opacity:1,scale:1,duration:.5,ease:'back.out(1.6)'},6.15);
+fi('#s2c',7.2,.5,20);
+fo('#s2b',8.6,.35); fo('#s2c',8.6,.35); fo('#shade2',8.7,.3);
+tl.to('#dark',{opacity:1,duration:.4},8.8);
+// S3 (9.0 - 18.0)
+fi('#meet',9.3,.6,-30);
+tl.set('#phoneWrap',{opacity:1},9.4).fromTo('#phone',{y:1500,rotationX:30},{y:0,rotationX:0,duration:1.3,ease:'power3.out'},9.4);
+tl.fromTo('#m1',{opacity:0,y:30},{opacity:1,y:0,duration:.6,ease:'power3.out'},10.8);
+tl.fromTo('#m2',{opacity:0,y:30},{opacity:1,y:0,duration:.6,ease:'power3.out'},12.0);
+tl.fromTo('#m3',{opacity:0,y:30},{opacity:1,y:0,duration:.6,ease:'power3.out'},13.0);
+tl.fromTo('#l1',{opacity:0,y:20},{opacity:1,y:0,duration:.5,ease:'power3.out'},10.3); fo('#l1',13.4,.35);
+tl.fromTo('#l2',{opacity:0,y:20},{opacity:1,y:0,duration:.5,ease:'power3.out'},13.6); fo('#l2',15.3,.35);
+tl.to('#ap',{scale:.92,duration:.15},14.4).to('#ap',{scale:1,duration:.15},14.55).call(()=>{const a=document.getElementById('ap');a.className='b d';a.textContent='Approved ✓'},null,14.6);
+tl.fromTo('#l3',{opacity:0,y:20},{opacity:1,y:0,duration:.5,ease:'power3.out'},15.5); fo('#l3',17.7,.35);
+fo('#phoneWrap',17.7,.4); fo('#meet',17.7,.4);
+// S4 (18 - 24)
+tl.set('#end',{opacity:1},18.0);
+tl.fromTo('#end svg',{opacity:0,scale:.7},{opacity:1,scale:1,duration:.7,ease:'back.out(1.6)'},18.1);
+tl.fromTo('#e1',{opacity:0,y:30},{opacity:1,y:0,duration:.5,ease:'power3.out'},18.5);
+tl.fromTo('#e2',{opacity:0,y:30},{opacity:1,y:0,duration:.45,ease:'power3.out'},19.3);
+tl.fromTo('#e3',{opacity:0,y:30},{opacity:1,y:0,duration:.45,ease:'power3.out'},20.2);
+tl.fromTo('#e4',{opacity:0,scale:.85},{opacity:1,scale:1,duration:.5,ease:'back.out(2)'},21.2);
+tl.fromTo('#e5',{opacity:0,scale:1.4},{opacity:1,scale:1,duration:.4,ease:'back.out(2)'},22.0);
+fi('#fine1',9.8,.5); fo('#fine1',17.8,.3); fi('#fine2',20.5,.5);
+tl.to({},{duration:.1},23.9);
+window.seek=t=>{tl.seek(t,false)};
+</script></body></html>
