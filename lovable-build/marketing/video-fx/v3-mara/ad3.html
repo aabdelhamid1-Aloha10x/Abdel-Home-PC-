@@ -1,0 +1,117 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Masar OS ad v3: Mara</title>
+<style>
+@font-face{font-family:Inter;font-weight:500;src:url(inter-latin-500-normal.woff2)}
+@font-face{font-family:Inter;font-weight:700;src:url(inter-latin-700-normal.woff2)}
+@font-face{font-family:Inter;font-weight:800;src:url(inter-latin-800-normal.woff2)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:transparent}
+#stage{position:absolute;inset:0;font-family:Inter,Arial,sans-serif;color:#EDEBE4;overflow:hidden}
+.abs{position:absolute}
+#shadeTop{inset:0;background:linear-gradient(#000c 0%,#0000 38%,#0000 58%,#000d 100%)}
+#bg{inset:0;background:radial-gradient(1000px 900px at 50% 40%,#12190c 0%,#07090C 72%);opacity:0}
+.cap{left:0;width:1080px;text-align:center;text-transform:uppercase;letter-spacing:14px;font-weight:500;font-size:34px;color:#C8F25C}
+.big{left:0;width:1080px;text-align:center;text-transform:uppercase;font-weight:700;letter-spacing:6px;line-height:1.18;color:#EDEBE4}
+.rule{left:440px;width:200px;height:3px;background:#C8F25C}
+/* orb */
+.orb{border-radius:50%;background:radial-gradient(circle at 35% 30%,#F1FFC0 0%,#C8F25C 38%,#5f8d12 100%);box-shadow:0 0 90px #C8F25Caa,0 0 200px #C8F25C55}
+/* phone */
+#phoneWrap{left:240px;top:430px;width:600px;height:1040px;opacity:0}
+#phone{position:absolute;inset:0;border-radius:96px;background:#171c24;border:5px solid #2b3340;box-shadow:0 60px 140px #000d}
+#screen{position:absolute;inset:16px;border-radius:82px;background:#0B0F14;overflow:hidden;padding:36px 30px}
+.notch{position:absolute;left:50%;top:14px;width:150px;height:38px;margin-left:-75px;border-radius:20px;background:#000;z-index:5}
+.hd{display:flex;align-items:center;gap:20px;margin-top:44px;padding-bottom:26px;border-bottom:2px solid #1d2530}
+.hd .o{width:62px;height:62px}
+.hd b{font-size:36px;font-weight:700}
+.hd span{font-size:24px;color:#7d8896;display:block;margin-top:2px}
+.msg{margin-top:28px;padding:30px 32px;border-radius:34px;background:#141b24;border:2px solid #1f2a37;font-size:34px;line-height:1.3;font-weight:500;opacity:0}
+.msg small{display:block;font-size:24px;color:#7d8896;margin-bottom:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase}
+.btns{display:flex;gap:18px;margin-top:22px}
+.btn{padding:18px 34px;border-radius:999px;font-size:28px;font-weight:700}
+.btn.p{background:#C8F25C;color:#0A0E13}
+.btn.s{background:#1d2530;color:#EDEBE4}
+.btn.done{background:#1d2a12;color:#C8F25C}
+.lbl{left:0;width:1080px;text-align:center;font-weight:700;font-size:62px;letter-spacing:2px;opacity:0;line-height:1.1}
+.sub{left:0;width:1080px;text-align:center;font-weight:500;font-size:38px;letter-spacing:10px;text-transform:uppercase;color:#C8F25C;opacity:0}
+#end{inset:0;opacity:0}
+.fine{left:0;width:1080px;text-align:center;bottom:60px;font-size:26px;color:#8b94a0;font-weight:500;letter-spacing:1px}
+</style></head>
+<body><div id="stage">
+<div class="abs" id="bg"></div>
+<div class="abs" id="shadeTop"></div>
+
+<!-- A and B: audience -->
+<div class="abs cap" id="capA" style="top:200px;opacity:0">For trucking company owners</div>
+<div class="abs big" id="hA" style="top:1180px;font-size:100px;opacity:0">If you run a<br>trucking company</div>
+<div class="abs big" id="hB" style="top:1100px;font-size:96px;opacity:0">You shouldn’t be<br>running the<br><span style="color:#C8F25C">paperwork.</span></div>
+
+<!-- C: Mara -->
+<div class="abs orb" id="orbBig" style="left:420px;top:240px;width:240px;height:240px;opacity:0"></div>
+<div class="abs lbl" id="meet" style="top:520px;font-size:120px;font-weight:800;letter-spacing:6px">Meet Mara.</div>
+<div class="abs sub" id="tag1" style="top:690px">Your AI back office</div>
+<div id="phoneWrap" class="abs"><div id="phone"><div id="screen"><div class="notch"></div>
+<div class="hd"><div class="orb o"></div><div><b>Mara</b><span>Back office</span></div></div>
+<div class="msg" id="m1"><small>Invoice ready</small>Invoice #1042 for Rivera Freight is ready. $2,850.
+<div class="btns"><div class="btn p" id="ap">Approve</div><div class="btn s">Edit</div></div></div>
+<div class="msg" id="m2"><small>Fuel logged</small>$412.18 diesel, Memphis. Added to this week’s expenses.</div>
+<div class="msg" id="m3"><small>Reminder</small>Insurance renews Nov 20. Set a reminder?</div>
+</div></div></div>
+<div class="abs lbl" id="l1" style="top:1560px;color:#EDEBE4">Invoices. Expenses. Reminders.</div>
+<div class="abs lbl" id="l2" style="top:1560px;color:#EDEBE4">Done for you.</div>
+<div class="abs lbl" id="l3" style="top:1560px;color:#C8F25C">Approved by you.</div>
+
+<!-- D: end -->
+<div class="abs" id="end">
+<svg class="abs" style="left:420px;top:380px" width="240" height="240" viewBox="0 0 48 48" fill="none"><path d="M9 38V14.5c0-1.3 1.6-2 2.5-1L24 26.5l12.5-13c.9-1 2.5-.3 2.5 1V30" stroke="#C8F25C" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="39" r="3.2" fill="#0A0E13" stroke="#C8F25C" stroke-width="2.4"/><circle cx="39" cy="37" r="4" fill="#C8F25C"/></svg>
+<div class="abs big" id="brand" style="top:690px;font-size:92px;letter-spacing:22px;font-weight:700">Masar OS</div>
+<div class="abs rule" id="rl" style="top:850px"></div>
+<div class="abs big" id="e1" style="top:930px;font-size:78px;font-weight:500;letter-spacing:3px;text-transform:none;opacity:0">You run the trucks.</div>
+<div class="abs big" id="e2" style="top:1040px;font-size:78px;font-weight:700;letter-spacing:3px;text-transform:none;color:#C8F25C;opacity:0">Mara runs the rest.</div>
+<div class="abs" id="cta" style="left:340px;top:1260px;width:400px;padding:26px 0;border-radius:999px;background:#C8F25C;color:#0A0E13;font-weight:800;font-size:40px;text-align:center;opacity:0">Start with Solo</div>
+</div>
+<div class="abs fine" id="fine" style="opacity:0">Simulated screen. Example data.</div>
+</div>
+<script src="gsap.min.js"></script>
+<script>
+const tl=gsap.timeline({paused:true});
+const fade=(sel,t,d=.5)=>tl.to(sel,{opacity:1,duration:d,ease:'power2.out'},t);
+const out=(sel,t,d=.4)=>tl.to(sel,{opacity:0,duration:d,ease:'power2.in'},t);
+// A
+fade('#capA',.4,.8); tl.fromTo('#hA',{y:30},{y:0,opacity:1,duration:1,ease:'power3.out'},.6);
+out('#capA',3.0); out('#hA',2.9);
+// B
+tl.fromTo('#hB',{y:30},{y:0,opacity:1,duration:1,ease:'power3.out'},3.35); out('#hB',5.5,.5);
+// bg to dark for product
+tl.to('#bg',{opacity:1,duration:.7,ease:'power2.inOut'},5.7).to('#shadeTop',{opacity:0,duration:.5},6.0);
+// C
+tl.fromTo('#orbBig',{scale:.6,opacity:0},{scale:1,opacity:1,duration:1.2,ease:'power3.out'},6.2)
+  .to('#orbBig',{scale:1.08,duration:1.6,yoyo:true,repeat:5,ease:'sine.inOut'},7.4);
+tl.fromTo('#meet',{y:24},{y:0,opacity:1,duration:1,ease:'power3.out'},6.5);
+fade('#tag1',7.7,.8);
+// move title up and phone in
+tl.to('#orbBig',{opacity:0,scale:.4,y:-120,duration:.7,ease:'power3.inOut'},8.2).to('#meet',{y:-335,scale:.6,duration:1.1,ease:'power3.inOut'},8.2).to('#tag1',{opacity:0,duration:.4},8.2);
+tl.set('#phoneWrap',{opacity:1},8.4).fromTo('#phone',{y:1400,rotationX:0},{y:0,duration:1.4,ease:'power3.out'},8.4);
+fade('#m1',9.7,.7); tl.fromTo('#m1',{y:30},{y:0,duration:.7,ease:'power3.out'},9.7);
+tl.to('#ap',{scale:.92,duration:.15},11.6).add(()=>{},11.7).to('#ap',{scale:1,duration:.15},11.75);
+tl.call(()=>{const a=document.getElementById('ap');a.className='btn done';a.textContent='Approved ✓'},null,11.8);
+fade('#m2',12.5,.7); fade('#m3',14.0,.7);
+// bottom labels in sync with VO L3 (6.3 to 15)
+tl.fromTo('#l1',{y:20},{y:0,opacity:1,duration:.7,ease:'power3.out'},9.4); out('#l1',11.3,.4);
+tl.fromTo('#l2',{y:20},{y:0,opacity:1,duration:.7,ease:'power3.out'},11.5); out('#l2',13.1,.4);
+tl.fromTo('#l3',{y:20},{y:0,opacity:1,duration:.7,ease:'power3.out'},13.2); out('#l3',15.2,.5);
+// leave C
+out('#phoneWrap',15.4,.6);  out('#meet',15.4,.6);
+// D
+tl.set('#end',{opacity:1},15.9);
+tl.fromTo('#end svg',{opacity:0,y:20},{opacity:1,y:0,duration:.9,ease:'power3.out'},15.95);
+tl.fromTo('#brand',{opacity:0,y:20},{opacity:1,y:0,duration:.9,ease:'power3.out'},16.2);
+tl.fromTo('#rl',{scaleX:0},{scaleX:1,duration:.7,ease:'power3.out'},16.8);
+tl.fromTo('#e1',{y:20},{y:0,opacity:1,duration:.8,ease:'power3.out'},17.5);
+tl.fromTo('#e2',{y:20},{y:0,opacity:1,duration:.8,ease:'power3.out'},18.9);
+tl.fromTo('#cta',{y:20},{y:0,opacity:1,duration:.7,ease:'power3.out'},19.8);
+fade('#fine',8.5,.6); out('#fine',15.2,.4); fade('#fine',19.8,.6);
+tl.to({},{duration:.1},20.9);
+gsap.set('#rl',{transformOrigin:'50% 50%'});
+window.seek=t=>{tl.seek(t,false)};
+window.DUR=21;
+</script></body></html>
