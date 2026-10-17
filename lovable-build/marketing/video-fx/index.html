@@ -1,0 +1,149 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Masar effects reel</title>
+<style>
+@font-face{font-family:Anton;src:url(anton-latin-400-normal.woff2)}
+@font-face{font-family:Inter;font-weight:700;src:url(inter-latin-700-normal.woff2)}
+@font-face{font-family:Inter;font-weight:800;src:url(inter-latin-800-normal.woff2)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#0A0E13}
+#stage{position:absolute;inset:0;overflow:hidden;background:radial-gradient(900px 900px at 50% 38%,#16210f 0%,#0A0E13 70%);font-family:Inter,Arial,sans-serif;color:#E8EDF2}
+.grid{position:absolute;inset:0;background-image:linear-gradient(#ffffff08 2px,transparent 2px),linear-gradient(90deg,#ffffff08 2px,transparent 2px);background-size:90px 90px}
+.blob{position:absolute;border-radius:50%;filter:blur(90px)}
+.abs{position:absolute}
+/* scene 1 */
+#s1{position:absolute;inset:0}
+.w{position:absolute;left:0;width:1080px;text-align:center;font-family:Anton;font-size:380px;line-height:1;letter-spacing:2px;text-transform:uppercase}
+.glass{position:absolute;border-radius:60px;background:linear-gradient(135deg,#ffffff30,#ffffff0f);border:3px solid #ffffff44;backdrop-filter:blur(40px);box-shadow:0 30px 80px #0008,inset 0 2px 0 #ffffff55}
+.glass .t{font-family:Anton;font-size:120px;letter-spacing:2px;color:#fff;text-align:center;text-transform:uppercase}
+/* phone */
+#phoneWrap{position:absolute;left:240px;top:330px;width:600px;height:1240px;perspective:2200px}
+#phone{position:absolute;inset:0;border-radius:92px;background:#1a212b;border:6px solid #2d3745;box-shadow:0 60px 140px #000b,0 0 0 2px #000;transform-style:preserve-3d}
+#screen{position:absolute;inset:18px;border-radius:76px;background:#0D1218;overflow:hidden;padding:60px 36px}
+.notch{position:absolute;left:50%;top:14px;width:150px;height:38px;margin-left:-75px;border-radius:20px;background:#000;z-index:3}
+.lab{font-size:26px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#8A97A5}
+.card{background:#121821;border:2px solid #1E2733;border-radius:36px;padding:34px}
+.big{font-family:Anton;font-size:150px;line-height:1;color:#C8F25C}
+.bars{display:flex;gap:40px;align-items:flex-end;height:380px;margin-top:26px}
+.bar{flex:1;border-radius:22px 22px 0 0;transform-origin:bottom;display:flex;align-items:flex-start;justify-content:center;padding-top:14px;font-weight:800;font-size:30px;color:#0A0E13}
+.cap{display:flex;gap:40px;margin-top:14px;font-size:26px;font-weight:700;color:#8A97A5;text-align:center}
+.cap div{flex:1}
+/* checklist */
+#check{position:absolute;left:90px;top:430px;width:900px;padding:60px;border-radius:70px}
+.row{display:flex;align-items:center;gap:36px;height:170px;border-bottom:2px solid #ffffff22}
+.row:last-child{border-bottom:none}
+.tick{width:92px;height:92px;border-radius:50%;border:6px solid #ffffff66;position:relative;flex:none}
+.tick i{position:absolute;inset:0;border-radius:50%;background:#C8F25C;transform:scale(0)}
+.tick svg{position:absolute;inset:0;width:92px;height:92px}
+.row span.txt{font-size:62px;font-weight:800;color:#fff}
+/* end */
+#end{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:50px;text-align:center}
+.cta{font-family:Anton;font-size:190px;line-height:1.02;text-transform:uppercase}
+.pill{font-size:44px;font-weight:700;padding:26px 60px;border-radius:999px;background:#C8F25C;color:#0A0E13}
+.small{position:absolute;left:0;width:1080px;text-align:center;font-size:30px;color:#8A97A5;font-weight:700}
+</style></head>
+<body>
+<div id="stage">
+<div class="grid"></div>
+<div class="blob" id="b1" style="width:700px;height:700px;left:-150px;top:300px;background:#C8F25C55"></div>
+<div class="blob" id="b2" style="width:800px;height:800px;left:500px;top:900px;background:#5AA9FF44"></div>
+<div class="blob" id="b3" style="width:600px;height:600px;left:200px;top:1300px;background:#FF6B6B33"></div>
+
+<!-- scene 1: headline wall + glass type -->
+<div id="s1">
+<div class="w" id="w1" style="top:250px;color:#E8EDF2">Gross</div>
+<div class="w" id="w2" style="top:610px;color:#E8EDF2">is a</div>
+<div class="w" id="w3" style="top:970px;color:#C8F25C">lie.</div>
+<div class="glass" id="g1" style="left:90px;top:1400px;width:900px;height:300px;display:flex;align-items:center;justify-content:center;flex-direction:column">
+<div class="lab" style="color:#fff;opacity:.8">Example week</div>
+<div class="t" style="font-size:150px"><span id="grossNum">$0</span> <span style="font-size:70px">gross</span></div>
+</div>
+</div>
+
+<!-- scene 2: phone mockup + chart grow -->
+<div id="phoneWrap" style="opacity:0"><div id="phone">
+<div class="notch"></div>
+<div id="screen">
+<div class="lab" style="margin-top:40px">This week</div>
+<div class="card" style="margin-top:20px">
+<div class="lab">You kept</div>
+<div class="big" id="keptNum">$0</div>
+<div class="bars">
+<div class="bar" id="barG" style="background:#3b4756;height:100%;color:#E8EDF2">$7,400</div>
+<div class="bar" id="barK" style="background:#C8F25C;height:56%">$4,150</div>
+</div>
+<div class="cap"><div>Gross</div><div>Kept</div></div>
+</div>
+<div class="card" style="margin-top:26px;display:flex;justify-content:space-between;align-items:center">
+<div><div class="lab">Fuel + deadhead</div><div style="font-size:54px;font-weight:800;margin-top:6px">− $3,250</div></div>
+<div style="width:110px;height:110px;border-radius:50%;border:14px solid #C8F25C;border-right-color:#2a3441"></div>
+</div>
+</div>
+</div></div>
+<div class="glass" id="g2" style="left:150px;top:110px;width:780px;height:150px;opacity:0;display:flex;align-items:center;justify-content:center"><div class="t" style="font-size:84px">See what you keep</div></div>
+<div class="glass" id="g3" style="left:150px;top:1640px;width:780px;height:150px;opacity:0;display:flex;align-items:center;justify-content:center"><div class="t" style="font-size:84px">Before you book</div></div>
+
+<!-- scene 3: checklist -->
+<div id="s3" style="opacity:0">
+<div class="abs" id="h3" style="left:0;width:1080px;top:150px;text-align:center;font-family:Anton;font-size:150px;text-transform:uppercase;line-height:1.02">Just talk.<br><span style="color:#C8F25C">Masar does it.</span></div>
+<div class="glass" id="check" style="top:560px">
+<div class="row"><div class="tick"><i></i><svg viewBox="0 0 92 92"><path d="M24 48 L40 63 L68 30" fill="none" stroke="#0A0E13" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="80" stroke-dashoffset="80"/></svg></div><span class="txt">Counter drafted</span></div>
+<div class="row"><div class="tick"><i></i><svg viewBox="0 0 92 92"><path d="M24 48 L40 63 L68 30" fill="none" stroke="#0A0E13" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="80" stroke-dashoffset="80"/></svg></div><span class="txt">Fuel logged</span></div>
+<div class="row"><div class="tick"><i></i><svg viewBox="0 0 92 92"><path d="M24 48 L40 63 L68 30" fill="none" stroke="#0A0E13" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="80" stroke-dashoffset="80"/></svg></div><span class="txt">Invoice chased</span></div>
+<div class="row"><div class="tick"><i></i><svg viewBox="0 0 92 92"><path d="M24 48 L40 63 L68 30" fill="none" stroke="#0A0E13" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="80" stroke-dashoffset="80"/></svg></div><span class="txt">Marked paid</span></div>
+</div>
+<div class="abs" id="ask" style="left:0;width:1080px;top:1560px;text-align:center;font-size:56px;font-weight:800;color:#8A97A5">You approve. Nothing moves your money.</div>
+</div>
+
+<!-- end card -->
+<div id="end" style="opacity:0">
+<svg width="260" height="200" viewBox="0 0 130 100"><polyline points="10,85 10,20 65,70 120,20 120,85" fill="none" stroke="#C8F25C" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="92" r="6" fill="none" stroke="#C8F25C" stroke-width="3"/><circle cx="120" cy="92" r="6" fill="#C8F25C"/></svg>
+<div class="cta">Masar <span style="color:#C8F25C">OS</span></div>
+<div style="font-size:84px;font-weight:800;color:#E8EDF2">Know what you keep.</div>
+<div class="pill">Start with Solo</div>
+</div>
+<div class="small" style="top:1840px">Example numbers. Screens recreated from the app design.</div>
+</div>
+<script src="gsap.min.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+const tl=gsap.timeline({paused:true});
+const cnt={g:0,k:0};
+// scene 1
+gsap.set(['#w1','#w2','#w3'],{opacity:0,scale:1.7,transformOrigin:'50% 50%'});
+tl.to('#w1',{opacity:1,scale:1,duration:.45,ease:'back.out(2)'},.2)
+  .to('#w2',{opacity:1,scale:1,duration:.45,ease:'back.out(2)'},.6)
+  .to('#w3',{opacity:1,scale:1,duration:.45,ease:'back.out(2)'},1.0)
+  .fromTo('#g1',{y:400,opacity:0,rotate:-6},{y:0,opacity:1,rotate:0,duration:.7,ease:'power3.out'},1.5)
+  .to(cnt,{g:7400,duration:1,ease:'power2.out',onUpdate(){$('#grossNum').textContent='$'+Math.round(cnt.g).toLocaleString('en-US')}},1.6)
+  .to(['#w1','#w2','#w3','#g1'],{opacity:0,scale:.85,duration:.4,ease:'power2.in',stagger:.05},3.0);
+// scene 2: phone mockup
+tl.set('#phoneWrap',{opacity:1},3.2)
+  .fromTo('#phone',{y:1500,rotationX:55,rotationY:-35,rotationZ:6,scale:.8},{y:0,rotationX:8,rotationY:-14,rotationZ:0,scale:1,duration:1.1,ease:'power3.out'},3.2)
+  .to('#phone',{rotationX:0,rotationY:0,duration:.9,ease:'power2.inOut'},4.4)
+  .fromTo('#g2',{y:-120,opacity:0},{y:0,opacity:1,duration:.5,ease:'back.out(1.6)'},4.1)
+  .fromTo('#barG',{scaleY:0},{scaleY:1,duration:.7,ease:'power3.out'},4.4)
+  .fromTo('#barK',{scaleY:0},{scaleY:1,duration:.9,ease:'elastic.out(1,.55)'},5.0)
+  .to(cnt,{k:4150,duration:1.1,ease:'power2.out',onUpdate(){$('#keptNum').textContent='$'+Math.round(cnt.k).toLocaleString('en-US')}},5.0)
+  .fromTo('#g3',{y:120,opacity:0},{y:0,opacity:1,duration:.5,ease:'back.out(1.6)'},5.9)
+  .to(['#g2','#g3'],{opacity:0,duration:.3},7.3);
+// scene 3: checklist
+tl.to('#phoneWrap',{y:900,scale:.5,opacity:0,duration:.6,ease:'power3.in'},7.3)
+  .set('#s3',{opacity:1},7.5)
+  .fromTo('#h3',{y:-100,opacity:0},{y:0,opacity:1,duration:.5,ease:'power3.out'},7.6)
+  .fromTo('#check',{y:900,rotationX:25,opacity:0},{y:0,rotationX:0,opacity:1,duration:.7,ease:'power3.out'},7.7)
+  .fromTo('#ask',{opacity:0},{opacity:1,duration:.5},9.9);
+document.querySelectorAll('.row').forEach((r,i)=>{
+  const at=8.5+i*.6;
+  tl.to(r.querySelector('.tick i'),{scale:1,duration:.3,ease:'back.out(2.4)'},at)
+    .to(r.querySelector('path'),{strokeDashoffset:0,duration:.25,ease:'power2.out'},at+.1);
+});
+// zoom-through cut into the screen, then end card
+tl.to('#s3',{scale:6,opacity:0,transformOrigin:'50% 62%',duration:.9,ease:'expo.in'},10.9)
+  .set('#end',{opacity:1},11.5)
+  .fromTo('#end',{scale:.4},{scale:1,duration:.9,ease:'expo.out'},11.5)
+  .fromTo('#end > *',{y:60,opacity:0},{y:0,opacity:1,duration:.5,ease:'back.out(1.6)',stagger:.12},11.7);
+tl.to({},{duration:.1},14.9);
+window.seek=t=>{tl.seek(t,false)};
+window.DUR=tl.duration();
+</script>
+</body></html>
