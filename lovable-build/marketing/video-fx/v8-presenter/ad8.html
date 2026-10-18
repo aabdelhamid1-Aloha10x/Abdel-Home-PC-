@@ -1,0 +1,204 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Masar OS ad v8</title>
+<style>
+@font-face{font-family:Montserrat;font-weight:600;src:url(montserrat-latin-600-normal.woff2)}
+@font-face{font-family:Montserrat;font-weight:700;src:url(montserrat-latin-700-normal.woff2)}
+@font-face{font-family:Montserrat;font-weight:800;src:url(montserrat-latin-800-normal.woff2)}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#06080B;--card:#0E141B;--line:#1F2A36;--lime:#C8F25C;--mut:#7F8C9C;--ink:#06080B}
+html,body{width:1080px;height:1920px;overflow:hidden;background:transparent}
+#stage{position:absolute;inset:0;font-family:Montserrat,Arial,sans-serif;color:#fff;overflow:hidden}
+.abs{position:absolute}
+.lime{color:var(--lime)}
+/* captions */
+#capWrap{left:60px;width:960px;top:1330px;text-align:center;z-index:50}
+.cap{position:absolute;left:0;width:960px;font-weight:800;font-size:82px;line-height:1.05;text-transform:uppercase;letter-spacing:.5px;opacity:0;
+ text-shadow:0 6px 0 #000c,0 0 40px #000e,0 0 4px #000}
+.cap .k{color:var(--lime)}
+/* B-roll plates */
+.plate{inset:0;background:radial-gradient(900px 900px at 50% 38%,#121B12 0%,#06080B 70%);opacity:0;overflow:hidden}
+.grid{inset:0;background-image:linear-gradient(#ffffff08 1px,transparent 1px),linear-gradient(90deg,#ffffff08 1px,transparent 1px);background-size:60px 60px}
+.kick{left:0;width:1080px;text-align:center;top:150px;font-weight:700;font-size:28px;letter-spacing:10px;color:var(--lime);text-transform:uppercase}
+/* agent network */
+#core{left:390px;top:500px;width:300px;height:300px;border-radius:50%;border:3px solid var(--lime);box-shadow:0 0 80px #C8F25C55,inset 0 0 60px #C8F25C33;display:flex;align-items:center;justify-content:center;flex-direction:column}
+#core b{font-size:40px;font-weight:800;margin-top:6px}
+.node{width:300px;padding:18px 20px;border-radius:20px;background:var(--card);border:2px solid var(--line);font-weight:800;font-size:26px;opacity:0}
+.node span{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:700;color:var(--lime);margin-top:6px;letter-spacing:2px}
+.node span i{width:12px;height:12px;border-radius:50%;background:var(--lime);box-shadow:0 0 12px var(--lime);display:block}
+svg.wires{position:absolute;left:0;top:0}
+/* console */
+.panel{left:70px;width:940px;background:var(--card);border:2px solid var(--line);border-radius:28px;padding:30px 34px}
+.stat{display:flex;gap:20px}
+.stat div{flex:1;background:#0A1016;border:2px solid var(--line);border-radius:20px;padding:22px 24px;font-size:20px;color:var(--mut);font-weight:700;letter-spacing:2px;text-transform:uppercase}
+.stat b{display:block;font-size:64px;color:#fff;letter-spacing:0;margin-top:6px}
+.feed{margin-top:22px;height:420px;overflow:hidden;position:relative}
+.frow{display:flex;justify-content:space-between;padding:16px 4px;border-bottom:1px solid var(--line);font-size:24px;font-weight:600;color:#c9d2dc}
+.frow em{font-style:normal;color:var(--mut)}
+.frow.hit{color:var(--ink);background:var(--lime);border-radius:14px;padding:16px 18px;font-weight:800}
+.frow.hit em{color:var(--ink)}
+/* execution */
+.act{display:flex;align-items:center;gap:20px;padding:20px 24px;border-radius:20px;background:var(--card);border:2px solid var(--line);font-size:32px;font-weight:800;margin-bottom:14px;opacity:0}
+.act .ck{width:46px;height:46px;border-radius:50%;background:var(--lime);color:var(--ink);display:flex;align-items:center;justify-content:center;font-size:26px;flex:none}
+.act span{display:block;font-size:20px;color:var(--mut);font-weight:600;margin-top:4px}
+#call{left:70px;width:940px;top:640px;background:var(--card);border:2px solid var(--lime);border-radius:28px;padding:28px 32px;opacity:0;box-shadow:0 0 60px #C8F25C22}
+#call .hd{display:flex;align-items:center;gap:16px;font-size:26px;font-weight:800}
+#call .hd .live{margin-left:auto;font-size:18px;letter-spacing:3px;color:var(--lime)}
+.wave{display:flex;gap:7px;align-items:center;height:70px;margin:18px 0}
+.wave i{display:block;width:9px;border-radius:5px;background:var(--lime);height:12px}
+.tr{font-size:32px;font-weight:600;line-height:1.35;margin-top:10px;opacity:0}
+.tr b{color:var(--mut);font-weight:800;font-size:18px;letter-spacing:2px;display:block}
+.tr.m b{color:var(--lime)}
+#rate{left:0;width:1080px;top:1110px;text-align:center;font-weight:800;font-size:150px;opacity:0;letter-spacing:-2px}
+#rate small{display:block;font-size:26px;letter-spacing:8px;color:var(--mut);font-weight:700}
+#stamp{left:240px;top:500px;width:600px;padding:26px 0;border:8px solid var(--lime);border-radius:24px;color:var(--lime);font-weight:800;font-size:110px;text-align:center;letter-spacing:8px;opacity:0;transform:rotate(-6deg)}
+#rc{left:170px;top:760px;width:740px;padding:30px 34px;border-radius:28px;background:#fff;color:#0A0E13;opacity:0;display:flex;gap:26px;align-items:center;box-shadow:0 40px 80px #000c}
+#rc .pdf{width:110px;height:140px;border-radius:12px;background:#0A0E13;color:var(--lime);font-weight:800;font-size:28px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:16px;flex:none}
+#rc b{font-size:38px;font-weight:800;display:block}
+#rc span{font-size:22px;font-weight:600;color:#4a5562;display:block;margin-top:6px}
+#rc .ok{margin-top:12px;display:inline-block;padding:8px 18px;border-radius:999px;background:#C8F25C;font-weight:800;font-size:20px}
+/* flash */
+#flash{inset:0;background:#fff;opacity:0;z-index:90}
+/* end */
+#end{inset:0;background:radial-gradient(900px 900px at 50% 40%,#131c10 0%,#06080B 70%);opacity:0;z-index:60}
+#cta{left:140px;width:800px;top:1270px;padding:40px 0;border-radius:999px;background:var(--lime);color:var(--ink);font-weight:800;font-size:52px;text-align:center;opacity:0}
+.fine{left:0;width:1080px;text-align:center;bottom:70px;font-size:24px;font-weight:600;color:#9aa5b1;opacity:0;z-index:70}
+#tag{left:60px;top:80px;font-weight:700;font-size:30px;z-index:40;text-shadow:0 2px 14px #000}
+</style></head>
+<body><div id="stage">
+<div class="abs" id="tag">masar<span class="lime">.</span></div>
+
+<!-- G1 agent network 8.85-12.35 -->
+<div class="abs plate" id="g1"><div class="abs grid"></div>
+ <div class="abs kick">AI agents online</div>
+ <svg class="wires" width="1080" height="1920" id="wires"><g stroke="#C8F25C" stroke-width="3" fill="none" opacity=".55">
+  <path id="w1" d="M540 650 L230 330"/><path id="w2" d="M540 650 L850 330"/><path id="w3" d="M540 650 L170 1000"/><path id="w4" d="M540 650 L910 1000"/><path id="w5" d="M540 650 L360 1180"/><path id="w6" d="M540 650 L720 1180"/></g></svg>
+ <div class="abs" id="core"><svg width="110" height="110" viewBox="0 0 48 48" fill="none"><path d="M9 38V14.5c0-1.3 1.6-2 2.5-1L24 26.5l12.5-13c.9-1 2.5-.3 2.5 1V30" stroke="#C8F25C" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="39" r="3.2" fill="#06080B" stroke="#C8F25C" stroke-width="2.4"/><circle cx="39" cy="37" r="4" fill="#C8F25C"/></svg><b>MASAR</b></div>
+ <div class="abs node" id="n1" style="left:80px;top:250px">Dispatch<span><i></i>RUNNING</span></div>
+ <div class="abs node" id="n2" style="left:700px;top:250px">Billing<span><i></i>RUNNING</span></div>
+ <div class="abs node" id="n3" style="left:30px;top:930px">Broker calls<span><i></i>RUNNING</span></div>
+ <div class="abs node" id="n4" style="left:760px;top:930px">Maintenance<span><i></i>RUNNING</span></div>
+ <div class="abs node" id="n5" style="left:210px;top:1110px;width:290px">Recruiting<span><i></i>RUNNING</span></div>
+ <div class="abs node" id="n6" style="left:580px;top:1110px;width:290px">Compliance<span><i></i>RUNNING</span></div>
+</div>
+
+<!-- G2 dispatch console 12.35-15.45 -->
+<div class="abs plate" id="g2"><div class="abs grid"></div>
+ <div class="abs kick">Dispatch agent · live</div>
+ <div class="abs panel" style="top:250px">
+  <div class="stat"><div>Load boards<b id="cb">0</b></div><div>Loads scanned<b id="cl">0</b></div></div>
+  <div class="feed" id="feed">
+   <div id="fin">
+    <div class="frow"><span>Atlanta → Orlando</span><em>$1,280 · skip</em></div>
+    <div class="frow"><span>Houston → Laredo</span><em>$1,150 · skip</em></div>
+    <div class="frow"><span>Chicago → Columbus</span><em>$1,020 · skip</em></div>
+    <div class="frow"><span>Denver → Salt Lake City</span><em>$1,860 · skip</em></div>
+    <div class="frow"><span>Phoenix → Las Vegas</span><em>$990 · skip</em></div>
+    <div class="frow"><span>Nashville → Charlotte</span><em>$1,240 · skip</em></div>
+    <div class="frow"><span>Kansas City → Omaha</span><em>$760 · skip</em></div>
+    <div class="frow"><span>Savannah → Jacksonville</span><em>$640 · skip</em></div>
+    <div class="frow"><span>Dallas → Houston</span><em>$880 · skip</em></div>
+    <div class="frow"><span>Louisville → Indianapolis</span><em>$720 · skip</em></div>
+    <div class="frow"><span>Fresno → Reno</span><em>$1,410 · skip</em></div>
+    <div class="frow"><span>El Paso → Tucson</span><em>$930 · skip</em></div>
+    <div class="frow"><span>Detroit → Cleveland</span><em>$610 · skip</em></div>
+    <div class="frow"><span>Mobile → Birmingham</span><em>$540 · skip</em></div>
+    <div class="frow hit" id="hit"><span>Memphis → Dallas · your lane</span><em>$2,400 · MATCH</em></div>
+   </div>
+  </div>
+ </div>
+</div>
+
+<!-- G3 execution 15.45-21.5 -->
+<div class="abs plate" id="g3"><div class="abs grid"></div>
+ <div class="abs kick" id="g3k">Executing · Load 8841</div>
+ <div class="abs" style="left:70px;width:940px;top:250px">
+  <div class="act" id="x1"><div class="ck">✓</div><div>Load matched<span>Memphis → Dallas · dry van · fits your lanes</span></div></div>
+ </div>
+ <div class="abs" id="call"><div class="hd"><svg width="34" height="34" viewBox="0 0 24 24" fill="#C8F25C"><path d="M6.6 10.8a15 15 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.4 11.4 0 00.57 3.6 1 1 0 01-.25 1z"/></svg>Masar calling · Coastal Logistics<div class="live">● LIVE</div></div>
+  <div class="wave" id="wv"></div>
+  <div class="tr" id="t1"><b>BROKER</b>We can do $2,400 on that.</div>
+  <div class="tr m" id="t2"><b>MASAR</b>For this lane we need $2,750.</div>
+  <div class="tr" id="t3"><b>BROKER</b>Meet me at $2,700?</div>
+  <div class="tr m" id="t4"><b>MASAR</b>Deal. Send the rate con.</div>
+ </div>
+ <div class="abs" id="rate"><small>NEGOTIATED RATE</small><span id="rv">$2,400</span></div>
+ <div class="abs" id="stamp">BOOKED</div>
+ <div class="abs" id="rc"><div class="pdf">PDF</div><div><b>Rate confirmation</b><span>Load 8841 · $2,700 · Memphis → Dallas</span><div class="ok">✓ In your inbox</div></div></div>
+</div>
+
+<div class="abs" id="flash"></div>
+
+<!-- captions -->
+<div class="abs" id="capWrap"></div>
+
+<!-- end -->
+<div class="abs" id="end"><div class="abs grid"></div>
+ <svg class="abs" id="elogo" style="left:430px;top:420px" width="220" height="220" viewBox="0 0 48 48" fill="none"><path d="M9 38V14.5c0-1.3 1.6-2 2.5-1L24 26.5l12.5-13c.9-1 2.5-.3 2.5 1V30" stroke="#C8F25C" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="39" r="3.2" fill="#06080B" stroke="#C8F25C" stroke-width="2.4"/><circle cx="39" cy="37" r="4" fill="#C8F25C"/></svg>
+ <div class="abs" id="e1" style="left:0;width:1080px;top:700px;text-align:center;font-weight:800;font-size:150px;letter-spacing:4px;opacity:0">MASAR <span class="lime">OS</span></div>
+ <div class="abs" id="e2" style="left:0;width:1080px;top:900px;text-align:center;font-weight:700;font-size:46px;line-height:1.3;opacity:0">AI agents that run<br>your trucking company.</div>
+ <div class="abs" id="cta">masar10x.io</div>
+</div>
+<div class="abs fine" id="fine1">Simulated screens · example data</div>
+<div class="abs fine" id="fine2">AI presenter · voice and visuals are AI-generated</div>
+</div>
+<script src="gsap.min.js"></script>
+<script>
+// waveform bars
+const wv=document.getElementById('wv');for(let i=0;i<48;i++){const b=document.createElement('i');wv.appendChild(b)}
+const tl=gsap.timeline({paused:true});
+const fi=(s,t,d=.4,y=0)=>tl.fromTo(s,{opacity:0,y:y},{opacity:1,y:0,duration:d,ease:'power3.out'},t);
+const fo=(s,t,d=.25)=>tl.to(s,{opacity:0,duration:d,ease:'power2.in'},t);
+// captions: [text with *keyword*, start, end, top]
+const C=[
+['Your *dispatcher*',0.08,1.05],['just lost',1.12,1.58],['another *load.*',1.6,2.7],
+['Not because',2.8,3.26],["he's *slow.*",3.28,4.15],['Loads post',4.24,5.25],['*every minute.*',5.28,6.15],
+['No human',6.2,6.94],['can *keep up.*',6.96,7.95],['So we built',8.08,8.86],['*Masar.*',8.88,9.8],
+['*AI agents*',9.84,10.52],['that run your',10.56,11.3],['*trucking company.*',11.32,12.35],
+['The *dispatch agent*',12.48,13.34],['watches the load boards',13.36,14.38],['*24/7.*',14.4,15.42],
+['The second a load',15.47,16.12],['fits your *lanes*',16.16,16.95],['it *calls the broker*',16.96,17.98],
+['*negotiates* the rate',18.0,19.08],['*books it*',19.12,19.72],['and sends you the',19.76,20.38],['*rate confirmation.*',20.4,21.48],
+['Before your',21.52,22.12],["*coffee's done.*",22.16,23.15],['You set *the rules.*',23.2,24.45],['*Masar* does the work.',24.48,26.0]];
+const W=document.getElementById('capWrap');
+C.forEach(([t,a,b],i)=>{const d=document.createElement('div');d.className='cap';d.id='c'+i;d.innerHTML=t.replace(/\*(.+?)\*/g,'<span class="k">$1</span>');W.appendChild(d);
+ tl.fromTo(d,{opacity:0,scale:.82,y:14},{opacity:1,scale:1,y:0,duration:.14,ease:'back.out(2.5)'},a);tl.set(d,{opacity:0},b);});
+// flashes at plate cuts
+[[8.86],[12.35],[15.45],[21.5],[26.0]].forEach(([t])=>{tl.fromTo('#flash',{opacity:.55},{opacity:0,duration:.18,ease:'power2.out',immediateRender:false},t)});
+// G1 8.86-12.35
+tl.set('#g1',{opacity:1},8.86);
+tl.fromTo('#core',{scale:.4,opacity:0},{scale:1,opacity:1,duration:.55,ease:'back.out(1.7)'},8.9);
+tl.to('#core',{boxShadow:'0 0 140px #C8F25Caa, inset 0 0 80px #C8F25C55',duration:.5,yoyo:true,repeat:5},9.4);
+['#w1','#w2','#w3','#w4','#w5','#w6'].forEach((w,i)=>{const p=document.querySelector(w);const L=p.getTotalLength();p.style.strokeDasharray=L;tl.fromTo(p,{strokeDashoffset:L},{strokeDashoffset:0,duration:.35,ease:'power2.out'},9.6+i*.22)});
+['#n1','#n2','#n3','#n4','#n5','#n6'].forEach((n,i)=>{tl.fromTo(n,{opacity:0,scale:.8},{opacity:1,scale:1,duration:.3,ease:'back.out(2)'},9.85+i*.22)});
+tl.set('#g1',{opacity:0},12.35);
+// G2 12.35-15.45
+tl.set('#g2',{opacity:1},12.35);
+const cb={v:0},cl={v:0};
+tl.to(cb,{v:14,duration:1.0,ease:'power2.out',onUpdate:()=>{document.getElementById('cb').textContent=Math.round(cb.v)}},12.5);
+tl.to(cl,{v:12906,duration:2.6,ease:'power1.out',onUpdate:()=>{document.getElementById('cl').textContent=Math.round(cl.v).toLocaleString('en-US')}},12.5);
+tl.fromTo('#fin',{y:0},{y:-660,duration:2.2,ease:'power1.inOut'},12.6);
+tl.fromTo('#hit',{scale:1},{scale:1.04,duration:.2,yoyo:true,repeat:3},14.8);
+tl.set('#g2',{opacity:0},15.45);
+// G3 15.45-21.5
+tl.set('#g3',{opacity:1},15.45);
+fi('#x1',15.6,.3,20);
+tl.fromTo('#call',{opacity:0,y:40},{opacity:1,y:0,duration:.35,ease:'power3.out'},16.9);
+tl.to('#wv i',{height:(i)=>14+((i*53)%7)*8,duration:.22,yoyo:true,repeat:11,ease:'sine.inOut',stagger:{each:.02,from:'center'}},17.0);
+fi('#t1',17.15,.25,10); fi('#t2',17.65,.25,10); fi('#t3',18.15,.25,10); fi('#t4',18.6,.25,10);
+const rv={v:2400};
+tl.fromTo('#rate',{opacity:0,scale:.9},{opacity:1,scale:1,duration:.3,ease:'back.out(2)'},18.0);
+tl.to(rv,{v:2700,duration:.9,ease:'power2.out',onUpdate:()=>{const e=document.getElementById('rv');e.textContent='$'+Math.round(rv.v).toLocaleString('en-US');e.style.color=rv.v>2650?'#C8F25C':'#fff'}},18.1);
+tl.to(['#call','#x1','#rate'],{opacity:0,duration:.2},19.05);
+tl.fromTo('#stamp',{opacity:0,scale:2.2},{opacity:1,scale:1,duration:.22,ease:'power4.in'},19.12);
+tl.to('#stamp',{opacity:0,duration:.2},20.25);
+tl.fromTo('#rc',{opacity:0,y:300,rotation:6},{opacity:1,y:0,rotation:0,duration:.5,ease:'back.out(1.5)'},20.35);
+tl.set('#g3',{opacity:0},21.5);
+// end 26.0-30
+tl.set('#end',{opacity:1},26.0);
+tl.fromTo('#elogo',{opacity:0,scale:.6},{opacity:1,scale:1,duration:.5,ease:'back.out(1.8)'},26.05);
+tl.fromTo('#e1',{opacity:0,y:30},{opacity:1,y:0,duration:.45,ease:'power3.out'},26.35);
+tl.fromTo('#e2',{opacity:0,y:20},{opacity:1,y:0,duration:.45,ease:'power3.out'},27.4);
+tl.fromTo('#cta',{opacity:0,y:30},{opacity:1,y:0,duration:.45,ease:'power3.out'},28.0);
+fi('#fine1',9.0,.3); fo('#fine1',21.45,.2); fi('#fine2',28.2,.4);
+tl.to({},{duration:.1},29.9);
+window.seek=t=>{tl.seek(t,false)};
+</script></body></html>
