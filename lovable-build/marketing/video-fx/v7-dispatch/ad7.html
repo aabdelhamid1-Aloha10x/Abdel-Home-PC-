@@ -1,0 +1,164 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Masar OS ad v7 dispatch</title>
+<style>
+@font-face{font-family:Montserrat;font-weight:600;src:url(montserrat-latin-600-normal.woff2)}
+@font-face{font-family:Montserrat;font-weight:700;src:url(montserrat-latin-700-normal.woff2)}
+@font-face{font-family:Montserrat;font-weight:800;src:url(montserrat-latin-800-normal.woff2)}
+@font-face{font-family:Inter;font-weight:500;src:url(inter-latin-500-normal.woff2)}
+@font-face{font-family:Inter;font-weight:700;src:url(inter-latin-700-normal.woff2)}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0A0E13;--bg2:#121A24;--bg3:#1A2430;--line:#243040;--lime:#C8F25C;--ink:#0A0E13;--mut:#8A97A8;--red:#FF5A5A}
+html,body{width:1080px;height:1920px;overflow:hidden;background:transparent}
+#stage{position:absolute;inset:0;font-family:Montserrat,Arial,sans-serif;color:#fff;overflow:hidden}
+.abs{position:absolute}
+.lime{color:var(--lime)}.red{color:var(--red)}
+.tag{left:70px;top:100px;font-weight:700;font-size:34px;text-shadow:0 2px 16px #000a}
+.shade{inset:0;opacity:0}
+#shT{background:linear-gradient(#000d 0%,#0000 42%)}
+#shB{background:linear-gradient(#0000 55%,#000d 100%)}
+.h{left:70px;width:940px;font-weight:800;font-size:92px;line-height:1.04;text-transform:uppercase;text-shadow:0 4px 30px #000a;opacity:0}
+.h.sm{font-size:80px}
+.fine{left:76px;bottom:70px;font-size:26px;font-weight:600;opacity:0;text-shadow:0 2px 14px #000}
+/* laptop */
+.lapWrap{left:60px;top:760px;width:960px;opacity:0}
+.lapLid{width:960px;height:700px;border-radius:30px 30px 8px 8px;background:#181a1e;border:3px solid #6a6e75;padding:20px 20px 0;box-shadow:0 60px 120px #000c}
+.lapScreen{width:100%;height:100%;border-radius:10px 10px 0 0;background:var(--bg);overflow:hidden;position:relative}
+.lapBase{width:1060px;height:28px;margin-left:-50px;border-radius:0 0 44px 44px;background:linear-gradient(#b7bac0,#6a6d74)}
+.bar{height:64px;border-bottom:2px solid var(--line);display:flex;align-items:center;gap:16px;padding:0 24px;font-weight:700;font-size:24px}
+.bar b{font-weight:800}
+.dot{width:14px;height:14px;border-radius:50%;background:var(--lime);box-shadow:0 0 14px var(--lime)}
+.bar .live{margin-left:auto;font-size:19px;color:var(--lime);font-weight:700}
+.cols{display:flex;height:calc(100% - 64px)}
+.list{width:58%;padding:16px 18px;border-right:2px solid var(--line);overflow:hidden;position:relative}
+.list h4,.side h4{font-size:15px;letter-spacing:3px;color:var(--mut);text-transform:uppercase;margin-bottom:12px;font-weight:800}
+.row{display:flex;justify-content:space-between;align-items:center;padding:13px 14px;margin-bottom:8px;border-radius:12px;background:var(--bg2);border:2px solid var(--line);font-size:19px;font-weight:600;opacity:0}
+.row span{color:var(--mut);font-weight:600;font-size:16px;display:block;margin-top:2px}
+.row em{font-style:normal;font-weight:800;color:#fff}
+.row .nw{font-size:13px;letter-spacing:2px;color:var(--lime);margin-left:10px;font-weight:800}
+.row.hit{border-color:var(--lime);background:#1d2a12}
+.side{width:42%;padding:16px 18px}
+.logc{background:var(--bg2);border:2px solid var(--line);border-radius:14px;padding:14px 16px;font-size:18px;font-weight:600;line-height:1.3;margin-bottom:10px;opacity:0}
+.logc small{display:block;font-size:13px;letter-spacing:2px;color:var(--lime);font-weight:800;text-transform:uppercase;margin-bottom:4px}
+.step{display:flex;align-items:center;gap:16px;padding:16px 18px;border-radius:14px;background:var(--bg2);border:2px solid var(--line);font-size:23px;font-weight:700;margin-bottom:10px;opacity:0}
+.step .ck{width:36px;height:36px;border-radius:50%;background:var(--lime);color:var(--ink);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:22px;flex:none}
+.step span{display:block;font-size:16px;color:var(--mut);font-weight:600;margin-top:2px}
+.step .amt{margin-left:auto;color:var(--lime);font-weight:800;font-size:24px}
+.rc{display:flex;align-items:center;gap:16px;margin-top:10px;padding:16px 18px;border-radius:14px;background:var(--lime);color:var(--ink);font-weight:800;font-size:23px;opacity:0}
+.rc span{display:block;font-weight:700;font-size:16px;opacity:.7}
+.rc .pdf{width:44px;height:56px;border-radius:6px;background:var(--ink);color:var(--lime);font-size:13px;font-weight:800;display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px;flex:none}
+/* pause pill */
+#pause{left:70px;top:1500px;padding:26px 44px;border-radius:999px;background:#000b;border:3px solid #ffffff55;font-weight:800;font-size:42px;opacity:0;display:flex;gap:20px;align-items:center}
+#pause i{width:70px;height:40px;border-radius:24px;background:#3a4656;position:relative;display:block}
+#pause i b{position:absolute;left:4px;top:4px;width:32px;height:32px;border-radius:50%;background:#fff}
+/* end */
+#end{inset:0;opacity:0}
+#cta{left:75px;top:1420px;width:930px;padding:44px 0;border-radius:999px;background:var(--lime);color:var(--ink);font-weight:800;font-size:54px;text-align:center;opacity:0}
+</style></head>
+<body><div id="stage">
+<div class="abs tag" id="tag">masar / OS</div>
+<div class="abs shade" id="shT"></div>
+<div class="abs shade" id="shB"></div>
+
+<!-- 1 -->
+<div class="abs h" id="a1" style="top:190px">New loads.<br><span class="lime">Every minute.</span></div>
+<!-- 2 -->
+<div class="abs h sm" id="b1" style="top:190px">Refresh.</div>
+<div class="abs h sm" id="b2" style="top:190px">Call.</div>
+<div class="abs h sm" id="b3" style="top:190px">Refresh.</div>
+<div class="abs h" id="b4" style="top:190px;font-size:120px"><span class="red">Gone.</span></div>
+
+<!-- scene A -->
+<div class="abs h" id="c1" style="top:190px">Masar finds<br>it <span class="lime">first.</span></div>
+<div class="abs lapWrap" id="lapA"><div class="lapLid"><div class="lapScreen">
+ <div class="bar"><div class="dot"></div><b>Masar</b><span style="color:var(--mut);font-weight:600">Dispatch agent</span><div class="live">LIVE · 14 load boards</div></div>
+ <div class="cols">
+  <div class="list"><h4>New loads</h4>
+   <div class="row" id="r1"><div>Atlanta, GA → Orlando, FL<span>Dry van · 438 mi</span></div><div><em>$1,280</em><i class="nw">NEW</i></div></div>
+   <div class="row" id="r2"><div>Houston, TX → Laredo, TX<span>Reefer · 304 mi</span></div><div><em>$1,150</em><i class="nw">NEW</i></div></div>
+   <div class="row" id="r3"><div>Chicago, IL → Columbus, OH<span>Dry van · 355 mi</span></div><div><em>$1,020</em><i class="nw">NEW</i></div></div>
+   <div class="row hit" id="r4"><div>Memphis, TN → Dallas, TX<span>Dry van · 452 mi · matches your rules</span></div><div><em class="lime">$2,400</em><i class="nw">MATCH</i></div></div>
+   <div class="row" id="r5"><div>Denver, CO → Salt Lake City, UT<span>Flatbed · 520 mi</span></div><div><em>$1,860</em><i class="nw">NEW</i></div></div>
+  </div>
+  <div class="side"><h4>Masar agent</h4>
+   <div class="logc" id="g1"><small>Scanning</small>Watching 14 boards, every few seconds.</div>
+   <div class="logc" id="g2"><small>Match found · 2s</small>Memphis → Dallas fits your lane, equipment and rate floor.</div>
+   <div class="logc" id="g3"><small>Next</small>Calling the broker now.</div>
+  </div>
+ </div></div></div><div class="lapBase"></div></div>
+
+<!-- scene B -->
+<div class="abs h sm" id="d1" style="top:190px">Booked.<br>Negotiated.<br><span class="lime">Confirmed.</span></div>
+<div class="abs lapWrap" id="lapB"><div class="lapLid"><div class="lapScreen">
+ <div class="bar"><div class="dot"></div><b>Masar</b><span style="color:var(--mut);font-weight:600">Memphis → Dallas · Load 8841</span></div>
+ <div style="padding:20px 22px">
+  <div class="step" id="s1"><div class="ck">✓</div><div>Load found<span>Posted 2 seconds ago</span></div></div>
+  <div class="step" id="s2"><div class="ck">✓</div><div>Broker called<span>Coastal Logistics · offered $2,400</span></div></div>
+  <div class="step" id="s3"><div class="ck">✓</div><div>Rate negotiated<span>Countered and agreed</span></div><div class="amt">$2,700</div></div>
+  <div class="step" id="s4"><div class="ck">✓</div><div>Load booked<span>Added to your dispatch board</span></div></div>
+  <div class="rc" id="s5"><div class="pdf">PDF</div><div>Rate confirmation received<span>Attached to the load · ready to dispatch</span></div></div>
+ </div>
+</div></div><div class="lapBase"></div></div>
+
+<!-- scene C -->
+<div class="abs h" id="e1" style="top:190px">You set<br>the rules.</div>
+<div class="abs h lime" id="e2" style="top:190px">Pause it<br>any time.</div>
+<div class="abs" id="pause">Pause everything <i id="psw"><b id="pk"></b></i></div>
+
+<!-- end -->
+<div class="abs" id="end">
+ <div class="abs h" id="f1" style="top:170px;font-size:150px;opacity:0">Masar <span class="lime">OS</span></div>
+ <div class="abs h" id="f2" style="top:360px;font-size:62px;opacity:0;line-height:1.1">Let your AI agents<br><span class="lime">run dispatch.</span></div>
+</div>
+<div class="abs" id="cta">masar10x.io</div>
+<div class="abs fine" id="fine1">Simulated screens • example data</div>
+<div class="abs fine" id="fine2">Dramatized concept • voice and visuals are AI-generated</div>
+</div>
+<script src="gsap.min.js"></script>
+<script>
+const tl=gsap.timeline({paused:true});
+const fi=(s,t,d=.5,y=0)=>tl.fromTo(s,{opacity:0,y:y},{opacity:1,y:0,duration:d,ease:'power3.out'},t);
+const fo=(s,t,d=.3)=>tl.to(s,{opacity:0,duration:d,ease:'power2.in'},t);
+tl.to('#shT',{opacity:1,duration:.4},0.1);
+// 1 (0-3.3)
+fi('#a1',.35,.5,28); fo('#a1',3.0,.3);
+// 2 (3.3-8.9)
+fi('#b1',3.5,.35,26); fo('#b1',4.5,.2);
+fi('#b2',4.6,.35,26); fo('#b2',5.6,.2);
+fi('#b3',5.7,.35,26); fo('#b3',6.7,.2);
+tl.fromTo('#b4',{opacity:0,scale:1.4},{opacity:1,scale:1,duration:.35,ease:'back.out(2)'},6.9); fo('#b4',8.5,.3);
+fo('#shT',8.6,.3);
+// A (8.9-15.5)
+tl.to('#shT',{opacity:1,duration:.4},8.8); tl.to('#shB',{opacity:.8,duration:.4},8.8);
+fi('#c1',9.0,.5,28);
+tl.fromTo('#lapA',{opacity:0,y:600},{opacity:1,y:0,duration:1.0,ease:'power3.out'},9.2);
+fi('#g1',10.0,.4,14);
+['#r1','#r2','#r3'].forEach((s,i)=>{tl.fromTo(s,{opacity:0,x:-40},{opacity:1,x:0,duration:.35,ease:'power3.out'},10.3+i*.55)});
+tl.fromTo('#r4',{opacity:0,x:-40},{opacity:1,x:0,duration:.35,ease:'power3.out'},12.2);
+tl.to('#r4',{scale:1.03,duration:.25,yoyo:true,repeat:1},12.6);
+tl.fromTo('#r5',{opacity:0,x:-40},{opacity:1,x:0,duration:.35,ease:'power3.out'},12.9);
+fi('#g2',12.5,.4,14); fi('#g3',14.0,.4,14);
+fo('#lapA',15.1,.35); fo('#c1',15.1,.3);
+// B (15.5-21)
+fi('#d1',15.6,.5,28);
+tl.fromTo('#lapB',{opacity:0,y:600},{opacity:1,y:0,duration:.9,ease:'power3.out'},15.7);
+fi('#s1',16.4,.35,14); fi('#s2',17.1,.35,14); fi('#s3',17.9,.35,14); fi('#s4',18.7,.35,14);
+tl.fromTo('#s5',{opacity:0,scale:.9,y:20},{opacity:1,scale:1,y:0,duration:.5,ease:'back.out(1.8)'},19.4);
+fo('#lapB',20.7,.35); fo('#d1',20.7,.3);
+// C (21-26)
+fo('#shB',20.9,.3); tl.to('#shT',{opacity:1,duration:.3},20.9);
+fi('#e1',21.2,.5,26); fo('#e1',23.4,.3);
+fi('#e2',23.5,.5,26); fo('#e2',25.6,.3);
+tl.to('#shB',{opacity:.8,duration:.3},23.3);
+tl.fromTo('#pause',{opacity:0,y:30},{opacity:1,y:0,duration:.45,ease:'power3.out'},23.8);
+tl.to('#pk',{left:34,duration:.25},24.8).to('#psw',{backgroundColor:'#C8F25C',duration:.25},24.8);
+fo('#pause',25.7,.3);
+// end (26-31)
+tl.set('#end',{opacity:1},26.0);
+tl.to('#shB',{opacity:0,duration:.3},26.0); tl.to('#shT',{opacity:1,duration:.3},26.0);
+tl.fromTo('#f1',{opacity:0,y:30},{opacity:1,y:0,duration:.5,ease:'power3.out'},26.3);
+tl.fromTo('#f2',{opacity:0,y:24},{opacity:1,y:0,duration:.5,ease:'power3.out'},27.2);
+tl.fromTo('#cta',{opacity:0,y:30},{opacity:1,y:0,duration:.5,ease:'power3.out'},28.4);
+fi('#fine1',9.2,.4); fo('#fine1',20.7,.3); fi('#fine2',28.6,.4);
+tl.to({},{duration:.1},30.9);
+window.seek=t=>{tl.seek(t,false)};
+</script></body></html>
