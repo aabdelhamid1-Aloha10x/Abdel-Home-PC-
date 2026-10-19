@@ -1,0 +1,83 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Estimator</title><link rel="stylesheet" href="/ui.css"></head>
+<body><div class="wrap narrow"><h2>Today's estimates</h2><div id="app"></div></div>
+<script>
+const T = location.hash.slice(1), app = document.getElementById('app');
+const E = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const api = (m, p, b, extra) => fetch(p, { method: m, headers: { 'x-staff-token': T, ...(b && !(b instanceof Blob) ? { 'Content-Type': 'application/json' } : {}), ...(extra || {}) }, body: b instanceof Blob ? b : b ? JSON.stringify(b) : undefined }).then(async r => { const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || r.status); return j; });
+let visit, rooms = [], rec = null, chunks = [], recorded = false;
+
+async function list() {
+  try {
+    const a = await api('GET', '/api/tech/appointments');
+    app.innerHTML = a.length ? '' : '<p class="mute">No scheduled visits.</p>';
+    a.forEach(x => {
+      const d = document.createElement('div'); d.className = 'card';
+      d.innerHTML = `<b>${E(new Date(x.starts_at).toLocaleString([], {weekday:'short',hour:'numeric',minute:'2-digit',month:'short',day:'numeric'}))}</b><br>${E(x.name)} · ${E(x.service)} (${E(x.property_type)})<br><span class="mute">${E(x.address || 'No address on file')} · ${E(x.phone)}</span><br><span class="mute">${E(x.details || '')}</span><br><br>`;
+      const b = document.createElement('button'); b.textContent = x.visit_id ? 'Resume visit' : 'Start visit';
+      b.onclick = async () => { visit = await api('POST', '/api/tech/visits', { appointmentId: x.id }); rooms = JSON.parse(visit.rooms || '[]'); consent(x); };
+      d.appendChild(b); app.appendChild(d);
+    });
+  } catch (e) { app.innerHTML = '<p class="err">Link invalid or expired. Ask the office for a new link.</p>'; }
+}
+
+function consent(x) {
+  if (visit.consent_at) return work(x);
+  app.innerHTML = `<div class="card"><h3>1. Recording consent</h3>
+  <p>Read this aloud before you do anything else:</p>
+  <p><i>“To make sure we get your measurements and wishes exactly right, I'd like to audio-record our conversation today. It's used only to prepare your estimate and contract. Is that okay with you?”</i></p>
+  <p class="mute">Everyone present who is speaking must agree. If anyone says no, do not record: take written notes.</p>
+  <label>Who consented?</label><input id="by" placeholder="e.g. Jane Smith (homeowner)">
+  <button class="big" id="yes">They agreed: allow recording</button>
+  <button class="big ghost" id="no">They declined: no recording</button></div>`;
+  const set = async g => { try { await api('POST', `/api/tech/visits/${visit.id}/consent`, { granted: g, by: document.getElementById('by').value || 'customer verbal consent' }); visit.consent_at = 1; visit.recording_consent = g ? 1 : 0; work(x); } catch (e) { alert(e.message); } };
+  document.getElementById('yes').onclick = () => set(true); document.getElementById('no').onclick = () => set(false);
+}
+
+function sqft(r) { return (r.length * r.width).toFixed(0); }
+function walls(r) { return (2 * (r.length + r.width) * r.height).toFixed(0); }
+
+function work(x) {
+  app.innerHTML = `<div class="card"><b>${E(x.name)}</b> · ${E(x.service)}<br><span class="mute">${E(x.address || '')}</span></div>
+  <div class="card" id="recbox"></div>
+  <div class="card"><h3>Measurements (feet)</h3><div id="rooms"></div>
+    <div class="row"><div><label>Room / area</label><input id="rn" placeholder="Kitchen"></div><div><label>Length</label><input id="rl" type="number" step="0.1" inputmode="decimal"></div><div><label>Width</label><input id="rw" type="number" step="0.1" inputmode="decimal"></div><div><label>Height</label><input id="rh" type="number" step="0.1" inputmode="decimal" value="8"></div></div>
+    <label>Notes (existing conditions, obstacles)</label><input id="rno"><br><button id="addr" class="ghost">Add room</button></div>
+  <div class="card"><h3>Customer wishes</h3><label>Style, materials, brands, must-haves, budget, timeline</label><textarea id="prefs" rows="5"></textarea>
+    <label>Photos</label><input type="file" id="ph" accept="image/*" capture="environment" multiple><div id="phs" class="mute"></div></div>
+  <button class="big" id="submit">Finish and submit visit</button><p class="err" id="e"></p>`;
+  const rb = document.getElementById('recbox');
+  if (visit.recording_consent) {
+    rb.innerHTML = '<h3>Recording</h3><button class="big" id="rs">● Start recording</button><div id="rst" class="mute"></div>';
+    document.getElementById('rs').onclick = toggleRec;
+  } else rb.innerHTML = '<h3>Recording</h3><p class="mute">Customer declined. Take detailed written notes below.</p>';
+  const draw = () => { document.getElementById('rooms').innerHTML = rooms.length ? '<table><tr><th>Room</th><th>L×W×H</th><th>Floor ft²</th><th>Wall ft²</th></tr>' + rooms.map((r, i) => `<tr><td>${E(r.name)}<br><span class="mute">${E(r.notes)}</span></td><td>${r.length}×${r.width}×${r.height}</td><td>${sqft(r)}</td><td>${walls(r)}</td></tr>`).join('') + '</table>' : '<p class="mute">No rooms yet.</p>'; };
+  draw();
+  document.getElementById('addr').onclick = () => { const g = id => document.getElementById(id).value; if (!g('rn') || !(+g('rl')) || !(+g('rw'))) return; rooms.push({ name: g('rn'), length: +g('rl'), width: +g('rw'), height: +g('rh') || 8, notes: g('rno') }); ['rn','rl','rw','rno'].forEach(i => document.getElementById(i).value = ''); draw(); };
+  document.getElementById('ph').onchange = async e => { for (const f of e.target.files) { try { await api('POST', `/api/tech/visits/${visit.id}/photo`, f, { 'Content-Type': 'image/jpeg' }); document.getElementById('phs').textContent += ' ✓'; } catch (er) { alert(er.message); } } };
+  document.getElementById('submit').onclick = async () => {
+    if (rec && rec.state === 'recording') return alert('Stop the recording first.');
+    if (!rooms.length) return alert('Add at least one room measurement.');
+    try { await api('POST', `/api/tech/visits/${visit.id}/submit`, { rooms, preferences: document.getElementById('prefs').value }); app.innerHTML = '<div class="card"><h3>Submitted ✓</h3><p>The office will build the quote.</p></div>'; setTimeout(list, 1500); }
+    catch (e) { document.getElementById('e').textContent = e.message; }
+  };
+}
+
+async function toggleRec() {
+  const b = document.getElementById('rs'), st = document.getElementById('rst');
+  if (rec && rec.state === 'recording') { rec.stop(); return; }
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    chunks = []; rec = new MediaRecorder(stream);
+    rec.ondataavailable = e => chunks.push(e.data);
+    rec.onstop = async () => {
+      stream.getTracks().forEach(t => t.stop()); b.textContent = '● Start another segment'; b.classList.remove('rec'); st.textContent = 'Uploading…';
+      const blob = new Blob(chunks, { type: rec.mimeType || 'audio/webm' });
+      try { await api('PUT', `/api/tech/visits/${visit.id}/audio`, blob, { 'Content-Type': blob.type }); st.textContent = 'Saved ✓ (' + Math.round(blob.size / 1024) + ' KB). Starting another segment replaces this file, so record the whole conversation in one go.'; recorded = true; }
+      catch (e) { st.textContent = 'Upload failed: ' + e.message + '. Keep this page open and tap Start to retry the next segment.'; }
+    };
+    rec.start(); b.textContent = '■ Stop recording'; b.classList.add('rec'); st.textContent = 'Recording…';
+  } catch (e) { st.textContent = 'Microphone unavailable: ' + e.message; }
+}
+list();
+</script></body></html>

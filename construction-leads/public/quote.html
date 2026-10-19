@@ -1,0 +1,57 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Your project</title><link rel="stylesheet" href="/ui.css"></head>
+<body><div class="wrap narrow" id="app">Loading…</div>
+<script>
+const E = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const M = n => '$' + Number(n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const M0 = n => '$' + Number(n || 0).toLocaleString('en-US', { maximumFractionDigits: 0 });
+const t = new URLSearchParams(location.search).get('t'), app = document.getElementById('app');
+const api = (m, p, b) => fetch('/api/quote/' + encodeURIComponent(t) + p, { method: m, headers: { 'Content-Type': 'application/json' }, body: b ? JSON.stringify(b) : undefined }).then(async r => { const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || r.status); return j; });
+function load() { api('GET', '').then(render).catch(() => app.innerHTML = '<div class="card"><h2>Project not found</h2><p class="mute">This link may be wrong or expired. Please contact us.</p></div>'); }
+load();
+
+const phaseTable = (q, withAmounts) => `<table><tr><th>Phase</th><th>Work days</th>${withAmounts ? '<th style="text-align:right">You pay</th>' : '<th style="text-align:right">Share</th>'}</tr>${q.phases.map(p => `<tr><td>${p.seq}. ${E(p.name)}</td><td>${p.days}</td><td style="text-align:right">${withAmounts ? M(p.amount) : p.share_pct + '%'}</td></tr>`).join('')}</table>`;
+const scopeList = (q) => `<ul>${q.scope.map(l => `<li>${E(l.description)}${l.qty ? ` <span class="mute">(${E(l.qty)} ${E(l.unit)})</span>` : ''}</li>`).join('')}</ul>`;
+const head = (q) => `<div class="card"><p class="mute">${E(q.company.name)} · License ${E(q.company.license)} · ${E(q.company.phone)}</p><h2>${E(q.title)}</h2><p>Prepared for ${E(q.customer)}</p>${q.selections ? `<p>${E(q.selections)}</p>` : `<p>${E(q.scope_summary)}</p>`}</div>`;
+
+function signaturePad() {
+  const cv = document.getElementById('cv'), ctx = cv.getContext('2d'); let down = false; const st = { ink: false };
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cv.width, cv.height); ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.strokeStyle = '#111';
+  const pos = e => { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) * cv.width / r.width, (e.clientY - r.top) * cv.height / r.height]; };
+  cv.onpointerdown = e => { down = true; st.ink = true; const [x, y] = pos(e); ctx.beginPath(); ctx.moveTo(x, y); cv.setPointerCapture(e.pointerId); };
+  cv.onpointermove = e => { if (!down) return; const [x, y] = pos(e); ctx.lineTo(x, y); ctx.stroke(); };
+  cv.onpointerup = () => down = false;
+  document.getElementById('clr').onclick = () => { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cv.width, cv.height); st.ink = false; };
+  st.data = () => cv.toDataURL('image/png'); return st;
+}
+
+function render(q) {
+  let h = head(q);
+  if (q.stage === 'plan') {
+    h += `<div class="card"><h3>Your fixed price</h3><p style="font-size:34px;margin:4px 0">${M0(q.price)}</p>
+    <p class="mute">Guaranteed once we verify your measurements (within 7 days of signing). If verification changes the price by more than 5%, you can accept the change or cancel for a full refund. About ${q.total_days} working days of work.</p>
+    <h4>How you pay: short phases, one at a time</h4><p class="mute">You pay phase 1 now. Each later phase is requested just before it starts, and only paid out to the crew after you approve the finished work. Pay only through this page.</p>${phaseTable(q, true)}<h4>What's included</h4>${scopeList(q)}</div>
+    <div class="card"><h3>Sign and start</h3><details><summary>Read the contract</summary><pre id="ct" style="margin-top:10px"></pre></details>
+    <label>Type your full legal name</label><input id="nm" autocomplete="name"><label>Draw your signature</label><canvas id="cv" width="600" height="150"></canvas><button class="ghost" id="clr" type="button" style="margin:6px 0">Clear</button>
+    <label style="display:flex;gap:8px;color:var(--ink)"><input type="checkbox" id="ag" style="width:auto;margin-top:4px"><span>I agree to this contract and the ${M0(q.price)} fixed price, I will pay only through this page, and I understand I may cancel within 3 business days of signing.</span></label>
+    <p class="err" id="er"></p><button class="big" id="go">Sign and pay phase 1 (${M(q.phases[0].amount)})</button></div>`;
+    app.innerHTML = h; document.getElementById('ct').textContent = q.contract_preview;
+    const pad = signaturePad();
+    document.getElementById('go').onclick = async () => { const er = document.getElementById('er'); er.textContent = ''; if (!pad.ink) { er.textContent = 'Please draw your signature.'; return; }
+      try { const j = await api('POST', '/sign', { name: document.getElementById('nm').value, agree: document.getElementById('ag').checked, signature: pad.data() }); if (j.checkoutUrl) location.href = j.checkoutUrl; else load(); } catch (e) { er.textContent = e.message; } };
+    return;
+  }
+  const c = q.contract, T = q.milestones;
+  const banner = q.stage === 'contract' ? `<div class="card"><h3>Your contractor is assigned ✓</h3><p><b>${E(q.contractor.company)}</b> · License / registration ${E(q.contractor.license)} ${E(q.contractor.license_state)} · Liability insurance valid through ${E(q.contractor.insurance_expires)}</p><p class="mute">${E(q.company.name)} remains responsible to you for the work.</p></div>`
+    : q.stage === 'finding' ? '<div class="card"><h3>Phase 1 received ✓: we are assigning your contractor</h3><p>We are matching a licensed, insured contractor to your project. You will get a message as soon as they are assigned. In the meantime you can book your measurement visit below.</p></div>'
+    : '<div class="card"><h3>Contract signed: pay phase 1 to start</h3><p>We assign your contractor after phase 1 is received.</p></div>';
+  h += banner + `<div class="card"><p>Signed by ${E(c.signer_name)} on ${E(new Date(c.signed_at).toLocaleString())}. You may cancel without penalty until ${E(new Date(c.rescission_ends).toLocaleString())}.</p>${q.stage !== 'awaiting_funding' ? `<a class="btn" href="/book.html?lead=${q.lead_ref.id}&k=${q.lead_ref.key}">Book your measurement visit</a>` : ''}</div>
+  <div class="card"><h3>Project payments</h3><p class="mute">Pay <b>only</b> through the buttons on this page. Never pay crew members directly: payments made outside this page are not protected and do not count toward your balance.</p><table>${T.map(m => `<tr><td>${m.seq}. ${E(m.name)}<br><span class="mute">${E(m.status.replace('_', ' '))}${m.notes ? ' · ' + E(m.notes) : ''}${m.dispute_reason ? ' · you reported: ' + E(m.dispute_reason) : ''}</span>${m.photos ? '<div>' + Array.from({ length: m.photos }, (_, i) => `<a href="/api/quote/${encodeURIComponent(t)}/milestones/${m.id}/photo/${i}" target="_blank">photo ${i + 1}</a>`).join(' · ') + '</div>' : ''}</td><td style="text-align:right">${M(m.amount)}<br>${m.funded ? '<span class="ok">paid ✓</span>' : m.status === 'invoiced' ? `<button data-pay="${m.id}">Pay</button>` : '<span class="mute">upcoming</span>'}${m.status === 'submitted' ? `<br><button data-ap="${m.id}">Approve work</button> <button class="ghost" data-dp="${m.id}">Report a problem</button><br><span class="mute">Auto-approved ${m.auto_approve_hours}h after submission</span>` : ''}</td></tr>`).join('')}</table></div>
+  <div class="card"><h3>Contract</h3><pre id="ct"></pre></div>`;
+  app.innerHTML = h; document.getElementById('ct').textContent = c.text;
+  app.querySelectorAll('[data-pay]').forEach(b => b.onclick = () => api('POST', `/milestones/${b.dataset.pay}/pay`).then(j => location.href = j.checkoutUrl).catch(e => alert(e.message)));
+  app.querySelectorAll('[data-ap]').forEach(b => b.onclick = () => confirm('Approve this completed work? The crew will be paid for this phase.') && api('POST', `/milestones/${b.dataset.ap}/approve`).then(load).catch(e => alert(e.message)));
+  app.querySelectorAll('[data-dp]').forEach(b => b.onclick = () => { const r = prompt('What is the problem?'); if (r) api('POST', `/milestones/${b.dataset.dp}/dispute`, { reason: r }).then(load).catch(e => alert(e.message)); });
+  if (q.stage === 'finding') setTimeout(load, 15000);
+}
+</script></body></html>
