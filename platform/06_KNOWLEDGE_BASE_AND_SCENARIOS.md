@@ -17,6 +17,8 @@ Goal: every Unstaffd agent works like a seasoned expert in its field, and the pl
 | 5. **Outcome data** | What actually worked across Unstaffd companies (anonymized): hooks, offers, prices, channels, scripts | Our own platform | Daily |
 | 6. **Company memory** | This user's business: brand, customers, results, decisions, owner preferences | The company itself | Continuous |
 
+Owner experience never limits what Unstaffd does for them (see `07_TOOL_HUB_AND_CAPITAL_ENGINE.md` §5).
+
 Rule of evidence: **outcome data (5) beats expert opinion (1-2) once we have enough of it.** A Hormozi method that underperforms for local services on our platform gets ranked down for that industry, automatically.
 
 ### A2. Method card format (what agents actually read)
@@ -79,15 +81,16 @@ version:       7
 
 ### A6. What the user tells us (intake), kept short
 Asked **after** they type the idea, 5-7 quick taps, adapted to the idea (Mom Test style: past behavior, not opinions):
-1. "How close are you to this?" Expert (5+ yrs) / Worked in it / Customer of it / New to it
-2. "Who could you sell to this week?" (people you know, an audience, an email list, none)
-3. "Why you?" one line, optional (license, skill, location, network)
-4. Time and money: hours per week + starting budget range
-5. Goal: side income / replace my job / build something big
-6. Market: city or online, and any license you hold
-7. Optional: **upload your resume or LinkedIn PDF** ("Save to PDF" on your profile) and paste your website/social links.
+1. "How involved do you want to be?" **Hands-off (default)** / Advisor (weekly check-in) / Operator
+2. "What do you know about this industry?" Expert / Worked in it / Customer of it / New to it (context only, never a limit)
+3. "Who could you sell to this week?" (people you know, an audience, an email list, none)
+4. "Anything that gives you an edge?" one line, optional (license, skill, location, network)
+5. Starting budget range
+6. Goal: side income / replace my job / build something big
+7. Market: city or online, and any license you hold
+8. Optional: **upload your resume or LinkedIn PDF** ("Save to PDF" on your profile) and paste your website/social links.
 
-**About LinkedIn login:** "Sign in with LinkedIn" only gives name, email and photo, not your work history; full profile access is limited to LinkedIn partners, and scraping profiles breaks LinkedIn's terms. So: sign-in with LinkedIn for speed + **LinkedIn PDF or resume upload** for experience. Mila reads it to compute a **Founder-Market Fit** score that feeds Nora's verdict and the plan (e.g. a 12-year detailer gets a premium/membership plan; a newcomer gets a validation-first plan).
+**About LinkedIn login:** "Sign in with LinkedIn" only gives name, email and photo, not your work history; full profile access is limited to LinkedIn partners, and scraping profiles breaks LinkedIn's terms. So: sign-in with LinkedIn for speed + **LinkedIn PDF or resume upload** for experience. Mila reads it to build an **owner profile**: context, never a score or a cap. The business runs for the owner either way; experience only changes how the crew explains things and what the owner can add if they choose to. Plans change because of market, money and regulation, not the résumé.
 
 ---
 
@@ -100,7 +103,7 @@ Common start for everyone: they see Unstaffd content → land on **unstaffd.com*
 2. **Lands**: unstaffd.com hero "A whole company. Zero employees." Types: *"Mobile car detailing in Austin."*
 3. **Intake (6 taps)**: Expert, 9 years at a dealership · can reach ~40 past clients · has a van and equipment · 25 hrs/week · $1,500 budget · replace my job · uploads LinkedIn PDF.
 4. **Crew builds (live)**: Mila finds 41 detailers, only 6 mobile, most phone-only booking. Ava: Google local + before/after Reels + office parks; no cold email.
-5. **Nora's verdict (84, pivot then go)**: one-off washes = price war. Uses method cards *value equation* (Hormozi) + *Jobs to Be Done*: sell "always clean" memberships at offices. Founder fit is high, so she skips the validation phase and goes straight to launch.
+5. **Nora's verdict (84, pivot then go)**: one-off washes = price war. Uses method cards *value equation* (Hormozi) + *Jobs to Be Done*: sell "always clean" memberships at offices. Her past clients give a fast first win, so the plan starts by contacting them.
 6. **Plan**: membership offer + "redo free" guarantee; First Win = first member by day 14; 90-day roadmap; names from available domains; site preview on `[name].unstaffd.app`.
 7. **Choose crew**: renames Sam to "Jess", picks the Southern voice for calls.
 8. **Launch**: buys `[name].com`, Stripe Connect onboarding, prepaid $300 ads, connects Instagram/Facebook (2 min).
@@ -121,9 +124,9 @@ Common start for everyone: they see Unstaffd content → land on **unstaffd.com*
 ### Scenario 3 — Priya, plant-based dog treats online (idea → e-commerce, new to industry)
 1. **Sees**: an Instagram Reel with the orb crew "Meet your crew."
 2. **Types**: *"Healthy plant-based dog treats sold online."*
-3. **Intake**: new to it · 2,000 Instagram followers (dog lovers) · $1,000 budget · side income.
+3. **Intake**: hands-off · new to the industry (context only) · 2,000 Instagram followers (dog lovers) · $1,000 budget · side income.
 4. **Crew builds**: Mila: crowded category, strong brands; pet-food labeling rules (state feed registrations) flagged. Ava: TikTok/IG UGC + creators; Amazon later.
-5. **Nora's verdict (62, validate first)**: low founder-market fit + regulated labeling. Uses *The Mom Test*: "Before you buy inventory, pre-sell 50 boxes." Pushback when Priya wants 1,000 units upfront: shows cash-at-risk math (Profit First card).
+5. **Nora's verdict (68, pre-sell first)**: crowded category + inventory cash at risk + regulated labeling (not her experience; a veteran would get the same advice). Uses *The Mom Test*: "Before you buy inventory, pre-sell 50 boxes." The crew runs everything; Priya stays hands-off. Pushback when Priya wants 1,000 units upfront: shows cash-at-risk math (Profit First card).
 6. **Plan**: pre-order page + small-batch co-packer list + registration checklist; First Win = 50 pre-orders in 21 days.
 7. **Launch**: store in pre-order mode, 3 UGC videos (faceless, Iris), 5 dog creators contacted via the creator API (affiliate 20%).
 8. **Day 21**: 64 pre-orders → Nora: "Validated. Order the first batch." If it had failed, she would have proposed a pivot instead of letting her spend.
@@ -149,4 +152,4 @@ Common start for everyone: they see Unstaffd content → land on **unstaffd.com*
 ---
 
 ## Part C — How this gets built (Codex)
-See `codex/prompts/02b_knowledge_base.md`: tables, retrieval, Knowledge Ops pipeline, intake + Founder-Market Fit, evaluation sets, and the first 150 method cards across the roster above.
+See `codex/prompts/02b_knowledge_base.md`: tables, retrieval, Knowledge Ops pipeline, intake + owner profile, evaluation sets, and the first 150 method cards across the roster above.

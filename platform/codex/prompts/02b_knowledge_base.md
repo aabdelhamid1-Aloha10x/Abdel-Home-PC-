@@ -3,7 +3,7 @@
 Read `docs/06_KNOWLEDGE_BASE_AND_SCENARIOS.md` (Part A) and `AGENTS.md`.
 
 ## Goal
-Every agent answers like a seasoned expert: it retrieves cited method cards, industry packs, live research, platform outcomes and company memory. Onboarding asks a few smart questions and scores Founder-Market Fit.
+Every agent answers like a seasoned expert: it retrieves cited method cards, industry packs, live research, platform outcomes and company memory. Onboarding asks a few smart questions and builds an owner profile (context only, never a limit).
 
 ## Tasks
 1. **Tables** (`packages/db`, RLS: global knowledge readable by all, company memory per company):
@@ -18,11 +18,11 @@ Every agent answers like a seasoned expert: it retrieves cited method cards, ind
 3. **Knowledge Ops jobs** (Trigger.dev, weekly): `kb_scout` (Perplexity Sonar + Exa + Meta Ad Library + SEC EDGAR + YouTube Data API metadata), `kb_extract` (writes cards in our own words; max one quote <= 25 words with link; never stores full transcripts or book text), `kb_verify` (claim status), `kb_curate` (dedupe/merge/version), `kb_eval` (runs eval sets; blocks publish on regression), `kb_publish` (owner approval queue in admin).
 4. **Seed content**: 150 method cards across the roster in Part A §A5 (≈15 per agent + capital-raising pack + compliance), 10 industry packs (local services, e-commerce, B2B SaaS, coaching, restaurants, dental/medical, real estate investing, home services, agencies, info products). Mark every expert achievement `verified/claimed/disputed` with sources.
 5. **Eval sets** (`packages/agents/evals/`): 50 sales objections, 30 ad briefs, 20 pricing dilemmas, 20 validation cases, 15 compliance traps (fake reviews, return promises in investment ads, TCPA cold calls, HIPAA in DMs). Grader rubric per set.
-6. **Smart intake** (onboarding, after the idea): 5-7 adaptive questions (Part A §A6), optional resume/LinkedIn PDF upload (parse to structured experience; delete raw file after 30 days), "Sign in with LinkedIn" (OpenID Connect: name/email/photo only). Compute `founder_fit` (0-100) with reasons; feed to coach verdict and plan generator (validation-first plan when fit is low).
+6. **Smart intake** (onboarding, after the idea): 5-7 adaptive questions (Part A §A6), optional resume/LinkedIn PDF upload (parse to structured experience; delete raw file after 30 days), "Sign in with LinkedIn" (OpenID Connect: name/email/photo only). Build an `owner_profile` (involvement level: hands_off default | advisor | operator; industry knowledge; assets like audience/list/license). It is context only: it never caps features or changes what the crew does; it changes tone/explanations and which owner assets the plan uses (e.g. past clients). Plans differ only by market, money and regulation.
 7. **Regulated-industry switches**: if the idea involves securities/fundraising, health, legal, finance, alcohol, firearms, etc., load the compliance pack, show the user the rules up front, and require the professional-review steps (e.g. securities attorney sign-off) before related public outputs ship. Unstaffd never takes a percentage of capital raised.
 
 ## Acceptance
-- The 5 scenarios in Part B run end-to-end in staging (seeded test users): intake -> verdict -> plan reflect the expected differences (e.g. Priya gets validation-first, James gets 506(c) rules and attorney step, Dr. Lee gets HIPAA-safe receptionist).
+- The 5 scenarios in Part B run end-to-end in staging (seeded test users): intake -> verdict -> plan reflect the expected differences (e.g. Priya gets pre-sell-first because of inventory risk, James gets 506(c) rules and attorney step, Dr. Lee gets HIPAA-safe receptionist).
 - Every plan section shows the method cards it used, with sources.
 - KB update blocked when an eval regresses (prove with a test).
 - Report per definition of done.

@@ -24,6 +24,7 @@ Give Codex one prompt at a time, in order:
 | 3b | `prompts/02b_knowledge_base.md` | Phase 2: expert knowledge base + smart intake |
 | 4 | `prompts/03_launch_and_money.md` | Phase 3 |
 | 5 | `prompts/04_autopilot_core.md` | Phase 4 |
+| 5b | `prompts/04f_tool_hub_and_capital_engine.md` | Phase 4: tool hub + capital-raising engine |
 | 6 | `prompts/05_onward.md` | Phases 5-8 (expanded later) |
 
 Message to Codex for each step:
