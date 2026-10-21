@@ -1,7 +1,7 @@
 # Crewzero master spec (v1-v3 consolidated)
 
 Status: DRAFT for owner decisions. Date: 2026-10-21.
-Name: **Crewzero** (crewzero.ai), a product of Masar AI LLC (Delaware). The name lives in ONE constant (`src/config/brand.ts`, same rule as Masar OS).
+Name: **Crewzero** (crewzero.ai), a product of Masar AI Inc. (Delaware C corporation). The name lives in ONE constant (`src/config/brand.ts`, same rule as Masar OS).
 Companion docs: `01_INFRASTRUCTURE.md` (hosting, tenants, stack), `02_BUILD_QUEUE.md` (order of work), `03_OWNER_DECISIONS.md` (open questions).
 
 ---

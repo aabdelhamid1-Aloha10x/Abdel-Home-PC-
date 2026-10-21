@@ -151,7 +151,7 @@ Metrics: `kpis_daily` (per company), `site_events`.
 
 | Item | Why | Notes |
 |---|---|---|
-| Legal entity | Required by Stripe, Meta business verification, registrar, Twilio | DONE: Masar AI LLC (Delaware), EIN, bank, Stripe |
+| Legal entity | Required by Stripe, Meta business verification, registrar, Twilio | DONE: Masar AI Inc. (Delaware C corporation), EIN, bank, Stripe |
 | Meta: Business verification + App Review | Ads, Pages, Instagram messaging/publishing, lead ads, WhatsApp | Scopes such as ads_management, pages_messaging, instagram_manage_messages, instagram_content_publish, leads_retrieval, business_management, WhatsApp Tech Provider. Needs privacy policy, ToS, screencasts |
 | Google Ads API developer token | Ads from our own MCC (Mode 1) | Still needed. OAuth app verification is **skipped at launch** (no Gmail, built-in calendar, ads via our own MCC); add only if we later connect users' Calendar / Business Profile / YouTube |
 | TikTok for Business / Content Posting API audit | TikTok ads + posting | Audit required for public posting |

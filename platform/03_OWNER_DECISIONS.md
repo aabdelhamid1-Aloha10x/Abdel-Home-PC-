@@ -26,7 +26,7 @@ Answer inline; agents treat answered items as rules.
 - Domains: **GoDaddy reseller API** (+ connect your own domain).
 - Custom domains: **Cloudflare for SaaS**.
 - Sending email: **Amazon SES** (+ built-in dashboard inbox).
-- Legal entity: **Masar AI LLC (Delaware)**, existing EIN, bank and Stripe account. Platform runs as a product/DBA of Masar AI LLC for now. If raising VC later, form or convert to a Delaware C-corp (investors expect one).
+- Legal entity: **Masar AI Inc. (Delaware C corporation)**, existing EIN, bank and Stripe account. Crewzero runs as a product of Masar AI Inc.; a Delaware C-corp is already the structure investors expect.
 - Google OAuth verification: **skipped at launch.** No Gmail (SES + Cloudflare inbox), built-in booking calendar instead of Google Calendar sync, Google Ads run from our own MCC (Mode 1, only our account authorizes), YouTube build-in-public on our own channel. Verify later only if we add Google Calendar sync, Business Profile management or posting to users' YouTube channels (and when > 100 users connect them).
 
 ## Name finalists: **Crewzero** (one word) vs Autopreneur
@@ -43,7 +43,7 @@ Answer inline; agents treat answered items as rules.
 | CREWAI | CrewAI, Inc. application (cl. 9/42) **abandoned**; CrewAI is a well-known AI-agent framework company and still has common-law rights from use |
 | Live CREW* in classes 9/35/42 | ~200 coexisting marks (CREWAPP, CREWIQ, CREWVO, CREWMAKR, CREWBRAIN, CLOUD CREW, CHIME CREW...): a crowded field, so many CREW- marks coexist, and each gets narrow protection |
 Reading: no identical or near-identical mark found; "CREW" alone is weak/crowded, so protection rests on the full CREWZERO compound. Main watch item: perceived link to CrewAI in the AI-agent space.
-Next: attorney clearance opinion (optional) and file an intent-to-use application for CREWZERO (standard characters) in classes 9, 35, 42 under Masar AI LLC (USPTO base fee ~$350 per class).
+Next: attorney clearance opinion (optional) and file an intent-to-use application for CREWZERO (standard characters) in classes 9, 35, 42 under Masar AI Inc. (USPTO base fee ~$350 per class).
 
 ## Earlier name shortlist (Oct 21 2026, .com checked via Verisign RDAP; .ai checks partly rate-limited)
 | Name | Meaning | Domain status |

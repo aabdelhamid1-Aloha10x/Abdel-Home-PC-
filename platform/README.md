@@ -1,6 +1,6 @@
 # Crewzero: AI agents that run the whole company
 
-Crewzero (crewzero.ai), a product of Masar AI LLC. Solo founder + AI, built in public. Masar OS is Company #1.
+Crewzero (crewzero.ai), a product of Masar AI Inc. Solo founder + AI, built in public. Masar OS is Company #1.
 
 | File | What it is |
 |---|---|

@@ -28,7 +28,7 @@ Paste this whole file into Codex. Read `AGENTS.md` and `docs/` first.
 - Public counter "N founders waiting" (real count).
 
 ### C. Legal drafts
-- `docs/legal/privacy.md` and `docs/legal/terms.md`: plain-English drafts for Masar AI (entity type left as `[ENTITY: owner to confirm]`), covering waitlist data, AI processing, cookies. Mark "DRAFT for owner/counsel review".
+- `docs/legal/privacy.md` and `docs/legal/terms.md`: plain-English drafts for Masar AI Inc. (Delaware C corporation), covering waitlist data, AI processing, cookies. Mark "DRAFT for owner/counsel review".
 
 ### D. model-router v0
 - `route(taskType, input, { companyId?, taskId? })`.

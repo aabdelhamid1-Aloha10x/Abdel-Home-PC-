@@ -15,17 +15,17 @@ Timeline assumes a full-time solo founder + AI. Phases overlap where noted.
 ### 👤 Owner
 1. **Domains**: buy `crewzero.ai` (main), `crewzero.app` (tenant previews; a separate domain keeps user sites isolated from our app), `crewzero.co` (protection).
 2. **Handles**: claim `@crewzero` (or closest) on X, Instagram, TikTok, YouTube, LinkedIn page, Facebook page, Threads, Reddit, Product Hunt.
-3. **Trademark**: file intent-to-use application CREWZERO (standard characters), classes 9, 35, 42, owner Masar AI LLC (~$350/class). Optional attorney check on CrewAI.
-4. **Accounts (under Masar AI LLC)**:
+3. **Trademark**: file intent-to-use application CREWZERO (standard characters), classes 9, 35, 42, owner Masar AI Inc. (~$350/class). Optional attorney check on CrewAI.
+4. **Accounts (under Masar AI Inc.)**:
    - GitHub: new private repo `crewzero` (or let the builder create it).
    - Cloudflare (Workers Paid; enable Cloudflare for SaaS), Supabase (Pro org), Trigger.dev, Langfuse, Sentry, PostHog.
    - AWS (SES; request production access, which takes ~1 day).
-   - Stripe: a **separate Stripe account for Crewzero under Masar AI LLC** (clean books from Masar), enable Billing + Connect (Express).
+   - Stripe: a **separate Stripe account for Crewzero under Masar AI Inc.** (clean books from Masar), enable Billing + Connect (Express).
    - Model API keys with monthly spend limits: Anthropic, OpenAI, xAI, Google AI, Perplexity.
    - Dev tools: Claude Max 20x + ChatGPT plan with Codex.
 5. **Long-lead applications** (some take weeks):
    - **GoDaddy reseller (API)** account + test (OTE) keys + prepaid balance.
-   - **Meta**: Business Manager for Crewzero, business verification (Masar AI LLC documents), developer app created (App Review comes in P3 once screens exist).
+   - **Meta**: Business Manager for Crewzero, business verification (Masar AI Inc. documents), developer app created (App Review comes in P3 once screens exist).
    - **Google Ads**: manager account (MCC) + API developer token application.
    - **Twilio**: account + ISV setup (A2P) — can wait until P6 if needed.
    - **Modash** (creator API) — can wait until P6.
