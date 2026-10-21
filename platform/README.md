@@ -10,3 +10,4 @@ Unstaffd (unstaffd.com), a product of Masar AI Inc. Solo founder + AI, built in 
 | `03_OWNER_DECISIONS.md` | Decided items and open questions for the owner |
 | `04_COST_ANALYSIS.md` | Cost comparison: domains, database, build tools, agent hosting, models, email, phone, Google, social/ad accounts, credits testing |
 | `05_LAUNCH_GTM_FUNDRAISING.md` | Where to list, launch funnel, viral loops, fundraising via build in public |
+| `06_KNOWLEDGE_BASE_AND_SCENARIOS.md` | How agents become experts (knowledge layers, research pipeline, expert roster) + 5 end-to-end user scenarios |

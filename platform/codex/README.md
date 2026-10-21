@@ -21,6 +21,7 @@ Give Codex one prompt at a time, in order:
 | 1b | `prompts/00b_repo_setup_and_waitlist.md` | Week 0: monorepo + waitlist |
 | 2 | `prompts/01_foundation.md` | Phase 1 |
 | 3 | `prompts/02_aha_onboarding.md` | Phase 2 |
+| 3b | `prompts/02b_knowledge_base.md` | Phase 2: expert knowledge base + smart intake |
 | 4 | `prompts/03_launch_and_money.md` | Phase 3 |
 | 5 | `prompts/04_autopilot_core.md` | Phase 4 |
 | 6 | `prompts/05_onward.md` | Phases 5-8 (expanded later) |
