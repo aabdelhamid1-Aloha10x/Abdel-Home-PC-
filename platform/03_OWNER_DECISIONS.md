@@ -34,6 +34,17 @@ Answer inline; agents treat answered items as rules.
 - autopreneur.com/.ai/.app/.co all taken; the word is also widely used by others (books, courses), so weak as a trademark.
 - Recommendation: **Crewzero**.
 
+### USPTO knockout search: CREWZERO (Oct 21 2026, USPTO Trademark Search database, live + dead records)
+| Query | Result |
+|---|---|
+| CREWZERO, CREW ZERO, CREW0, CREW0*, CREW*ZERO, ZEROCREW, ZERO CREW, KRUZERO, CREWZRO | **0 records** |
+| CREW 0 | 2 unrelated (FIVE 0 NINE THE CREW, toys; an abandoned slogan) |
+| CREWZ* | 19 records; closest live: CREWZ (cl. 35, Colorado LLC; cl. 39 carpool), CREWZY (cl. 42), CREWZZ (cl. 40/37/42/44). Different sound and look from CREWZERO |
+| CREWAI | CrewAI, Inc. application (cl. 9/42) **abandoned**; CrewAI is a well-known AI-agent framework company and still has common-law rights from use |
+| Live CREW* in classes 9/35/42 | ~200 coexisting marks (CREWAPP, CREWIQ, CREWVO, CREWMAKR, CREWBRAIN, CLOUD CREW, CHIME CREW...): a crowded field, so many CREW- marks coexist, and each gets narrow protection |
+Reading: no identical or near-identical mark found; "CREW" alone is weak/crowded, so protection rests on the full CREWZERO compound. Main watch item: perceived link to CrewAI in the AI-agent space.
+Next: attorney clearance opinion (optional) and file an intent-to-use application for CREWZERO (standard characters) in classes 9, 35, 42 under Masar AI LLC (USPTO base fee ~$350 per class).
+
 ## Earlier name shortlist (Oct 21 2026, .com checked via Verisign RDAP; .ai checks partly rate-limited)
 | Name | Meaning | Domain status |
 |---|---|---|
