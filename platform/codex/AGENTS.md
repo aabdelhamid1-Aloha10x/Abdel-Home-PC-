@@ -16,6 +16,8 @@ The current task is always one file in `prompts/`. Do only that task.
 9. **Tenant sites are rendered by `apps/renderer` from config in the database.** Agents change config/content, not renderer code. Custom code is only via the Engineering agent in a sandbox.
 10. **Legal**: never generate fake testimonials/reviews or AI "customers" presented as real. Follow each ad/social platform's own AI-content rules. Voice calls only inbound / consented. Cold email B2B only with unsubscribe.
 
+11. **Paid actions need owner approval**: any purchase (domains, plans, credits) first prints a quote and runs only when `PURCHASE_APPROVED=yes` and the total is <= `MAX_PURCHASE_USD`. Infra changes go through idempotent scripts in `infra/scripts/` and are recorded (no secrets) in `infra/STATE.md`.
+
 ## Definition of done (every task)
 1. Every button, link, tab, form and menu does something real. No dead buttons, no `console.log` handlers, no "coming soon" toasts. Out-of-scope features are not rendered, or are disabled with a visible reason.
 2. Data comes from the database, never hardcoded arrays. Creates/edits/deletes persist and survive reload.

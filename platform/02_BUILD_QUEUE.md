@@ -13,7 +13,7 @@ Timeline assumes a full-time solo founder + AI. Phases overlap where noted.
 ## Week 0: next 7 days (start now)
 
 ### 👤 Owner
-1. **Domains**: buy `crewzero.ai` (main), `crewzero.app` (tenant previews; a separate domain keeps user sites isolated from our app), `crewzero.co` (protection).
+1. **Domains**: `crewzero.ai` (main), `crewzero.app` (tenant previews), `crewzero.co` (protection) are **bought by Codex on the owner's Hostinger account** (prompt 00a) after the owner approves the quote. Customer domains still go through the GoDaddy reseller API.
 2. **Handles**: claim `@crewzero` (or closest) on X, Instagram, TikTok, YouTube, LinkedIn page, Facebook page, Threads, Reddit, Product Hunt.
 3. **Trademark**: file intent-to-use application CREWZERO (standard characters), classes 9, 35, 42, owner Masar AI Inc. (~$350/class). Optional attorney check on CrewAI.
 4. **Accounts (under Masar AI Inc.)**:
@@ -30,7 +30,8 @@ Timeline assumes a full-time solo founder + AI. Phases overlap where noted.
    - **Twilio**: account + ISV setup (A2P) — can wait until P6 if needed.
    - **Modash** (creator API) — can wait until P6.
 
-### 🤖 Builder
+### 🤖 Builder (Codex)
+0. **Prompt 00a**: via APIs, buy the domains (Hostinger), set up Cloudflare (zones, DNS, R2, Email Routing, Cloudflare for SaaS, AI Gateway), Supabase (prod + staging), Amazon SES (verified domain, DKIM/SPF/DMARC, production access request). The owner only creates the accounts, adds cards, and pastes API tokens into Codex secrets.
 1. Monorepo skeleton + `CLAUDE.md` rules (Masar's definition of done, multi-tenancy, no dead buttons) + CI (typecheck, lint, tests).
 2. **Waitlist site on crewzero.ai**: one input box ("type your idea") -> instant free idea score (cheap model) -> join waitlist -> referral link to move up. This starts build in public with something real.
 3. Draft Privacy Policy + Terms of Service (needed for Meta/Google reviews; owner reviews).

@@ -17,7 +17,8 @@ Everything Codex needs to build Crewzero in its own repo.
 Give Codex one prompt at a time, in order:
 | Order | Prompt | Phase |
 |---|---|---|
-| 1 | `prompts/00_repo_setup_and_waitlist.md` | Week 0 |
+| 1 | `prompts/00a_infrastructure_setup.md` | Week 0: Codex buys domains on Hostinger, sets up Cloudflare, Supabase, SES, AI Gateway |
+| 1b | `prompts/00b_repo_setup_and_waitlist.md` | Week 0: monorepo + waitlist |
 | 2 | `prompts/01_foundation.md` | Phase 1 |
 | 3 | `prompts/02_aha_onboarding.md` | Phase 2 |
 | 4 | `prompts/03_launch_and_money.md` | Phase 3 |

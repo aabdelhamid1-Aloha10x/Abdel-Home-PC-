@@ -1,4 +1,6 @@
-# Prompt 00: repo setup + waitlist site (Week 0)
+# Prompt 00b: repo setup + waitlist site (Week 0)
+
+Run after `00a_infrastructure_setup.md`. Use the resources recorded in `infra/STATE.md`.
 
 Paste this whole file into Codex. Read `AGENTS.md` and `docs/` first.
 
