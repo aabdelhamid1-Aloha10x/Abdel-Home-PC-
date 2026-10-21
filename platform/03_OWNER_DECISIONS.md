@@ -60,6 +60,22 @@ Next: attorney clearance opinion (optional) and file an intent-to-use applicatio
 | Nahda (نهضة) | Rise, renaissance | getnahda.com available; .com taken |
 Re-check availability at purchase time (GoDaddy) and run a trademark search on the final pick (for our own brand).
 
+- Build: **Codex** builds Crewzero in its own private repo `crewzero` (package in `platform/codex/`).
+- Meta: reuse the existing verified Meta business; create a **separate Crewzero business portfolio + developer app** (Mode 1 customer ad accounts isolated from Masar's own ads).
+- Google Ads: reuse the existing manager account + developer token (check access level; update the API Center tool description for Crewzero; create a Crewzero sub-manager for client accounts).
+
+## Trucking product rename (Masar OS -> American name), Oct 21 2026
+USPTO: 0 records for each. Domains: .com taken for all.
+| Name | Free domains found | Note |
+|---|---|---|
+| **HaulCrew** (recommended) | haulcrew.ai | "Your AI crew that runs the hauling business"; brand family with Crewzero |
+| FreightCrew | freightcrew.ai, freightcrew.app | Broader logistics (brokers, 3PL) |
+| RigCrew | rigcrew.app | Very trucker-native ("rig") |
+| LoadCrew | loadcrew.app | Load-centric |
+| Haulzero | haulzero.ai | "Zero back-office staff"; may read as "zero hauls" |
+| HaulStack | haulstack.app | Software-y |
+Company stays **Masar AI**; product renamed. Rename touches `src/config/brand.ts`, domains, emails, Stripe descriptor, Google OAuth consent screen (re-review), Vapi assistant name, and the in-app AI persona name ("Masar").
+
 ## Not adopted (legal)
 - Fabricated testimonials/reviews: banned by the FTC rule (up to $51,744 per violation) and ad platform policies, and a risk to our shared ad accounts. Replaced by real-review collection and disclosed creator content.
 
