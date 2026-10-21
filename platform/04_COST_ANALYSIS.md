@@ -6,7 +6,7 @@ Status: DRAFT. Date: 2026-10-21. Prices come from vendor pages and third-party g
 
 ## 1. Custom domains (customer sites on their own domain)
 
-Free previews always use our wildcard subdomain (`company.crewzero.app`), which costs nothing per company. Custom domains are only needed for paying companies.
+Free previews always use our wildcard subdomain (`company.unstaffd.app`), which costs nothing per company. Custom domains are only needed for paying companies.
 
 | Option | Per-domain cost | 1,000 domains | 10,000 domains | Notes |
 |---|---|---|---|---|
@@ -38,7 +38,7 @@ Est. monthly: stage 0 (≤100 companies) $25-50; stage 1 (≤2,000) $100-400; st
 
 ---
 
-## 3. Building Crewzero (our own development tools)
+## 3. Building Unstaffd (our own development tools)
 
 | Tool | Cost | Best for | Watch out |
 |---|---|---|---|

@@ -21,13 +21,13 @@ A company runs itself for 14 days with zero manual fixes.
 ### 04d Engines v1
 - **Connect wizard**: Facebook Login for Business (Page + Instagram), then X, TikTok, LinkedIn, Pinterest, YouTube as their APIs allow. Agents prepare handle, bio, images; user creates/connects; we store tokens encrypted (`connections`).
 - **Social posting**: calendar, generation, scheduling, publishing, metrics back into `kpis_daily`.
-- **Meta ads Mode 1**: one ad account per company under the Crewzero Business portfolio (system user), prepaid `ad_balances` via Stripe, management fee from config, budget caps enforced server-side, daily optimization task.
+- **Meta ads Mode 1**: one ad account per company under the Unstaffd Business portfolio (system user), prepaid `ad_balances` via Stripe, management fee from config, budget caps enforced server-side, daily optimization task.
 - **Email flows**: welcome, abandoned cart, newsletter (SES).
 - **Content -> DM closer** + **speed-to-lead**: Messenger/IG webhooks -> AI Closer replies (business-specific, discloses AI when asked), qualifies, sends checkout/booking link, logs to CRM (`contacts`, `conversations`, `messages`, `leads`).
 
 ### 04e Dashboard + finance/risk
 - Org chart home with live agent cards, agent detail (history, outputs, credits, lessons), KPIs (visitors, leads, bookings, sales, revenue, ad spend, ROAS, Time to First Result), credits pace, aggressiveness slider, budget settings.
-- Finance agent v1: Stripe reconciliation, monthly P&L for Crewzero itself. Risk agent v1: Connect reviews, fraud flags, dispute queue triage.
+- Finance agent v1: Stripe reconciliation, monthly P&L for Unstaffd itself. Risk agent v1: Connect reviews, fraud flags, dispute queue triage.
 
 ## Acceptance
 - Owner's test company runs 14 days: daily posts, one prepaid Meta campaign, DMs answered < 60 s, daily report emails, no manual fixes. Log incidents honestly.

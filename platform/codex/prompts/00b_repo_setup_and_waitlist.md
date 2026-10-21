@@ -6,14 +6,14 @@ Paste this whole file into Codex. Read `AGENTS.md` and `docs/` first.
 
 ## Goal
 1. Create the monorepo skeleton exactly as described in `AGENTS.md` (Stack).
-2. Ship a **waitlist site on crewzero.ai** that already shows the product idea:
+2. Ship a **waitlist site on unstaffd.com** that already shows the product idea:
    one input box -> instant free idea score -> join waitlist -> referral link.
 
 ## Tasks
 ### A. Monorepo
 - pnpm workspaces + Turborepo. Root scripts: `dev`, `build`, `typecheck`, `lint`, `test`, `db:migrate`, `db:types`.
 - Create `apps/dashboard`, `apps/renderer`, `apps/api`, `apps/jobs`, `packages/db`, `packages/model-router`, `packages/agents`, `packages/config`, `packages/ui` with minimal working code and a README each.
-- `packages/config/src/brand.ts`: `BRAND = { name: "Crewzero", domain: "crewzero.ai", previewDomain: "crewzero.app", tagline: "AI agents that run your whole company" }`.
+- `packages/config/src/brand.ts`: `BRAND = { name: "Unstaffd", domain: "unstaffd.com", previewDomain: "unstaffd.app", tagline: "AI agents that run your whole company" }`.
 - ESLint + Prettier + Vitest. GitHub Actions CI: install, typecheck, lint, test on every push.
 - `.gitignore` covers `.env*` except `.env.example`.
 
@@ -24,8 +24,8 @@ Paste this whole file into Codex. Read `AGENTS.md` and `docs/` first.
   Use structured output; validate with zod; max 1 request per IP per minute and 5 per day (store counters in Supabase or Cloudflare KV).
 - Show the score card nicely + **"Share my score"** (generates an image card URL `/s/:id` with Open Graph image) + **"Get it built: join the waitlist"** (email field).
 - Waitlist table `waitlist(id, email unique, idea, score_id, referral_code unique, referred_by, position, created_at)`. Position = signup order minus 3 per successful referral (min 1).
-- After joining: show position + personal referral link `crewzero.ai/?ref=CODE`.
-- Confirmation email via Amazon SES (`packages/email` helper, template "You're #N on the Crewzero list").
+- After joining: show position + personal referral link `unstaffd.com/?ref=CODE`.
+- Confirmation email via Amazon SES (`packages/email` helper, template "You're #N on the Unstaffd list").
 - Footer: links to `/privacy` and `/terms` pages (render the markdown in `docs/legal/` — create drafts, see C).
 - Public counter "N founders waiting" (real count).
 

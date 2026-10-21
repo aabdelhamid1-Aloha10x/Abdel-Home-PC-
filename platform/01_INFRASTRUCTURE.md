@@ -26,7 +26,7 @@ Principles:
 | LLM gateway | Own `model-router` module + **Cloudflare AI Gateway** (logging, caching, rate limits, provider fallback), start on **Cloudflare unified billing** (one Cloudflare balance + one token for supported providers such as OpenAI, Anthropic, Google; 5% fee on credits, no token markup); move high-volume providers to **direct keys (BYOK)** through the same gateway once spend passes ~$2-3K/mo (no code change). xAI and Perplexity via own keys | One account to start; cheapest at scale; Batch API and prompt caching available on direct keys | OpenRouter only for experiments / long-tail models (5.5% credit fee) |
 | LLM tracing + evals | **Langfuse** | Traces every agent run; feeds eval sets and the learning loop | Braintrust, Helicone |
 | **Tenant sites** (websites, stores, funnels, booking pages) | One multi-tenant **Next.js renderer on Cloudflare Workers** (OpenNext); tenant config + content in Postgres; edge-cached | SEO-friendly SSR, one tested codebase for all tenants | Astro on Workers; Vercel Platforms |
-| Platform subdomains | Wildcard `*.crewzero.app` | Instant site preview during onboarding | — |
+| Platform subdomains | Wildcard `*.unstaffd.app` | Instant site preview during onboarding | — |
 | **Custom domains** | **Cloudflare for SaaS** custom hostnames (auto SSL). 100 included, then ~$0.10/hostname/mo | Built for SaaS with customer domains | Vercel domains API |
 | Domain registration | **GoDaddy reseller API** (DECIDED). .com wholesale ~$10.69/yr, our markup on registration + renewals, registrant = the user. Users can also connect a domain they already own | Full markup revenue from day one | Entri Sell; Hostinger has no domain reseller API (see `04_COST_ANALYSIS.md` §5) |
 | Custom code tier / per-tenant JS | **Workers for Platforms** ($25/mo: 20M requests, 1,000 scripts; $0.02/extra script) | Isolated per-tenant scripts on our account | Separate projects per tenant |
@@ -72,7 +72,7 @@ Principles:
        ┌─────────────────────┴──┐  ┌─────┴──────────┐ ┌─┴──────────────────────┐
        │ Agent runtime          │  │ Webhooks/API   │ │ Tenant site renderer    │
        │ Trigger.dev tasks      │  │ Hono on Workers│ │ Next.js on Workers      │
-       │ orchestrator, daily    │  │ Stripe, Meta,  │ │ *.crewzero.app +        │
+       │ orchestrator, daily    │  │ Stripe, Meta,  │ │ *.unstaffd.app +        │
        │ cycles, coach actions  │  │ Twilio, Vapi   │ │ custom domains (CF SaaS)│
        └───┬─────────┬──────────┘  └────────────────┘ └─────────────────────────┘
            │         │
@@ -101,7 +101,7 @@ Principles:
 
 ### Provisioning a new company (one idempotent Trigger.dev workflow, status shown live in the UI)
 1. Create `companies` row + owner membership + credit ledger.
-2. Assign subdomain `<slug>.crewzero.app` (wildcard DNS, instant).
+2. Assign subdomain `<slug>.unstaffd.app` (wildcard DNS, instant).
 3. Write site config from the chosen template; renderer serves the preview immediately.
 4. On Launch (paid):
    - register domain via registrar API (registrant = user) -> add Cloudflare for SaaS custom hostname -> SSL auto-issued;
@@ -205,6 +205,6 @@ Usage-based (passed through to tenants with markup via credits or billing): LLM 
 ## 9. Masar OS in this infrastructure
 
 - Masar stays on its current Lovable + Supabase stack (Tier C, bring-your-own).
-- Crewzero connects through: GitHub repo access, Lovable project, Supabase management access (scoped), Stripe (Masar's own account connected as a Connect account or via restricted key for analytics), Vapi, and the existing `masar-browser-worker` VPS.
+- Unstaffd connects through: GitHub repo access, Lovable project, Supabase management access (scoped), Stripe (Masar's own account connected as a Connect account or via restricted key for analytics), Vapi, and the existing `masar-browser-worker` VPS.
 - Agents work on Masar code inside a sandbox (E2B) and open PRs; nothing is pushed straight to production without passing Masar's own checks.
-- Masar marketing runs on Crewzero's growth agents like any other tenant.
+- Masar marketing runs on Unstaffd's growth agents like any other tenant.

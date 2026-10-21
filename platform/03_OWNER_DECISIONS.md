@@ -26,49 +26,33 @@ Answer inline; agents treat answered items as rules.
 - Domains: **GoDaddy reseller API** (+ connect your own domain).
 - Custom domains: **Cloudflare for SaaS**.
 - Sending email: **Amazon SES** (+ built-in dashboard inbox).
-- Legal entity: **Masar AI Inc. (Delaware C corporation)**, existing EIN, bank and Stripe account. Crewzero runs as a product of Masar AI Inc.; a Delaware C-corp is already the structure investors expect.
+- Legal entity: **Masar AI Inc. (Delaware C corporation)**, existing EIN, bank and Stripe account. Unstaffd runs as a product of Masar AI Inc.; a Delaware C-corp is already the structure investors expect.
 - Google OAuth verification: **skipped at launch.** No Gmail (SES + Cloudflare inbox), built-in booking calendar instead of Google Calendar sync, Google Ads run from our own MCC (Mode 1, only our account authorizes), YouTube build-in-public on our own channel. Verify later only if we add Google Calendar sync, Business Profile management or posting to users' YouTube channels (and when > 100 users connect them).
 
-## Name finalists: **Crewzero** (one word) vs Autopreneur
-- crewzero.ai, crewzero.app, crewzero.co available (Oct 21 2026); crewzero.com registered at GoDaddy since 2015 (expires 2027-01-15).
-- autopreneur.com/.ai/.app/.co all taken; the word is also widely used by others (books, courses), so weak as a trademark.
-- Recommendation: **Crewzero**.
+## Name: **Unstaffd** (DECIDED Oct 21 2026)
+Spelled **Unstaffd** (no "e"): the version whose domains are all free. Earlier candidates: Crewzero (dropped: "too heavy"), Orezo, Zifr, Nobody HQ, Autopreneur.
+- Domains (Oct 21 2026): **unstaffd.com, unstaffd.ai, unstaffd.app, unstaffd.co all available**. Spelled "unstaffed": .com and .ai taken (unstaffed.app free).
+- Plan: **unstaffd.com** = main site/app; **unstaffd.app** = tenant previews (`<slug>.unstaffd.app`); unstaffd.ai + unstaffd.co = protection, redirect to .com.
 
-### USPTO knockout search: CREWZERO (Oct 21 2026, USPTO Trademark Search database, live + dead records)
+### USPTO knockout search: UNSTAFFD (Oct 21 2026, USPTO Trademark Search database, live + dead records)
 | Query | Result |
 |---|---|
-| CREWZERO, CREW ZERO, CREW0, CREW0*, CREW*ZERO, ZEROCREW, ZERO CREW, KRUZERO, CREWZRO | **0 records** |
-| CREW 0 | 2 unrelated (FIVE 0 NINE THE CREW, toys; an abandoned slogan) |
-| CREWZ* | 19 records; closest live: CREWZ (cl. 35, Colorado LLC; cl. 39 carpool), CREWZY (cl. 42), CREWZZ (cl. 40/37/42/44). Different sound and look from CREWZERO |
-| CREWAI | CrewAI, Inc. application (cl. 9/42) **abandoned**; CrewAI is a well-known AI-agent framework company and still has common-law rights from use |
-| Live CREW* in classes 9/35/42 | ~200 coexisting marks (CREWAPP, CREWIQ, CREWVO, CREWMAKR, CREWBRAIN, CLOUD CREW, CHIME CREW...): a crowded field, so many CREW- marks coexist, and each gets narrow protection |
-Reading: no identical or near-identical mark found; "CREW" alone is weak/crowded, so protection rests on the full CREWZERO compound. Main watch item: perceived link to CrewAI in the AI-agent space.
-Next: attorney clearance opinion (optional) and file an intent-to-use application for CREWZERO (standard characters) in classes 9, 35, 42 under Masar AI Inc. (USPTO base fee ~$350 per class).
+| UNSTAFFD, UNSTAFFED, UNSTAFF, UNSTAFF*, UN STAFFED, UNSTAFD | **0 records** |
+| NOSTAFF, ZERO STAFF, STAFFLESS | **0 records** |
+| NO STAFF | only unrelated "STAFF" marks (sporting goods, tableware, old software filings) |
+Reading: no conflicting mark. **Risk to manage: descriptiveness.** "Unstaffed" describes the service (a business run without staff), and USPTO treats a misspelling ("Unstaffd") like the real word. An application may be refused as merely descriptive (Section 2(e)(1)). Options: argue it is suggestive; file with a stylized logo; register on the Supplemental Register first and move to the Principal Register after 5 years of use. The brand can be used either way: no one else owns it.
+Next: buy all four domains now; have a trademark attorney decide the filing strategy (classes 9, 35, 42, owner Masar AI Inc.).
 
-## Earlier name shortlist (Oct 21 2026, .com checked via Verisign RDAP; .ai checks partly rate-limited)
-| Name | Meaning | Domain status |
-|---|---|---|
-| **CrewZero** (recommended) | A full crew, zero employees | crewzero.ai available; getcrewzero.com available; crewzero.com taken |
-| Opernaut | Operator + astronaut | getopernaut.com, opernauthq.com available; .com taken |
-| Autopreneur | Autopilot + entrepreneur | getautopreneur.com, autopreneurhq.com available; .com taken |
-| Bizgent | Business + agent | bizgent.ai available; getbizgent.com available |
-| Runtly | It runs your company | getruntly.com available; .com taken |
-| Helmwise | At the helm, wise coach | gethelmwise.com available; .com taken |
-| Tadbir (تدبير) | Managing / running affairs | gettadbir.com, tadbirhq.com available; .com and .ai taken |
-| Rawaj (رواج) | Market demand, things selling | getrawaj.com available; .com taken |
-| Bidaya (بداية) | Beginning | getbidaya.com available; .com taken |
-| Nahda (نهضة) | Rise, renaissance | getnahda.com available; .com taken |
-Re-check availability at purchase time (GoDaddy) and run a trademark search on the final pick (for our own brand).
-
-- Build: **Codex** builds Crewzero in its own private repo `crewzero` (package in `platform/codex/`).
-- Meta: reuse the existing verified Meta business; create a **separate Crewzero business portfolio + developer app** (Mode 1 customer ad accounts isolated from Masar's own ads).
-- Google Ads: reuse the existing manager account + developer token (check access level; update the API Center tool description for Crewzero; create a Crewzero sub-manager for client accounts).
+## Build and accounts
+- Build: **Codex** builds Unstaffd in its own private repo `unstaffd` (package in `platform/codex/`).
+- Meta: reuse the existing verified Meta business; create a **separate Unstaffd business portfolio + developer app** (Mode 1 customer ad accounts isolated from Masar's own ads).
+- Google Ads: reuse the existing manager account + developer token (check access level; update the API Center tool description for Unstaffd; create a Unstaffd sub-manager for client accounts).
 
 ## Trucking product rename (Masar OS -> American name), Oct 21 2026
 USPTO: 0 records for each. Domains: .com taken for all.
 | Name | Free domains found | Note |
 |---|---|---|
-| **HaulCrew** (recommended) | haulcrew.ai | "Your AI crew that runs the hauling business"; brand family with Crewzero |
+| **HaulCrew** (recommended) | haulcrew.ai | "Your AI crew that runs the hauling business"; sister product under Masar AI |
 | FreightCrew | freightcrew.ai, freightcrew.app | Broader logistics (brokers, 3PL) |
 | RigCrew | rigcrew.app | Very trucker-native ("rig") |
 | LoadCrew | loadcrew.app | Load-centric |
@@ -80,7 +64,7 @@ Company stays **Masar AI**; product renamed. Rename touches `src/config/brand.ts
 - Fabricated testimonials/reviews: banned by the FTC rule (up to $51,744 per violation) and ad platform policies, and a risk to our shared ad accounts. Replaced by real-review collection and disclosed creator content.
 
 ## Open
-1. ~~Platform name~~ DECIDED: **Crewzero**. Main domain crewzero.ai; tenant previews on crewzero.app (separate domain isolates user sites from our app).
+1. ~~Platform name~~ DECIDED: **Unstaffd**. Main domain unstaffd.com; tenant previews on unstaffd.app (separate domain isolates user sites from our app).
 2. **Hosting picks** in `01_INFRASTRUCTURE.md` §1: approve, or change any row (biggest ones: Supabase, Cloudflare, Trigger.dev, Next.js renderer).
 3. **Dashboard build method**: Lovable (like Masar) vs Claude Code/Codex in the monorepo vs both.
 4. **Trial model**: 7-day trial with card, or no trial + first-week money-back guarantee.

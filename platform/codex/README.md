@@ -1,9 +1,9 @@
-# Crewzero Codex package
+# Unstaffd Codex package
 
-Everything Codex needs to build Crewzero in its own repo.
+Everything Codex needs to build Unstaffd in its own repo.
 
 ## One-time setup (owner)
-1. Create an empty **private** GitHub repo `crewzero` (GitHub -> New repository -> Private).
+1. Create an empty **private** GitHub repo `unstaffd` (GitHub -> New repository -> Private).
 2. Copy into the new repo root:
    - `platform/codex/AGENTS.md` -> `AGENTS.md` (Codex reads this automatically)
    - `platform/codex/.env.example` -> `.env.example`

@@ -1,12 +1,12 @@
-# AGENTS.md — rules for Codex (and any coding agent) in the Crewzero repo
+# AGENTS.md — rules for Codex (and any coding agent) in the Unstaffd repo
 
-Crewzero: "AI agents that run the whole company." A product of Masar AI. Solo founder + AI, built in public.
+Unstaffd: "AI agents that run the whole company." A product of Masar AI. Solo founder + AI, built in public.
 Read `docs/00_MASTER_SPEC.md` (what), `docs/01_INFRASTRUCTURE.md` (how), `docs/02_BUILD_QUEUE.md` (order) before any task.
 The current task is always one file in `prompts/`. Do only that task.
 
 ## Hard rules
 1. **No secrets in code, files, commits, logs, screenshots or chat.** Secrets live only in the platform secret stores (Cloudflare, Supabase, Trigger.dev) or `.env.local` (git-ignored). `.env.example` lists names only.
-2. **Brand name lives in one constant**: `packages/config/src/brand.ts` (`BRAND.name = "Crewzero"`). Plans live only in `packages/config/src/plans.ts`. Never hardcode either elsewhere.
+2. **Brand name lives in one constant**: `packages/config/src/brand.ts` (`BRAND.name = "Unstaffd"`). Plans live only in `packages/config/src/plans.ts`. Never hardcode either elsewhere.
 3. **Multi-tenancy is non-negotiable**: every business table has `company_id uuid not null`; RLS enabled on every table; a row is visible/writable only if `company_id` is in the user's active memberships. Test with two companies in every migration that adds a table.
 4. **Agents never choose the tenant.** Tool functions get `companyId` from server context, never from model output. Credentials are loaded server-side by `companyId`.
 5. **Hard limits are enforced in code, not prompts**: spend caps, budgets, allowed channels, destructive-action confirmation, compliance rules.
@@ -30,7 +30,7 @@ The current task is always one file in `prompts/`. Do only that task.
 ## Stack (do not swap without an owner decision)
 pnpm + Turborepo monorepo. TypeScript everywhere.
 - `apps/dashboard`: React + Vite + Tailwind + shadcn/ui + TanStack Query + React Router. Hosted on Cloudflare Workers (static assets).
-- `apps/renderer`: Next.js (App Router) on Cloudflare Workers via OpenNext. Serves `*.crewzero.app` and custom domains.
+- `apps/renderer`: Next.js (App Router) on Cloudflare Workers via OpenNext. Serves `*.unstaffd.app` and custom domains.
 - `apps/api`: Hono on Cloudflare Workers (webhooks: Stripe, Meta, Twilio, SES/SNS, GoDaddy).
 - `apps/jobs`: Trigger.dev tasks (agents, daily cycles, provisioning).
 - `packages/db`: Supabase migrations (SQL), generated types, RLS tests.
