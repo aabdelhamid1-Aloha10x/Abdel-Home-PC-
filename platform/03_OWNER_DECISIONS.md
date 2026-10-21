@@ -64,7 +64,7 @@ Re-check availability at purchase time (GoDaddy) and run a trademark search on t
 - Fabricated testimonials/reviews: banned by the FTC rule (up to $51,744 per violation) and ad platform policies, and a risk to our shared ad accounts. Replaced by real-review collection and disclosed creator content.
 
 ## Open
-1. **Platform name + domain.** (Goes into `src/config/brand.ts` only.)
+1. ~~Platform name~~ DECIDED: **Crewzero**. Main domain crewzero.ai; tenant previews on crewzero.app (separate domain isolates user sites from our app).
 2. **Hosting picks** in `01_INFRASTRUCTURE.md` §1: approve, or change any row (biggest ones: Supabase, Cloudflare, Trigger.dev, Next.js renderer).
 3. **Dashboard build method**: Lovable (like Masar) vs Claude Code/Codex in the monorepo vs both.
 4. **Trial model**: 7-day trial with card, or no trial + first-week money-back guarantee.

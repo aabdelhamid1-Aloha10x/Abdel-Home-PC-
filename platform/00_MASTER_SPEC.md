@@ -1,7 +1,7 @@
-# Master spec: AI company platform (v1-v3 consolidated)
+# Crewzero master spec (v1-v3 consolidated)
 
 Status: DRAFT for owner decisions. Date: 2026-10-21.
-Working name: not chosen yet. The name lives in ONE constant (`src/config/brand.ts`, same rule as Masar OS). This doc says "the Platform".
+Name: **Crewzero** (crewzero.ai), a product of Masar AI LLC (Delaware). The name lives in ONE constant (`src/config/brand.ts`, same rule as Masar OS).
 Companion docs: `01_INFRASTRUCTURE.md` (hosting, tenants, stack), `02_BUILD_QUEUE.md` (order of work), `03_OWNER_DECISIONS.md` (open questions).
 
 ---
@@ -10,7 +10,7 @@ Companion docs: `01_INFRASTRUCTURE.md` (hosting, tenants, stack), `02_BUILD_QUEU
 
 **"Type your idea or plug in your business. AI agents run the whole company — and coach you to results."**
 
-- The Platform builds, launches and runs a business end to end: research, plan, brand, website, payments, marketing, sales, support, finance.
+- Crewzero builds, launches and runs a business end to end: research, plan, brand, website, payments, marketing, sales, support, finance.
 - It runs on **autopilot**. The user steers through a strategy chat, not by approving every action.
 - It is a **business coach**, not a yes-man. It challenges bad ideas with research and proven playbooks.
 - It works for **every kind of business**: idea-stage, running local businesses (plumbers, dentists, daycares, grocery, law offices), B2B services, SaaS, e-commerce, info products.
@@ -19,7 +19,7 @@ Companion docs: `01_INFRASTRUCTURE.md` (hosting, tenants, stack), `02_BUILD_QUEU
 ### Founder model
 - Solo founder + AI. **No employees, ever.** That is the core story.
 - Vendors are allowed where the law requires a licensed party (counsel drafting contest rules, for example). They are vendors, not hires.
-- The Platform runs its own company on itself ("Company #0"). Masar OS is Company #1.
+- Crewzero runs its own company on itself ("Company #0"). Masar OS is Company #1.
 - Built in public, aggressively, on every platform from day one.
 
 ---
@@ -176,7 +176,7 @@ The platform's own outcome data becomes the stronger moat over time (section 13)
 | QA & Compliance Guard | Checks every public output before it ships | Rules engine + LLM grader | Error rate |
 
 The QA & Compliance Guard is mandatory because there is no approval step.
-The same org chart runs the Platform's own company (Company #0), so it is tested daily by us.
+The same org chart runs Crewzero's own company (Company #0), so it is tested daily by us.
 
 ---
 
@@ -232,7 +232,7 @@ Each business model has a fastest-path plan to a first result (first lead, booke
 ## 10. Niche packs (horizontal product, vertical marketing)
 
 Niche pack = template + playbook + channel mix + KPIs + compliance rules.
-The niches below are **examples only**. The Platform serves any business; new packs are added whenever data shows demand.
+The niches below are **examples only**. Crewzero serves any business; new packs are added whenever data shows demand.
 
 | Niche | Primary engines | Outcome we sell | Compliance |
 |---|---|---|---|
@@ -259,8 +259,8 @@ Each niche gets its own landing page and ad set, run by our own agents (dogfoodi
 - FTC disclosure (#ad / paid partnership) enforced by the Compliance Guard.
 - Masar example: trucking, owner-operator, CDL and logistics creators on YouTube/TikTok/LinkedIn.
 
-### Phase B (later): creators join the Platform
-- Opportunity feed: companies on the Platform, products, commission rates, real conversion data.
+### Phase B (later): creators join Crewzero
+- Opportunity feed: companies on Crewzero, products, commission rates, real conversion data.
 - AI matchmaking both ways.
 - Revenue: % of creator payouts (e.g. 10-20%), optional small business-side fee.
 - Flywheel: more companies -> more opportunities -> more creators -> more sales -> more companies.
@@ -330,9 +330,9 @@ Rules:
 7. Later: template/agent marketplace, licensed creator agents, agency white-label.
 
 ### Revenue lock (Stripe Connect)
-- Use **Connect Express** accounts (platform-controlled; only work inside the Platform; payouts to the user's bank). Not Standard (user can disconnect).
+- Use **Connect Express** accounts (platform-controlled; only work inside Crewzero; payouts to the user's bank). Not Standard (user can disconnect).
 - All platform-built checkouts, booking pages, invoices and payment links use only our Connect. No other processor can be added inside platform-built assets.
-- ToS: revenue from platform-built assets must be processed through the Platform while subscribed.
+- ToS: revenue from platform-built assets must be processed through Crewzero while subscribed.
 - Risk agent flags anomalies (traffic/leads up, processed revenue down).
 - Service businesses get platform invoices, payment links and tap-to-pay so on-site revenue still flows through us.
 - Ownership promise: "You own your brand, domain, customer data and code export. Payments run on our rails while you are with us."
@@ -411,7 +411,7 @@ Shown to users as each agent's "Lessons learned" feed and a weekly "your team go
 | Newsletter | Weekly metrics + lessons | Weekly |
 | Podcasts | Guest spots, agent pitches hosts | Ongoing |
 
-- **AI CEO account**: posts the Platform's own daily agent report, written by the agents.
+- **AI CEO account**: posts Crewzero's own daily agent report, written by the agents.
 - **Live metrics page**: recurring MRR, active companies, customer revenue generated.
 - Pipeline: owner records -> transcribe -> agents clip, caption, thumbnail -> scheduled everywhere. Existing workspace connectors cover most of this today: Blotato, VidIQ, HeyGen/HyperFrames, ElevenLabs, Higgsfield, Canva, Meta Ads.
 
@@ -420,7 +420,7 @@ Shown to users as each agent's "Lessons learned" feed and a weekly "your team go
 ## 18. Masar OS: Company #1 (continue mode)
 
 - Masar OS (trucking TMS, Lovable + Supabase) is already partly built: specs, credits model, Vapi agent, browser worker, `lovable-build/SOLO_STATUS.md` known gaps.
-- The Platform imports Masar (repo + `lovable-build/` docs), turns known gaps into tasks, finishes them, then runs Masar's go-to-market.
+- Crewzero imports Masar (repo + `lovable-build/` docs), turns known gaps into tasks, finishes them, then runs Masar's go-to-market.
 - Public story: "Masar OS was partly built. We plugged it in and the AI finished and launched it."
 - Owner-only steps (identity-bound): Google OAuth verification, Apple/Google developer accounts, Stripe live mode, ELD/carrier provider applications. Agents prepare everything; owner signs once.
 - Masar GTM: trucking creators, LinkedIn, B2B email (FMCSA public data), trucking FB groups, free tools (cost-per-mile calculator, load profit checker), demo-booking funnel.
@@ -449,4 +449,4 @@ Shown to users as each agent's "Lessons learned" feed and a weekly "your team go
 | Months 4-6 | Click-to-message closer, lead-gen engines, creator agent (Phase A), aggressiveness slider + tiers, voice receptionist, contest season 1 |
 | Months 6-12 | One niche pack per month, learning loop, creator marketplace (Phase B), agency tier |
 
-Detailed order: `02_BUILD_QUEUE.md`.
+Detailed phases, owners and exit criteria: `02_BUILD_QUEUE.md`.

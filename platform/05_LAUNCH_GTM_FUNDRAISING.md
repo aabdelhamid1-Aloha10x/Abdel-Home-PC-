@@ -1,8 +1,8 @@
-# Launch, viral growth, and fundraising for the Platform itself
+# Launch, viral growth, and fundraising for Crewzero itself
 
 Status: DRAFT. Date: 2026-10-21.
 
-## 1. Where to list and market the Platform
+## 1. Where to list and market Crewzero
 
 | Type | Places |
 |---|---|
@@ -36,7 +36,7 @@ Status: DRAFT. Date: 2026-10-21.
 
 ## 3. Built-in viral loops
 
-1. **"Built & run by [Platform]" badge** on every customer site (required on low tiers, removable on higher ones). Every customer site advertises us.
+1. **"Built & run by Crewzero" badge** on every customer site (required on low tiers, removable on higher ones). Every customer site advertises us.
 2. **Shareable idea score card**: "My AI CEO rated my idea 82/100" with a nice image for X/IG/LinkedIn. Free to generate, very shareable.
 3. **Referral credits** on both sides.
 4. **Public leaderboard + Founder Grant Contest**, with winners announced publicly.
