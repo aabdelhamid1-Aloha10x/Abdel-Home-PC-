@@ -23,18 +23,20 @@ Principles:
 | Webhooks / public API | Hono on Cloudflare Workers | Fast, cheap, handles Stripe/Meta/Twilio webhooks | Supabase Edge Functions |
 | **Agent runtime** (orchestrator, daily cycles, long jobs) | **Trigger.dev** (TypeScript tasks, no timeouts, schedules, retries, per-tenant concurrency keys) | Durable long-running agent jobs without running our own queue | Inngest; Temporal later at scale |
 | Code sandboxes (finishing imported apps, custom code tier) | E2B or Daytona sandboxes; or Claude Managed Agents (Anthropic-hosted sandbox) | Untrusted/generated code never runs on our servers | Modal |
-| LLM gateway | Own `model-router` module + **Cloudflare AI Gateway** (logging, caching, rate limits, provider fallback) | One call path for every agent; swap models by config | LiteLLM self-hosted; OpenRouter for long-tail models |
+| LLM gateway | Own `model-router` module + **Cloudflare AI Gateway** (logging, caching, rate limits, provider fallback), **direct API keys** to Anthropic, OpenAI, Google, xAI, Perplexity | One call path for every agent; no token markup; full Batch API (50% off) and prompt caching | OpenRouter only for experiments / long-tail models (5.5% credit fee) |
 | LLM tracing + evals | **Langfuse** | Traces every agent run; feeds eval sets and the learning loop | Braintrust, Helicone |
 | **Tenant sites** (websites, stores, funnels, booking pages) | One multi-tenant **Next.js renderer on Cloudflare Workers** (OpenNext); tenant config + content in Postgres; edge-cached | SEO-friendly SSR, one tested codebase for all tenants | Astro on Workers; Vercel Platforms |
 | Platform subdomains | Wildcard `*.<platform>.app` | Instant site preview during onboarding | — |
 | **Custom domains** | **Cloudflare for SaaS** custom hostnames (auto SSL). 100 included, then ~$0.10/hostname/mo | Built for SaaS with customer domains | Vercel domains API |
-| Domain registration | Registrar reseller API: **Openprovider** or **GoDaddy reseller** (.com wholesale ~$10.69/yr). Registrant = the user | Markup on registration + renewal; user truly owns domain | NameSilo, Namecheap API |
+| Domain registration | MVP: **connect your own domain** (auto DNS) + **Entri Sell** for in-app purchase (no reseller account needed). Later: registrar reseller API (Openprovider / GoDaddy reseller, .com wholesale ~$10.69/yr), registrant = the user | Launch without deposits or domain support work; full markup later | Hostinger has no domain reseller API (see `04_COST_ANALYSIS.md` §5) |
 | Custom code tier / per-tenant JS | **Workers for Platforms** ($25/mo: 20M requests, 1,000 scripts; $0.02/extra script) | Isolated per-tenant scripts on our account | Separate projects per tenant |
 | Imported apps (continue mode) | **Bring-your-own infra first**: keep the tenant's existing Supabase/Lovable/Vercel; agents work via their repo + credentials. Optional migration later | Masar stays where it is; no risky migration | Dedicated Supabase project per tenant (premium) |
 | Files / media | **Cloudflare R2** (no egress fees) | Videos, images, brand kits | Supabase Storage for small files |
 | Video delivery | Cloudflare Stream | UGC/VSL playback on tenant sites | Mux |
 | Transactional email (tenant domains) | **Amazon SES** (cheapest at volume) or Resend (simplest). Per-tenant sending domain with SPF/DKIM/DMARC set by agent | Deliverability isolated per tenant | Postmark |
-| Inbound email / company inbox | Cloudflare Email Routing -> Worker -> Postgres | Each company gets hello@theirdomain into the dashboard | Postmark inbound |
+| Inbound email / company inbox | Cloudflare Email Routing -> Worker -> Postgres | Each company gets hello@theirdomain into the dashboard at near-zero cost | Postmark inbound; Google Workspace as paid upsell for a full mailbox |
+| Social accounts | User creates/owns accounts; connect wizard (OAuth) grants us posting/messaging access; agents prepare names, bios, images | Platforms do not allow account creation by API | — |
+| Ad accounts | Mode 1: one ad account per company under **our** Meta Business Manager / Google Ads MCC, prepaid balance (Polsia model). Mode 2: user's own ad account via partner access | Fast aha moment by default; ownership option for running businesses | — |
 | Cold outreach (B2B only) | **Separate** secondary domains + warm-up/sending provider API (Instantly or Smartlead) | Never touches transactional reputation | — |
 | Phone + SMS | **Twilio** subaccount per tenant; A2P 10DLC brand + campaign per business (we register as ISV) | Clean per-tenant billing and compliance | Telnyx |
 | Voice agents | **Vapi** (BYO provider keys) + ElevenLabs voices | Already used in Masar | OpenAI Realtime |
@@ -151,13 +153,13 @@ Metrics: `kpis_daily` (per company), `site_events`.
 |---|---|---|
 | Legal entity (LLC/C-corp), EIN, business bank | Required by Stripe, Meta business verification, registrar, Twilio | Stripe Atlas is available through the connected Stripe account |
 | Meta: Business verification + App Review | Ads, Pages, Instagram messaging/publishing, lead ads, WhatsApp | Scopes such as ads_management, pages_messaging, instagram_manage_messages, instagram_content_publish, leads_retrieval, business_management, WhatsApp Tech Provider. Needs privacy policy, ToS, screencasts |
-| Google: OAuth verification + Google Ads API developer token | Business Profile, Calendar, Ads | Masar already hit the 100-user cap; start early |
+| Google: OAuth verification + Google Ads API developer token | Business Profile, Calendar, Ads (sensitive scopes, one-time app verification) | **Never request Gmail scopes** (restricted = yearly CASA security assessment). Masar already hit the 100-user cap; start early |
 | TikTok for Business / Content Posting API audit | TikTok ads + posting | Audit required for public posting |
 | YouTube Data API quota increase | Uploading Shorts/videos for tenants | Default quota is small |
 | X API paid tier | Posting + trend data | Grok covers trend reading |
 | LinkedIn Marketing Developer Platform | LinkedIn posting/ads | Hard to get; aggregator first |
 | Stripe Connect platform (Express) | Tenant payments, KYC, payouts | Platform profile + use-case review |
-| Registrar reseller account | Domains with markup | Openprovider membership or GoDaddy reseller + deposit |
+| Entri (Sell + Connect) | In-app domain purchase + auto DNS | Replaces a reseller account for MVP; reseller account later |
 | Twilio ISV + A2P 10DLC | SMS for tenants | Register as ISV; per-tenant brand/campaign |
 | Modash API | Creator search | Paid plan |
 | Cloudflare for SaaS + Workers for Platforms | Custom domains, per-tenant code | Enable on the account |

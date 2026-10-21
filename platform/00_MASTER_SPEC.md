@@ -44,7 +44,7 @@ Companion docs: `01_INFRASTRUCTURE.md` (hosting, tenants, stack), `02_BUILD_QUEU
 | Users don't see results, churn fast | "First Win in 14 Days" plan per business model. North-star metric: Time to First Result |
 | Uses every channel blindly | Channel-fit engine picks only the channels that fit the business model |
 | Opaque | Live org-chart dashboard: every agent, its task, result, cost, lessons |
-| Credits burned on failed tasks | Failed task = credits refunded automatically |
+| Credits burned on tasks that never delivered | Task is "completed" only after it passes testing. Revisions the user asks for are normal paid work (Lovable model). Only system failures (task crashed / never delivered) are re-run at no charge |
 | Yes-man AI | Coach with a challenge protocol and a playbook knowledge base |
 | Inflated metrics | Public live metrics page: recurring MRR, active companies, customer revenue generated |
 
@@ -76,7 +76,7 @@ Rules:
 ## 4. User journey (worked example: ski equipment)
 
 1. **Research and validation** (10-20 min, free): demand and seasonality, competitors (REI, Evo, Backcountry, Amazon), finding = generalist ski gear is saturated and capital heavy. Niche options scored: premium women's gear, refurbished gear marketplace, beginner trip kits, kids' gear subscription. ICP written. Go / Pivot / Kill score.
-2. **Brand and build**: names checked against USPTO + domain availability in one step. Domain shown with price (wholesale + markup). Logo, brand kit, store from template, Stripe Connect, inbox, legal pages. Supplier / dropship integration for physical goods.
+2. **Brand and build**: names are suggested **from available domains** (domain-first naming; no USPTO gate). The user picks; the choice is theirs. Domain shown with price (cost + markup). Logo, brand kit, store from template, Stripe Connect, inbox, legal pages. Supplier / dropship integration for physical goods.
 3. **Channel strategy**: for ski gear -> IG/TikTok UGC, Pinterest, Meta ads, Google Shopping, creators, email/SMS. Not cold email, not AI cold calls. (A B2B business would get the opposite.)
 4. **Launch and operate**: daily loop (plan -> execute -> QA -> report). Daily email: visitors, signups, orders, what the agents test today.
 5. **Learn**: results feed company memory and the platform playbook library.
@@ -158,8 +158,9 @@ The platform's own outcome data becomes the stronger moat over time (section 13)
 | CEO / Orchestrator | Weekly goals, task routing, conflicts, daily report | All agents, KPI tables | Revenue growth |
 | Coach (strategy chat) | User conversations, challenge protocol, lessons | Playbook KB, research | Retention, plan adherence |
 | Research & Strategy | Market, niche, ICP, competitors, pricing | Perplexity, Grok, DataForSEO, web | Validation accuracy |
-| Brand | Names, logo, voice, brand kit | Image models, USPTO, registrar API | — |
-| Web / Build | Site, store, funnels from templates; finishing imported apps | Template engine, renderer, GitHub, sandbox | Uptime, speed |
+| Brand | Names, logo, voice, brand kit | Image models, domain availability API | — |
+| Web / Build | Site, store, funnels from templates (config + content, no raw code) | Template engine, renderer | Uptime, speed |
+| Engineering | Custom features, integrations, apps per company; finishing imported apps (Masar); bug fixes. Flow: spec -> code in sandbox -> tests -> review by a second model -> QA agent -> preview -> promote | Claude Agent SDK / Codex in E2B sandbox, GitHub repo per company, Workers for Platforms or tenant's own host | Shipped features, zero regressions |
 | Funnel & CRO | Offers, A/B tests, checkout, VSL pages | Analytics, Stripe | Conversion rate |
 | Content Studio | UGC (faceless / avatar), images, copy, VSL scripts | Sora/Veo/Kling/Higgsfield, HeyGen, ElevenLabs | Hook rate |
 | Social | Posting, comments, community | Social APIs, scheduler | Engagement |
@@ -231,6 +232,7 @@ Each business model has a fastest-path plan to a first result (first lead, booke
 ## 10. Niche packs (horizontal product, vertical marketing)
 
 Niche pack = template + playbook + channel mix + KPIs + compliance rules.
+The niches below are **examples only**. The Platform serves any business; new packs are added whenever data shows demand.
 
 | Niche | Primary engines | Outcome we sell | Compliance |
 |---|---|---|---|
@@ -282,13 +284,39 @@ Each niche gets its own landing page and ad set, run by our own agents (dogfoodi
 | Business 10 | 2,999 | 50 | 220,000 |
 | Enterprise / Agency | quote | 50+ | custom |
 
-DRAFT numbers. Recalibrate after 30 days of real usage.
+**STATUS: TEST ONLY. Not published.** Tiers, credit amounts and per-action credit values are tested first (Masar + 10-20 beta users, real cost per action measured in Langfuse), then set. See `04_COST_ANALYSIS.md` §9.
+
+### What credits do (draft values, to be tested)
+Credits pay for agent work. Each action has a credit value sized so our real cost stays ~25-35% of what the credit sells for.
+
+| Action | Credits (draft) |
+|---|---|
+| Idea validation + first business plan + site preview (onboarding) | free |
+| Daily agent cycle (orchestrator plan + daily report) | 20 / day |
+| Site / landing page build from template | 100 |
+| Page edit or revision | 10 |
+| Social post (copy + image) | 8 |
+| AI image | 4 |
+| SEO / blog article | 25 |
+| Ad campaign setup (3 ad variants) | 60 |
+| Ad optimization pass | 5 / day |
+| Faceless UGC video (30s) | 150 |
+| Avatar video (30s, user's face) | 250 |
+| DM / chat conversation handled by AI Closer | 3 |
+| Email campaign (per 100 recipients) | 2 |
+| Voice minute (receptionist / follow-up) | 35 |
+| Lead found + enriched | 2 |
+| Creator found + outreach | 10 |
+| Engineering task (custom feature) | 200-1,000 by size |
+
+Example: Business 1 ($29, 1,000 credits) ≈ daily cycle all month (600) + 20 social posts (160) + 1 ad campaign (60) + daily ad optimization (150) = 970. That is "light autopilot for one company". Video-heavy or aggressive users top up or upgrade.
 
 Rules:
 - Upgrade any month; one-time top-up packs any time.
 - Included credits expire monthly; packs never expire (same as Masar).
 - Credits priced at 3-4x blended AI cost (target 65-75% gross margin).
-- Failed tasks refund their credits automatically.
+- A task counts as **completed when it passes testing**; credits are charged then. Changes the user asks for afterwards (didn't like the look, wants another version) are new paid tasks, like Lovable.
+- Only **system failures** (task crashed, timed out, or never delivered output because of our bug/outage) are re-run automatically at no extra charge. Recommended because "credits spent on tasks that never deployed" is Polsia's top complaint. Owner decision.
 - **Aggressiveness is a slider** (Steady / Growth / Aggressive / Blitz) that controls credit pace and which engines run. The coach shows "at this pace credits last 16 days; top up or move to Business 4?"
 - Autopilot paces credits across the month unless the user speeds it up. No surprise bills.
 
@@ -346,11 +374,12 @@ Shown to users as each agent's "Lessons learned" feed and a weekly "your team go
 | SMS | Opt-in, A2P 10DLC registration per business |
 | Meta messaging | Reply only to user-initiated conversations inside Meta's window; disclose AI; WhatsApp allows business-specific bots, not general-purpose assistants (verify current policy) |
 | Avatars / voice clones | Only the user's own face/voice with liveness + consent check |
-| Ads | Platform AI-disclosure labels; no fake testimonials or false claims (FTC) |
-| Names | Trademark check before buying domain |
+| AI content labels | No blanket labeling. Follow each platform's own rule only where it applies (e.g. Meta for political/social-issue ads with realistic altered media; TikTok/YouTube for realistic AI-generated people or events) |
+| Testimonials and reviews | Only real customer reviews and real results. No fabricated testimonials, AI "customers" presented as real, or bought reviews: banned by the FTC rule (effective Oct 21 2024, up to $51,744 per violation) and by ad platform policies; one violation can get ad accounts banned. Instead: automated real-review collection, disclosed creator reviews, demo ads labeled "actor portrayal" where actors are used, true numbers as social proof |
+| Names | Domain-first naming. Optional non-blocking warning for obvious famous brands (ads and domains get rejected for those) |
 | Prohibited businesses | Blocked categories; KYC via Stripe; Risk agent review |
 | Regulated niches | HIPAA (dental/health), state bar rules (law), child privacy (daycare) built into niche packs |
-| Billing | No charge for failed tasks; one-click cancel; clear refund policy; transparent credit usage |
+| Billing | Credits charged when a task passes testing; user revisions are paid; system failures re-run free. Online cancellation (required for California consumers by state auto-renewal law). No refunds of used credits or the current period; written refund policy; transparent credit usage |
 | Data | Provider retention terms checked; customer data never used for training without consent |
 
 ---

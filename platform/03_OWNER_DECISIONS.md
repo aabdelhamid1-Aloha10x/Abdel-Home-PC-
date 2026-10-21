@@ -14,6 +14,16 @@ Answer inline; agents treat answered items as rules.
 - Revenue share locked to our Stripe Connect.
 - Every business type supported; marketing by niche, selling outcomes.
 
+- Niches in the spec are examples only; any business is served.
+- Domain-first naming; no USPTO gate.
+- Credits charged when a task passes testing; user revisions are paid work.
+- No blanket AI labels; follow each platform's rules where they apply.
+- Tiers and credit values are tested (Masar + beta) before publishing.
+- Engineering agent added to the org chart.
+
+## Not adopted (legal)
+- Fabricated testimonials/reviews: banned by the FTC rule (up to $51,744 per violation) and ad platform policies, and a risk to our shared ad accounts. Replaced by real-review collection and disclosed creator content.
+
 ## Open
 1. **Platform name + domain.** (Goes into `src/config/brand.ts` only.)
 2. **Hosting picks** in `01_INFRASTRUCTURE.md` §1: approve, or change any row (biggest ones: Supabase, Cloudflare, Trigger.dev, Next.js renderer).
@@ -24,6 +34,9 @@ Answer inline; agents treat answered items as rules.
 7. **First niche pack** after Masar: plumbers/HVAC, dentists, or other.
 8. **Contest**: season length (90 days proposed), grant pool % (3-5%), guaranteed minimum $.
 9. **Creator API provider**: Modash vs influencers.club vs Upfluence.
-10. **Registrar**: Openprovider vs GoDaddy reseller.
+10. **Domains for MVP**: connect-your-own + Entri Sell (recommended), or a reseller account now.
+13. **System-failure policy**: re-run free when a task crashes / never delivers (recommended), or charge regardless.
+14. **Ads default**: Mode 1 (our ad accounts, prepaid) for new users + Mode 2 for running businesses (recommended)?
+15. **Build tools**: Claude Code Max 20x + Codex as reviewer; keep or drop Lovable.
 11. **Legal entity**: existing company or new (Stripe Atlas)?
 12. **Public metrics page**: which numbers are public from day one.
