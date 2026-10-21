@@ -44,7 +44,7 @@ Companion docs: `01_INFRASTRUCTURE.md` (hosting, tenants, stack), `02_BUILD_QUEU
 | Users don't see results, churn fast | "First Win in 14 Days" plan per business model. North-star metric: Time to First Result |
 | Uses every channel blindly | Channel-fit engine picks only the channels that fit the business model |
 | Opaque | Live org-chart dashboard: every agent, its task, result, cost, lessons |
-| Credits burned on tasks that never delivered | Task is "completed" only after it passes testing. Revisions the user asks for are normal paid work (Lovable model). Only system failures (task crashed / never delivered) are re-run at no charge |
+| Credits burned on tasks that never delivered | Task is "completed" only after it passes testing. Revisions the user asks for are normal paid work (Lovable model). Disputes reviewed case by case |
 | Yes-man AI | Coach with a challenge protocol and a playbook knowledge base |
 | Inflated metrics | Public live metrics page: recurring MRR, active companies, customer revenue generated |
 
@@ -316,7 +316,7 @@ Rules:
 - Included credits expire monthly; packs never expire (same as Masar).
 - Credits priced at 3-4x blended AI cost (target 65-75% gross margin).
 - A task counts as **completed when it passes testing**; credits are charged then. Changes the user asks for afterwards (didn't like the look, wants another version) are new paid tasks, like Lovable.
-- Only **system failures** (task crashed, timed out, or never delivered output because of our bug/outage) are re-run automatically at no extra charge. Recommended because "credits spent on tasks that never deployed" is Polsia's top complaint. Owner decision.
+- **No automatic refunds.** If a user disputes a charge (e.g. a task that never delivered), the Support + Finance agents review it **case by case** and may re-run the task or return credits. (Owner decision, Oct 21 2026.)
 - **Aggressiveness is a slider** (Steady / Growth / Aggressive / Blitz) that controls credit pace and which engines run. The coach shows "at this pace credits last 16 days; top up or move to Business 4?"
 - Autopilot paces credits across the month unless the user speeds it up. No surprise bills.
 
@@ -379,7 +379,7 @@ Shown to users as each agent's "Lessons learned" feed and a weekly "your team go
 | Names | Domain-first naming. Optional non-blocking warning for obvious famous brands (ads and domains get rejected for those) |
 | Prohibited businesses | Blocked categories; KYC via Stripe; Risk agent review |
 | Regulated niches | HIPAA (dental/health), state bar rules (law), child privacy (daycare) built into niche packs |
-| Billing | Credits charged when a task passes testing; user revisions are paid; system failures re-run free. Online cancellation (required for California consumers by state auto-renewal law). No refunds of used credits or the current period; written refund policy; transparent credit usage |
+| Billing | Credits charged when a task passes testing; user revisions are paid; no automatic refunds, disputes reviewed case by case. Online cancellation (required for California consumers by state auto-renewal law). No refunds of used credits or the current period; written refund policy; transparent credit usage |
 | Data | Provider retention terms checked; customer data never used for training without consent |
 
 ---

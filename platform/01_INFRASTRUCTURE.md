@@ -28,7 +28,7 @@ Principles:
 | **Tenant sites** (websites, stores, funnels, booking pages) | One multi-tenant **Next.js renderer on Cloudflare Workers** (OpenNext); tenant config + content in Postgres; edge-cached | SEO-friendly SSR, one tested codebase for all tenants | Astro on Workers; Vercel Platforms |
 | Platform subdomains | Wildcard `*.<platform>.app` | Instant site preview during onboarding | — |
 | **Custom domains** | **Cloudflare for SaaS** custom hostnames (auto SSL). 100 included, then ~$0.10/hostname/mo | Built for SaaS with customer domains | Vercel domains API |
-| Domain registration | MVP: **connect your own domain** (auto DNS) + **Entri Sell** for in-app purchase (no reseller account needed). Later: registrar reseller API (Openprovider / GoDaddy reseller, .com wholesale ~$10.69/yr), registrant = the user | Launch without deposits or domain support work; full markup later | Hostinger has no domain reseller API (see `04_COST_ANALYSIS.md` §5) |
+| Domain registration | **GoDaddy reseller API** (DECIDED). .com wholesale ~$10.69/yr, our markup on registration + renewals, registrant = the user. Users can also connect a domain they already own | Full markup revenue from day one | Entri Sell; Hostinger has no domain reseller API (see `04_COST_ANALYSIS.md` §5) |
 | Custom code tier / per-tenant JS | **Workers for Platforms** ($25/mo: 20M requests, 1,000 scripts; $0.02/extra script) | Isolated per-tenant scripts on our account | Separate projects per tenant |
 | Imported apps (continue mode) | **Bring-your-own infra first**: keep the tenant's existing Supabase/Lovable/Vercel; agents work via their repo + credentials. Optional migration later | Masar stays where it is; no risky migration | Dedicated Supabase project per tenant (premium) |
 | Files / media | **Cloudflare R2** (no egress fees) | Videos, images, brand kits | Supabase Storage for small files |
@@ -159,7 +159,7 @@ Metrics: `kpis_daily` (per company), `site_events`.
 | X API paid tier | Posting + trend data | Grok covers trend reading |
 | LinkedIn Marketing Developer Platform | LinkedIn posting/ads | Hard to get; aggregator first |
 | Stripe Connect platform (Express) | Tenant payments, KYC, payouts | Platform profile + use-case review |
-| Entri (Sell + Connect) | In-app domain purchase + auto DNS | Replaces a reseller account for MVP; reseller account later |
+| GoDaddy reseller account (API) | In-app domain purchase with markup | Apply in week 1; OTE sandbox for testing; prepaid balance |
 | Twilio ISV + A2P 10DLC | SMS for tenants | Register as ISV; per-tenant brand/campaign |
 | Modash API | Creator search | Paid plan |
 | Cloudflare for SaaS + Workers for Platforms | Custom domains, per-tenant code | Enable on the account |

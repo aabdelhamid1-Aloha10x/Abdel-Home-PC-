@@ -21,6 +21,27 @@ Answer inline; agents treat answered items as rules.
 - Tiers and credit values are tested (Masar + beta) before publishing.
 - Engineering agent added to the org chart.
 
+- Ads: **Mode 1** (one ad account per company under our Meta Business Manager / Google Ads MCC, prepaid balance).
+- Refunds: **no automatic refunds**; disputes reviewed case by case.
+- Domains: **GoDaddy reseller API** (+ connect your own domain).
+- Custom domains: **Cloudflare for SaaS**.
+- Sending email: **Amazon SES** (+ built-in dashboard inbox).
+
+## Name shortlist (Oct 21 2026, .com checked via Verisign RDAP; .ai checks partly rate-limited)
+| Name | Meaning | Domain status |
+|---|---|---|
+| **CrewZero** (recommended) | A full crew, zero employees | crewzero.ai available; getcrewzero.com available; crewzero.com taken |
+| Opernaut | Operator + astronaut | getopernaut.com, opernauthq.com available; .com taken |
+| Autopreneur | Autopilot + entrepreneur | getautopreneur.com, autopreneurhq.com available; .com taken |
+| Bizgent | Business + agent | bizgent.ai available; getbizgent.com available |
+| Runtly | It runs your company | getruntly.com available; .com taken |
+| Helmwise | At the helm, wise coach | gethelmwise.com available; .com taken |
+| Tadbir (تدبير) | Managing / running affairs | gettadbir.com, tadbirhq.com available; .com and .ai taken |
+| Rawaj (رواج) | Market demand, things selling | getrawaj.com available; .com taken |
+| Bidaya (بداية) | Beginning | getbidaya.com available; .com taken |
+| Nahda (نهضة) | Rise, renaissance | getnahda.com available; .com taken |
+Re-check availability at purchase time (GoDaddy) and run a trademark search on the final pick (for our own brand).
+
 ## Not adopted (legal)
 - Fabricated testimonials/reviews: banned by the FTC rule (up to $51,744 per violation) and ad platform policies, and a risk to our shared ad accounts. Replaced by real-review collection and disclosed creator content.
 
@@ -34,9 +55,6 @@ Answer inline; agents treat answered items as rules.
 7. **First niche pack** after Masar: plumbers/HVAC, dentists, or other.
 8. **Contest**: season length (90 days proposed), grant pool % (3-5%), guaranteed minimum $.
 9. **Creator API provider**: Modash vs influencers.club vs Upfluence.
-10. **Domains for MVP**: connect-your-own + Entri Sell (recommended), or a reseller account now.
-13. **System-failure policy**: re-run free when a task crashes / never delivers (recommended), or charge regardless.
-14. **Ads default**: Mode 1 (our ad accounts, prepaid) for new users + Mode 2 for running businesses (recommended)?
-15. **Build tools**: Claude Code Max 20x + Codex as reviewer; keep or drop Lovable.
+10. **Build tools**: Claude Code Max 20x + Codex as reviewer; keep or drop Lovable.
 11. **Legal entity**: existing company or new (Stripe Atlas)?
 12. **Public metrics page**: which numbers are public from day one.

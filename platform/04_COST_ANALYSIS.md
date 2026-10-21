@@ -87,7 +87,7 @@ Supabase (state, memory, credits, KPIs)  +  Langfuse (traces)  +  R2 (media)
 | C. Registrar API on our account (Openprovider, GoDaddy reseller ~$10.69/yr .com wholesale, Namecheap API, NameSilo) | Yes | Full markup (e.g. +$3-5/yr + renewals) | Medium: deposit, support, renewals, transfers, disputes | Register in the **user's** name (Polsia registers in its own name first, and users complain) |
 | Hostinger | — | Affiliate commission only | — | No domain reseller API found. Hostinger is ending cPanel reseller hosting (renewals stop Oct 1 2026, shutdown Oct 1 2027). Not a fit for in-app domain sales |
 
-**Recommendation:** MVP = **A + B** (connect your own domain, or buy one in-app through Entri Sell). Move to **C** once domain volume justifies running a reseller account (roughly 500+ domains/yr). We do **not** need a reseller account to launch.
+**Decision (Oct 21 2026): C with GoDaddy reseller API**, plus A (connect a domain you already own). Full markup on registration and renewals from day one; domains registered in the user's name.
 
 ---
 
