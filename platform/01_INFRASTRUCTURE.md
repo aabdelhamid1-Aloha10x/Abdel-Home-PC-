@@ -151,9 +151,9 @@ Metrics: `kpis_daily` (per company), `site_events`.
 
 | Item | Why | Notes |
 |---|---|---|
-| Legal entity (LLC/C-corp), EIN, business bank | Required by Stripe, Meta business verification, registrar, Twilio | Stripe Atlas is available through the connected Stripe account |
+| Legal entity | Required by Stripe, Meta business verification, registrar, Twilio | DONE: Masar AI LLC (Delaware), EIN, bank, Stripe |
 | Meta: Business verification + App Review | Ads, Pages, Instagram messaging/publishing, lead ads, WhatsApp | Scopes such as ads_management, pages_messaging, instagram_manage_messages, instagram_content_publish, leads_retrieval, business_management, WhatsApp Tech Provider. Needs privacy policy, ToS, screencasts |
-| Google: OAuth verification + Google Ads API developer token | Business Profile, Calendar, Ads (sensitive scopes, one-time app verification) | **Never request Gmail scopes** (restricted = yearly CASA security assessment). Masar already hit the 100-user cap; start early |
+| Google Ads API developer token | Ads from our own MCC (Mode 1) | Still needed. OAuth app verification is **skipped at launch** (no Gmail, built-in calendar, ads via our own MCC); add only if we later connect users' Calendar / Business Profile / YouTube |
 | TikTok for Business / Content Posting API audit | TikTok ads + posting | Audit required for public posting |
 | YouTube Data API quota increase | Uploading Shorts/videos for tenants | Default quota is small |
 | X API paid tier | Posting + trend data | Grok covers trend reading |

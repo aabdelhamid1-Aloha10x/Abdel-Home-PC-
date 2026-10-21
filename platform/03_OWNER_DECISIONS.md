@@ -26,8 +26,15 @@ Answer inline; agents treat answered items as rules.
 - Domains: **GoDaddy reseller API** (+ connect your own domain).
 - Custom domains: **Cloudflare for SaaS**.
 - Sending email: **Amazon SES** (+ built-in dashboard inbox).
+- Legal entity: **Masar AI LLC (Delaware)**, existing EIN, bank and Stripe account. Platform runs as a product/DBA of Masar AI LLC for now. If raising VC later, form or convert to a Delaware C-corp (investors expect one).
+- Google OAuth verification: **skipped at launch.** No Gmail (SES + Cloudflare inbox), built-in booking calendar instead of Google Calendar sync, Google Ads run from our own MCC (Mode 1, only our account authorizes), YouTube build-in-public on our own channel. Verify later only if we add Google Calendar sync, Business Profile management or posting to users' YouTube channels (and when > 100 users connect them).
 
-## Name shortlist (Oct 21 2026, .com checked via Verisign RDAP; .ai checks partly rate-limited)
+## Name finalists: **Crewzero** (one word) vs Autopreneur
+- crewzero.ai, crewzero.app, crewzero.co available (Oct 21 2026); crewzero.com registered at GoDaddy since 2015 (expires 2027-01-15).
+- autopreneur.com/.ai/.app/.co all taken; the word is also widely used by others (books, courses), so weak as a trademark.
+- Recommendation: **Crewzero**.
+
+## Earlier name shortlist (Oct 21 2026, .com checked via Verisign RDAP; .ai checks partly rate-limited)
 | Name | Meaning | Domain status |
 |---|---|---|
 | **CrewZero** (recommended) | A full crew, zero employees | crewzero.ai available; getcrewzero.com available; crewzero.com taken |
@@ -56,5 +63,4 @@ Re-check availability at purchase time (GoDaddy) and run a trademark search on t
 8. **Contest**: season length (90 days proposed), grant pool % (3-5%), guaranteed minimum $.
 9. **Creator API provider**: Modash vs influencers.club vs Upfluence.
 10. **Build tools**: Claude Code Max 20x + Codex as reviewer; keep or drop Lovable.
-11. **Legal entity**: existing company or new (Stripe Atlas)?
 12. **Public metrics page**: which numbers are public from day one.
