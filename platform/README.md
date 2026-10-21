@@ -12,3 +12,4 @@ Unstaffd (unstaffd.com), a product of Masar AI Inc. Solo founder + AI, built in 
 | `05_LAUNCH_GTM_FUNDRAISING.md` | Where to list, launch funnel, viral loops, fundraising via build in public |
 | `06_KNOWLEDGE_BASE_AND_SCENARIOS.md` | How agents become experts (knowledge layers, research pipeline, expert roster) + 5 end-to-end user scenarios |
 | `07_TOOL_HUB_AND_CAPITAL_ENGINE.md` | Every tool behind one crew (capability hub), human-grade + legal conversation standard, capital-raising engine (clients and Unstaffd itself), owner involvement |
+| `08_BUILD_WITH_CLAUDE.md` | What the owner connects (repo, environment, accounts, keys, connectors), how we build and review together, and the company-formation service |

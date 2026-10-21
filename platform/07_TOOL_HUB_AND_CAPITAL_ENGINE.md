@@ -43,6 +43,8 @@ Rules:
 | Accounting | QuickBooks / Xero + our Finance agent | No |
 | Scheduling | Our own booking + calendar sync later | Yes |
 | Research | Perplexity, Exa, Grok, Similarweb, SparkToro | No |
+| Start a company (formation, EIN, registered agent, documents) | doola Formation API (primary), FileForms, Palm; Stripe Atlas as referral (no platform API) | No |
+| Business bank account | Mercury / similar via referral partnership | No (regulated) |
 
 Several of these are already connected in this workspace today (Clay, Blotato, ElevenLabs, HeyGen, Higgsfield, Canva, PandaDoc, DocuSign, Stripe, Meta Ads, Make), which makes prototyping fast.
 
