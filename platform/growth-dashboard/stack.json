@@ -1,0 +1,130 @@
+[
+ {
+  "id": "s01",
+  "category": "Data (trucking)",
+  "pick": "FMCSA Motor Carrier Census",
+  "status": "To add",
+  "monthly_cost": 0,
+  "note": "Public, free, monthly. Filter by power units and authority date"
+ },
+ {
+  "id": "s02",
+  "category": "Data (people, agencies)",
+  "pick": "Apollo inside Clay",
+  "status": "To add",
+  "monthly_cost": 99,
+  "note": "Or Clay's Apollo integration only"
+ },
+ {
+  "id": "s03",
+  "category": "Data (local businesses)",
+  "pick": "Google Maps via Apify",
+  "status": "To add",
+  "monthly_cost": 0,
+  "note": "Part of Apify usage"
+ },
+ {
+  "id": "s04",
+  "category": "Enrichment",
+  "pick": "Clay",
+  "status": "Connected",
+  "monthly_cost": 0,
+  "note": "Workspace Aloha Capital. Waterfall Apollo, Prospeo, Findymail"
+ },
+ {
+  "id": "s05",
+  "category": "Verification",
+  "pick": "MillionVerifier",
+  "status": "To add",
+  "monthly_cost": 37,
+  "note": "Per 10k; final gate before Instantly"
+ },
+ {
+  "id": "s06",
+  "category": "Scraping and signals",
+  "pick": "Apify",
+  "status": "To add",
+  "monthly_cost": 49,
+  "note": "Maps, LinkedIn posts, FB groups, YouTube, Trustpilot"
+ },
+ {
+  "id": "s07",
+  "category": "Website visitor identification",
+  "pick": "RB2B",
+  "status": "To add",
+  "monthly_cost": 0,
+  "note": "Free tier first"
+ },
+ {
+  "id": "s08",
+  "category": "Cold email",
+  "pick": "Instantly",
+  "status": "To add",
+  "monthly_cost": 97,
+  "note": "Plus 6 domains and 9 Google Workspace inboxes (~$75)"
+ },
+ {
+  "id": "s09",
+  "category": "LinkedIn",
+  "pick": "Manual-assist queue (no automation)",
+  "status": "Connected",
+  "monthly_cost": 0,
+  "note": "Claude drafts into GHL tasks; you send 15 a day"
+ },
+ {
+  "id": "s10",
+  "category": "Personal video",
+  "pick": "HeyGen via HyperFrames",
+  "status": "Connected",
+  "monthly_cost": 0,
+  "note": "Top 10% of Masar fleets, every partner"
+ },
+ {
+  "id": "s11",
+  "category": "Voice",
+  "pick": "Vapi + ElevenLabs",
+  "status": "Connected",
+  "monthly_cost": 0,
+  "note": "Inbound and consented follow-up only"
+ },
+ {
+  "id": "s12",
+  "category": "Automation",
+  "pick": "Make",
+  "status": "Connected",
+  "monthly_cost": 29,
+  "note": "Ops tier grows with volume"
+ },
+ {
+  "id": "s13",
+  "category": "CRM, calendar, SMS, nurture",
+  "pick": "GoHighLevel",
+  "status": "Connected",
+  "monthly_cost": 0,
+  "note": "Existing account; 2 sub-accounts"
+ },
+ {
+  "id": "s14",
+  "category": "Posting and DMs",
+  "pick": "Blotato",
+  "status": "Connected",
+  "monthly_cost": 0,
+  "note": "12 accounts connected"
+ },
+ {
+  "id": "s15",
+  "category": "Ads",
+  "pick": "Meta Ads API",
+  "status": "Connected",
+  "monthly_cost": 0,
+  "note": "Unstaffd Ads account active; Masar from its own account"
+ },
+ {
+  "id": "s16",
+  "category": "Dashboard",
+  "pick": "Growth Command Center",
+  "status": "Connected",
+  "monthly_cost": 0,
+  "note": "This page"
+ }
+]

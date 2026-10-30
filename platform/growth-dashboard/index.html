@@ -1,0 +1,312 @@
+<meta name="dash-one-writer">
+<style>
+.gc{display:flex;flex-direction:column;gap:var(--cds-gap-lg);font-family:var(--font-anthropic-sans)}
+.gc h1{font-family:var(--font-anthropic-serif);font-weight:400;font-size:var(--cds-font-size-title);margin:0}
+.gc h2{font-size:var(--cds-font-size-heading);font-weight:var(--cds-font-weight-medium);margin:0}
+.gc .take,.gc .note{color:var(--color-fg-muted);margin:0;font-size:var(--cds-font-size-caption)}
+.gc .take{font-size:var(--cds-font-size-body)}
+.gc .sec{display:flex;flex-direction:column;gap:var(--cds-gap-sm)}
+.gc .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,20rem),1fr));gap:var(--cds-gap-md)}
+.gc .card{background:var(--color-panel);border:1px solid var(--color-border-line);border-radius:var(--cds-radius);padding:var(--cds-pad-lg);min-width:0;display:flex;flex-direction:column;gap:var(--cds-gap-sm)}
+.gc .card h3{margin:0;font-size:var(--cds-font-size-heading);font-weight:var(--cds-font-weight-medium)}
+.gc .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,8.5rem),1fr));gap:var(--cds-gap-md)}
+.gc .tile .lbl,.gc .tile .tgt{font-size:var(--cds-font-size-caption);color:var(--color-fg-muted)}
+.gc .tile .num{font-family:var(--font-anthropic-serif);font-size:var(--cds-font-size-title);font-variant-numeric:tabular-nums;line-height:1.1}
+.gc .tile .num b{font-weight:400}
+.gc .tw{overflow-x:auto}
+.gc table{width:100%;border-collapse:collapse;font-size:var(--cds-font-size-body);font-variant-numeric:tabular-nums}
+.gc th{text-align:left;font-weight:var(--cds-font-weight-medium);color:var(--color-fg-muted);font-size:var(--cds-font-size-caption);padding:var(--cds-pad-xs) var(--cds-pad-sm);border-bottom:1px solid var(--color-border-line);white-space:nowrap}
+.gc td{padding:var(--cds-pad-xs) var(--cds-pad-sm);border-bottom:1px solid var(--color-border-line);vertical-align:top}
+.gc td.n{text-align:right;white-space:nowrap}
+.gc .chip{display:inline-block;padding:0 .55em;border-radius:999px;font-size:var(--cds-font-size-caption);border:1px solid var(--color-border-line);white-space:nowrap;color:var(--color-fg-muted)}
+.gc .chip.live,.gc .chip.connected,.gc .chip.done{color:var(--color-ok);border-color:currentColor}
+.gc .chip.building,.gc .chip.open,.gc .chip.to-add{color:var(--color-warn);border-color:currentColor}
+.gc .chip.blocked{color:var(--color-bad);border-color:currentColor}
+.gc .chip.ready{color:var(--color-fg)}
+.gc .chart{min-height:220px;position:relative}
+.gc .tip{position:absolute;pointer-events:none;background:var(--cds-surface-popover);border:1px solid var(--cds-border);border-radius:var(--cds-radius);box-shadow:var(--cds-shadow-popover);padding:var(--cds-pad-xs) var(--cds-pad-sm);font-size:var(--cds-font-size-caption);white-space:nowrap}
+.gc .funnel{display:flex;flex-direction:column;gap:var(--cds-gap-xs);min-height:120px}
+.gc .frow{display:grid;grid-template-columns:9rem 1fr 3rem;gap:var(--cds-gap-sm);align-items:center;font-size:var(--cds-font-size-caption)}
+.gc .fbar{height:18px;border-radius:var(--cds-radius);background:var(--cds-chart-muted);position:relative;overflow:hidden}
+.gc .fbar i{position:absolute;left:0;top:0;bottom:0;background:var(--cds-chart-fill,currentColor)}
+.gc .fv{text-align:right;font-variant-numeric:tabular-nums}
+.gc .legend{display:flex;gap:var(--cds-gap-md);font-size:var(--cds-font-size-caption);color:var(--color-fg-muted);flex-wrap:wrap}
+.gc .sw{display:inline-block;width:.8em;height:.8em;border-radius:2px;vertical-align:-1px;margin-right:.35em}
+.gc .sw.t{border-top:2px dashed var(--cds-chart-reference);height:0;border-radius:0}
+.gc .scroll{max-height:26rem;overflow:auto}
+.gc .scroll th{position:sticky;top:0;background:var(--color-panel)}
+[data-dash-source-state=empty]{color:transparent}
+[data-dash-source-state=refreshing]{opacity:.5;transition:opacity var(--cds-dur-slow)}
+</style>
+
+<div class="gc">
+  <header class="sec" id="top">
+    <h1>Growth Command Center</h1>
+    <p class="take">Week <b data-draw="wk" data-source="latest" data-where="product=masar" data-field="week">—</b> of 13 for Unstaffd and Masar OS. Rollout: <b data-draw="done" data-source="progress" data-where="scope=all" data-field="done">—</b> of <b data-draw="total" data-source="progress" data-where="scope=all" data-field="total">—</b> tasks done. Actuals as of <b data-draw="asof" data-source="latest" data-where="product=masar" data-field="as_of">—</b>; numbers below are the plan's baseline until the nightly feed is connected.</p>
+  </header>
+
+  <section class="sec" id="north">
+    <h2>North stars, last 7 days</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Masar OS (trucking back office)</h3>
+        <div class="tiles">
+          <div class="tile"><div class="lbl">Demos booked</div><div class="num"><b class="dash-skeleton" data-draw="m_demos" data-source="latest" data-where="product=masar" data-field="demos_7d">—</b></div><div class="tgt">target this week <b data-draw="m_demos_t" data-source="latest" data-where="product=masar" data-field="demos_target_wk">—</b></div></div>
+          <div class="tile"><div class="lbl">Paying fleets</div><div class="num"><b class="dash-skeleton" data-draw="m_paid" data-source="latest" data-where="product=masar" data-field="paid_7d">—</b></div><div class="tgt">target this week <b data-draw="m_paid_t" data-source="latest" data-where="product=masar" data-field="paid_target_wk">—</b></div></div>
+          <div class="tile"><div class="lbl">Positive replies</div><div class="num"><b class="dash-skeleton" data-draw="m_pos" data-source="latest" data-where="product=masar" data-field="positive_7d">—</b></div><div class="tgt">from <b data-draw="m_sends" data-source="latest" data-where="product=masar" data-field="sends_7d">—</b> sends</div></div>
+          <div class="tile"><div class="lbl">Speed to lead, seconds</div><div class="num"><b class="dash-skeleton" data-draw="m_speed" data-source="latest" data-where="product=masar" data-field="speed_s">—</b></div><div class="tgt">goal under 60</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Unstaffd (pre-launch)</h3>
+        <div class="tiles">
+          <div class="tile"><div class="lbl">Waitlist, total</div><div class="num"><b class="dash-skeleton" data-draw="u_wait" data-source="latest" data-where="product=unstaffd" data-field="waitlist_total">—</b></div><div class="tgt">target by this week <b data-draw="u_wait_t" data-source="latest" data-where="product=unstaffd" data-field="waitlist_target">—</b></div></div>
+          <div class="tile"><div class="lbl">Founding members</div><div class="num"><b class="dash-skeleton" data-draw="u_found" data-source="latest" data-where="product=unstaffd" data-field="founding_total">—</b></div><div class="tgt">target <b data-draw="u_found_t" data-source="latest" data-where="product=unstaffd" data-field="founding_target">—</b></div></div>
+          <div class="tile"><div class="lbl">Partners signed</div><div class="num"><b class="dash-skeleton" data-draw="u_part" data-source="latest" data-where="product=unstaffd" data-field="partners_total">—</b></div><div class="tgt">target <b data-draw="u_part_t" data-source="latest" data-where="product=unstaffd" data-field="partners_target">—</b></div></div>
+          <div class="tile"><div class="lbl">Ad spend, $</div><div class="num"><b class="dash-skeleton" data-draw="u_spend" data-source="latest" data-where="product=unstaffd" data-field="ad_spend_7d">—</b></div><div class="tgt">leads <b data-draw="u_leads" data-source="latest" data-where="product=unstaffd" data-field="leads_7d">—</b></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="today">
+    <h2>Today: decisions and the human queue</h2>
+    <p class="note">Everything else runs without you. Decisions wait for a yes or no; queue items take under 15 minutes.</p>
+    <div class="card tw">
+      <table data-source="queue" data-row-key="id">
+        <thead><tr><th data-field="kind">Type</th><th data-field="item">Item</th><th data-field="product">Product</th><th data-field="owner">Owner</th><th data-field="status">Status</th></tr></thead>
+        <tbody data-draw="queue"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="sec" id="trend">
+    <h2>Plan versus actual, by program week</h2>
+    <div class="legend"><span><i class="sw" style="background:var(--cds-chart-fill,currentColor)"></i>actual</span><span><i class="sw t"></i>target</span></div>
+    <div class="grid">
+      <div class="card"><h3>Masar demos booked per week</h3><p class="note">Bars are demos booked that week. First sends start in week 3.</p><div class="chart" data-draw="chart_masar" data-source="weekly"></div></div>
+      <div class="card"><h3>Unstaffd waitlist, cumulative</h3><p class="note">Bars are the running total of waitlist members. Idea-score page goes live in week 3.</p><div class="chart" data-draw="chart_unstaffd" data-source="weekly"></div></div>
+    </div>
+  </section>
+
+  <section class="sec" id="funnel">
+    <h2>Funnels, last 7 days</h2>
+    <p class="note">Zeros until the first engine goes live. The step with the biggest loss is what the daily brief will point at.</p>
+    <div class="grid">
+      <div class="card"><h3>Masar: lead to paid</h3><div class="funnel" data-draw="funnel_masar" data-source="funnel"></div></div>
+      <div class="card"><h3>Unstaffd: lead to founding member</h3><div class="funnel" data-draw="funnel_unstaffd" data-source="funnel"></div></div>
+    </div>
+  </section>
+
+  <section class="sec" id="engines">
+    <h2>Engine scorecard</h2>
+    <p class="note">Six engines per product. Ready means the tools are connected and the flow is not built yet. Health thresholds come from the plan and will be re-set at day 30.</p>
+    <div class="card tw">
+      <table data-source="engines" data-row-key="id">
+        <thead><tr><th data-field="product">Product</th><th data-field="engine">Engine</th><th data-field="status">Status</th><th data-field="tools">Tools</th><th data-field="metric">Daily metric</th><th data-field="threshold">Healthy when</th></tr></thead>
+        <tbody data-draw="engines"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="sec" id="rollout">
+    <h2>90-day rollout</h2>
+    <p class="note">Week 1 starts Monday, November 3, 2026. Done tasks turn green; the header counts them.</p>
+    <div class="card tw scroll">
+      <table data-source="rollout" data-row-key="id">
+        <thead><tr><th data-field="week">Week</th><th data-field="task">Task</th><th data-field="product">Product</th><th data-field="status">Status</th><th data-field="exit">Exit criterion</th></tr></thead>
+        <tbody data-draw="rollout"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="sec" id="stack">
+    <h2>The stack, one tool per category</h2>
+    <p class="note">New tools total about <b data-draw="stack_cost" data-source="stackcost" data-where="scope=all" data-field="monthly_total">—</b> dollars a month before ads and usage.</p>
+    <div class="card tw">
+      <table data-source="stack" data-row-key="id">
+        <thead><tr><th data-field="category">Category</th><th data-field="pick">Pick</th><th data-field="status">Status</th><th data-field="monthly_cost">$/month</th><th data-field="note">Note</th></tr></thead>
+        <tbody data-draw="stack"></tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+dash.calc('weekly', {
+  inputs: ['targets', 'actuals'],
+  title: 'Weekly actuals vs targets',
+  description: 'Sums the daily actuals into each program week and places them beside that week\'s target.',
+  fn: (targets, actuals) => {
+    const starts = [...new Set(targets.map((t) => t.week_start))].sort();
+    const wk = (d) => starts.filter((s) => s <= d).length;
+    const sum = (rs, f) => rs.reduce((n, r) => n + Number(r[f] || 0), 0);
+    return targets.map((t) => {
+      const w = Number(t.week);
+      const rows = actuals.filter((a) => a.product === t.product && wk(a.day) === w);
+      const cum = actuals.filter((a) => a.product === t.product && wk(a.day) <= w);
+      return {product: t.product, week: w, week_start: t.week_start,
+        demos: sum(rows, 'demos_booked'), demos_target: Number(t.demos_wk),
+        paid: sum(rows, 'paid_customers'), paid_target: Number(t.paid_wk),
+        waitlist_cum: sum(cum, 'waitlist_added'), waitlist_target: Number(t.waitlist_cum),
+        founding_cum: sum(cum, 'founding_added'), founding_target: Number(t.founding_cum),
+        partners_cum: sum(cum, 'partners_signed'), partners_target: Number(t.partners_cum)};
+    });
+  }
+});
+
+dash.calc('latest', {
+  inputs: ['actuals', 'targets'],
+  title: 'Last 7 days by product',
+  description: 'Sums the last 7 recorded days per product and adds the target of the current program week.',
+  fn: (actuals, targets) => {
+    const starts = [...new Set(targets.map((t) => t.week_start))].sort();
+    const wk = (d) => starts.filter((s) => s <= d).length;
+    return ['masar', 'unstaffd'].map((p) => {
+      const rows = actuals.filter((a) => a.product === p).sort((a, b) => (a.day < b.day ? -1 : 1));
+      const last = rows[rows.length - 1];
+      const lastDay = last ? last.day : '';
+      const w = Math.min(13, wk(lastDay));
+      const tw = targets.find((t) => t.product === p && Number(t.week) === Math.max(1, w)) || {};
+      const cutoff = lastDay ? new Date(Date.UTC(+lastDay.slice(0, 4), +lastDay.slice(5, 7) - 1, +lastDay.slice(8, 10) - 6)).toISOString().slice(0, 10) : '';
+      const recent = rows.filter((r) => r.day >= cutoff);
+      const sum = (f) => recent.reduce((n, r) => n + Number(r[f] || 0), 0);
+      const cum = (f) => rows.reduce((n, r) => n + Number(r[f] || 0), 0);
+      return {product: p, as_of: lastDay, week: w,
+        demos_7d: sum('demos_booked'), demos_target_wk: Number(tw.demos_wk || 0),
+        paid_7d: sum('paid_customers'), paid_target_wk: Number(tw.paid_wk || 0),
+        positive_7d: sum('positive_replies'), sends_7d: sum('sends'), leads_7d: sum('leads_total'),
+        waitlist_total: cum('waitlist_added'), waitlist_target: Number(tw.waitlist_cum || 0),
+        founding_total: cum('founding_added'), founding_target: Number(tw.founding_cum || 0),
+        partners_total: cum('partners_signed'), partners_target: Number(tw.partners_cum || 0),
+        ad_spend_7d: sum('ad_spend'), speed_s: last ? Number(last.speed_to_lead_s || 0) : 0};
+    });
+  }
+});
+
+dash.calc('funnel', {
+  inputs: ['latest'],
+  title: 'Funnel steps, last 7 days',
+  description: 'Reads the last-7-day sums per product as ordered funnel steps.',
+  fn: (latest) => {
+    const m = latest.find((r) => r.product === 'masar') || {};
+    const u = latest.find((r) => r.product === 'unstaffd') || {};
+    return [
+      {product: 'masar', order: 1, stage: 'Leads', n: Number(m.leads_7d || 0)},
+      {product: 'masar', order: 2, stage: 'Demos booked', n: Number(m.demos_7d || 0)},
+      {product: 'masar', order: 3, stage: 'Paying fleets', n: Number(m.paid_7d || 0)},
+      {product: 'unstaffd', order: 1, stage: 'Leads', n: Number(u.leads_7d || 0)},
+      {product: 'unstaffd', order: 2, stage: 'Waitlist, total', n: Number(u.waitlist_total || 0)},
+      {product: 'unstaffd', order: 3, stage: 'Founding members', n: Number(u.founding_total || 0)}
+    ];
+  }
+});
+
+dash.calc('progress', {
+  inputs: ['rollout'],
+  title: 'Rollout progress',
+  description: 'Counts rollout tasks and how many are marked Done.',
+  fn: (rollout) => [{scope: 'all', total: rollout.length, done: rollout.filter((r) => String(r.status).toLowerCase() === 'done').length}]
+});
+
+dash.calc('stackcost', {
+  inputs: ['stack'],
+  title: 'New tool cost per month',
+  description: 'Adds the monthly cost of every stack row.',
+  fn: (stack) => [{scope: 'all', monthly_total: stack.reduce((n, r) => n + Number(r.monthly_cost || 0), 0)}]
+});
+
+const findRow = (g, where) => (g.status === 'ok' ? (g.data || []).find((r) => Object.entries(where).every(([k, v]) => String(r[k]) === String(v))) : null);
+const num = (name, src, where, field) => dash.draw(name, (el) => {
+  const g = dash.data(src);
+  el.classList.toggle('dash-skeleton', g.status === 'loading');
+  const row = findRow(g, where);
+  el.textContent = row && row[field] != null && row[field] !== '' ? String(row[field]) : '—';
+});
+num('wk', 'latest', {product: 'masar'}, 'week');
+num('asof', 'latest', {product: 'masar'}, 'as_of');
+num('done', 'progress', {scope: 'all'}, 'done');
+num('total', 'progress', {scope: 'all'}, 'total');
+num('stack_cost', 'stackcost', {scope: 'all'}, 'monthly_total');
+[['m_demos', 'demos_7d'], ['m_demos_t', 'demos_target_wk'], ['m_paid', 'paid_7d'], ['m_paid_t', 'paid_target_wk'], ['m_pos', 'positive_7d'], ['m_sends', 'sends_7d'], ['m_speed', 'speed_s']]
+  .forEach(([n, f]) => num(n, 'latest', {product: 'masar'}, f));
+[['u_wait', 'waitlist_total'], ['u_wait_t', 'waitlist_target'], ['u_found', 'founding_total'], ['u_found_t', 'founding_target'], ['u_part', 'partners_total'], ['u_part_t', 'partners_target'], ['u_spend', 'ad_spend_7d'], ['u_leads', 'leads_7d']]
+  .forEach(([n, f]) => num(n, 'latest', {product: 'unstaffd'}, f));
+
+const chipClass = (v) => 'chip ' + String(v).toLowerCase().trim().replace(/\s+/g, '-');
+const fillTable = (tbody, src, cols, opts) => {
+  const g = dash.data(src);
+  if (g.status !== 'ok') { tbody.replaceChildren(); return; }
+  const rows = opts.sort ? [...g.data].sort(opts.sort) : g.data;
+  tbody.replaceChildren(...rows.map((r) => {
+    const tr = document.createElement('tr');
+    tr.dataset.key = String(r.id);
+    cols.forEach((c) => {
+      const td = document.createElement('td');
+      if (c === 'status') { const s = document.createElement('span'); s.className = chipClass(r[c]); s.textContent = String(r[c]); td.append(s); }
+      else { td.textContent = r[c] == null ? '' : String(r[c]); if (opts.numeric && opts.numeric.includes(c)) td.className = 'n'; }
+      tr.append(td);
+    });
+    return tr;
+  }));
+};
+dash.draw('queue', (tb) => fillTable(tb, 'queue', ['kind', 'item', 'product', 'owner', 'status'], {}));
+dash.draw('engines', (tb) => fillTable(tb, 'engines', ['product', 'engine', 'status', 'tools', 'metric', 'threshold'], {}));
+dash.draw('rollout', (tb) => fillTable(tb, 'rollout', ['week', 'task', 'product', 'status', 'exit'], {numeric: ['week'], sort: (a, b) => Number(a.week) - Number(b.week) || (a.id < b.id ? -1 : 1)}));
+dash.draw('stack', (tb) => fillTable(tb, 'stack', ['category', 'pick', 'status', 'monthly_cost', 'note'], {numeric: ['monthly_cost']}));
+
+function weeklyChart(el, product, actualKey, targetKey, label) {
+  el.replaceChildren();
+  const g = dash.data('weekly');
+  if (g.status !== 'ok') { el.textContent = '—'; return; }
+  const rows = g.data.filter((r) => r.product === product).sort((a, b) => a.week - b.week);
+  const W = Math.max(240, el.clientWidth || 240), H = 220, m = {t: 12, r: 12, b: 28, l: 44};
+  const x = d3.scaleBand(rows.map((r) => r.week), [m.l, W - m.r]).padding(0.25);
+  const ymax = d3.max(rows, (r) => Math.max(r[actualKey], r[targetKey])) || 1;
+  const y = d3.scaleLinear([0, ymax * 1.1], [H - m.b, m.t]);
+  const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', label);
+  const yt = y.ticks(4);
+  svg.append('g').selectAll('line').data(yt).join('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', (d) => y(d)).attr('y2', (d) => y(d)).attr('stroke', 'var(--cds-chart-grid)');
+  svg.append('g').selectAll('text').data(yt).join('text').attr('x', m.l - 6).attr('y', (d) => y(d) + 3).attr('text-anchor', 'end').attr('fill', 'var(--color-fg-muted)').attr('font-size', 11).text((d) => d3.format(',')(d));
+  const every = rows.length > 8 && W < 420 ? 2 : 1;
+  svg.append('g').selectAll('text').data(rows.filter((r, i) => i % every === 0)).join('text').attr('x', (r) => x(r.week) + x.bandwidth() / 2).attr('y', H - 8).attr('text-anchor', 'middle').attr('fill', 'var(--color-fg-muted)').attr('font-size', 11).text((r) => 'W' + r.week);
+  svg.append('g').selectAll('rect').data(rows).join('rect').attr('x', (r) => x(r.week)).attr('y', (r) => y(r[actualKey])).attr('width', x.bandwidth()).attr('height', (r) => Math.max(0, y(0) - y(r[actualKey]))).attr('rx', 3).attr('fill', dash.colors[0]);
+  const line = d3.line().x((r) => x(r.week) + x.bandwidth() / 2).y((r) => y(r[targetKey]));
+  svg.append('path').attr('d', line(rows)).attr('fill', 'none').attr('stroke', 'var(--cds-chart-reference)').attr('stroke-width', 2).attr('stroke-dasharray', '4 4');
+  svg.append('g').selectAll('circle').data(rows).join('circle').attr('cx', (r) => x(r.week) + x.bandwidth() / 2).attr('cy', (r) => y(r[targetKey])).attr('r', 2.5).attr('fill', 'var(--cds-chart-reference)');
+  const tip = document.createElement('div'); tip.className = 'tip'; tip.hidden = true;
+  svg.append('g').selectAll('rect.hit').data(rows).join('rect').attr('class', 'hit').attr('x', (r) => x(r.week)).attr('y', m.t).attr('width', x.bandwidth()).attr('height', H - m.t - m.b).attr('fill', 'transparent')
+    .on('pointermove', (ev, r) => {
+      tip.hidden = false;
+      tip.textContent = `Week ${r.week} (${r.week_start}): ${label} ${d3.format(',')(r[actualKey])}, target ${d3.format(',')(r[targetKey])}`;
+      const b = el.getBoundingClientRect();
+      tip.style.left = Math.max(0, Math.min(ev.clientX - b.left + 10, b.width - 230)) + 'px';
+      tip.style.top = Math.max(0, ev.clientY - b.top - 32) + 'px';
+    })
+    .on('pointerleave', () => { tip.hidden = true; });
+  el.append(svg.node(), tip);
+}
+dash.draw('chart_masar', (el) => weeklyChart(el, 'masar', 'demos', 'demos_target', 'demos'));
+dash.draw('chart_unstaffd', (el) => weeklyChart(el, 'unstaffd', 'waitlist_cum', 'waitlist_target', 'waitlist'));
+
+function funnel(el, product) {
+  el.replaceChildren();
+  const g = dash.data('funnel');
+  if (g.status !== 'ok') { el.textContent = '—'; return; }
+  const rows = g.data.filter((r) => r.product === product).sort((a, b) => a.order - b.order);
+  const max = d3.max(rows, (r) => r.n) || 1;
+  rows.forEach((r, i) => {
+    const row = document.createElement('div'); row.className = 'frow';
+    const name = document.createElement('span'); name.textContent = r.stage;
+    const bar = document.createElement('div'); bar.className = 'fbar';
+    const fill = document.createElement('i'); fill.style.width = (100 * r.n / max) + '%'; fill.style.background = dash.colors[0]; bar.append(fill);
+    const v = document.createElement('span'); v.className = 'fv'; v.textContent = d3.format(',')(r.n);
+    const prev = rows[i - 1];
+    if (prev && prev.n > 0 && r.n / prev.n < 0.5) v.style.color = 'var(--color-bad)';
+    row.append(name, bar, v);
+    el.append(row);
+  });
+}
+dash.draw('funnel_masar', (el) => funnel(el, 'masar'));
+dash.draw('funnel_unstaffd', (el) => funnel(el, 'unstaffd'));
+</script>

@@ -1,0 +1,82 @@
+[
+ {
+  "id": "q01",
+  "kind": "Decision",
+  "item": "Approve the plan in platform/09_GROWTH_ENGINE.md",
+  "product": "both",
+  "owner": "Abdel",
+  "status": "Open"
+ },
+ {
+  "id": "q02",
+  "kind": "Decision",
+  "item": "Masar sender identity: Abdel (founder) for fleets and partners, team persona for nurture",
+  "product": "masar",
+  "owner": "Abdel",
+  "status": "Open"
+ },
+ {
+  "id": "q03",
+  "kind": "Decision",
+  "item": "Starting ad budgets: Masar $1,000/mo, Unstaffd $1,500/mo; approval threshold 30% day-budget change",
+  "product": "both",
+  "owner": "Abdel",
+  "status": "Open"
+ },
+ {
+  "id": "q04",
+  "kind": "Decision",
+  "item": "Affiliate terms: 30% recurring for 12 months",
+  "product": "both",
+  "owner": "Abdel",
+  "status": "Open"
+ },
+ {
+  "id": "q05",
+  "kind": "Decision",
+  "item": "First metros and categories for the local-business audit: Houston and Dallas; plumbers and dentists",
+  "product": "unstaffd",
+  "owner": "Abdel",
+  "status": "Open"
+ },
+ {
+  "id": "q06",
+  "kind": "Decision",
+  "item": "growth_daily lives in a Google Sheet first, Supabase at Unstaffd MVP",
+  "product": "both",
+  "owner": "Abdel",
+  "status": "Open"
+ },
+ {
+  "id": "q07",
+  "kind": "Decision",
+  "item": "Switch on the 6:30 am ET daily brief as a scheduled Claude task",
+  "product": "both",
+  "owner": "Abdel",
+  "status": "Open"
+ },
+ {
+  "id": "q08",
+  "kind": "Queue",
+  "item": "Meta: A&H Logistics Corp Ad and Investment 2025 accounts are UNSETTLED; Investors old account DISABLED. Settle or retire before any Masar campaign",
+  "product": "masar",
+  "owner": "Abdel",
+  "status": "Open"
+ },
+ {
+  "id": "q09",
+  "kind": "Queue",
+  "item": "Buy 6 secondary sending domains (3 per product) so warm-up starts this week",
+  "product": "both",
+  "owner": "Abdel",
+  "status": "Open"
+ },
+ {
+  "id": "q10",
+  "kind": "Queue",
+  "item": "Record the first 20-30 minutes of raw video (Masar story and Unstaffd build) for the content engine",
+  "product": "both",
+  "owner": "Abdel",
+  "status": "Open"
+ }
+]

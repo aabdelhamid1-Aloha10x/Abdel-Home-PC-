@@ -1,0 +1,110 @@
+[
+ {
+  "id": "masar-E1",
+  "product": "masar",
+  "engine": "E1 Outbound email",
+  "status": "Not started",
+  "tools": "FMCSA + Clay + MillionVerifier + Instantly",
+  "metric": "Positive replies / week",
+  "threshold": "Reply > 2%, bounce < 2%"
+ },
+ {
+  "id": "masar-E2",
+  "product": "masar",
+  "engine": "E2 Content and comment-to-DM",
+  "status": "Ready",
+  "tools": "Blotato + ElevenLabs + HyperFrames + VidIQ",
+  "metric": "DMs started / week",
+  "threshold": "DM to lead > 25%"
+ },
+ {
+  "id": "masar-E3",
+  "product": "masar",
+  "engine": "E3 Free tools and SEO",
+  "status": "Not started",
+  "tools": "Lovable pages + GHL forms",
+  "metric": "Emails captured / week",
+  "threshold": "Capture > 8%"
+ },
+ {
+  "id": "masar-E4",
+  "product": "masar",
+  "engine": "E4 Paid",
+  "status": "Not started",
+  "tools": "Meta Ads API + RB2B retargeting",
+  "metric": "Cost per lead",
+  "threshold": "Masar CPL < $40; Unstaffd < $4 per waitlist"
+ },
+ {
+  "id": "masar-E5",
+  "product": "masar",
+  "engine": "E5 Creators and affiliates",
+  "status": "Not started",
+  "tools": "Apify + Clay + Instantly + PandaDoc",
+  "metric": "Partners signed",
+  "threshold": "1 signed per 20 contacted"
+ },
+ {
+  "id": "masar-E6",
+  "product": "masar",
+  "engine": "E6 Speed-to-lead and follow-up",
+  "status": "Ready",
+  "tools": "GHL workflows + Vapi + ElevenLabs",
+  "metric": "Median seconds to first touch",
+  "threshold": "< 60 s; show rate > 65%"
+ },
+ {
+  "id": "unstaffd-E1",
+  "product": "unstaffd",
+  "engine": "E1 Outbound email",
+  "status": "Not started",
+  "tools": "FMCSA + Clay + MillionVerifier + Instantly",
+  "metric": "Positive replies / week",
+  "threshold": "Reply > 2%, bounce < 2%"
+ },
+ {
+  "id": "unstaffd-E2",
+  "product": "unstaffd",
+  "engine": "E2 Content and comment-to-DM",
+  "status": "Ready",
+  "tools": "Blotato + ElevenLabs + HyperFrames + VidIQ",
+  "metric": "DMs started / week",
+  "threshold": "DM to lead > 25%"
+ },
+ {
+  "id": "unstaffd-E3",
+  "product": "unstaffd",
+  "engine": "E3 Free tools and SEO",
+  "status": "Not started",
+  "tools": "Lovable pages + GHL forms",
+  "metric": "Emails captured / week",
+  "threshold": "Capture > 8%"
+ },
+ {
+  "id": "unstaffd-E4",
+  "product": "unstaffd",
+  "engine": "E4 Paid",
+  "status": "Ready",
+  "tools": "Meta Ads API + RB2B retargeting",
+  "metric": "Cost per lead",
+  "threshold": "Masar CPL < $40; Unstaffd < $4 per waitlist"
+ },
+ {
+  "id": "unstaffd-E5",
+  "product": "unstaffd",
+  "engine": "E5 Creators and affiliates",
+  "status": "Not started",
+  "tools": "Apify + Clay + Instantly + PandaDoc",
+  "metric": "Partners signed",
+  "threshold": "1 signed per 20 contacted"
+ },
+ {
+  "id": "unstaffd-E6",
+  "product": "unstaffd",
+  "engine": "E6 Speed-to-lead and follow-up",
+  "status": "Ready",
+  "tools": "GHL workflows + Vapi + ElevenLabs",
+  "metric": "Median seconds to first touch",
+  "threshold": "< 60 s; show rate > 65%"
+ }
+]

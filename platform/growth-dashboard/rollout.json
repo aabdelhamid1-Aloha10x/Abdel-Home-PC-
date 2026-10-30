@@ -1,0 +1,234 @@
+[
+ {
+  "id": "r01",
+  "week": 1,
+  "task": "Buy 6 secondary domains, create 9 inboxes, start Instantly warm-up",
+  "product": "both",
+  "status": "Open",
+  "exit": "Warm-up running 14 days before first send"
+ },
+ {
+  "id": "r02",
+  "week": 1,
+  "task": "GoHighLevel sub-accounts (Masar, Unstaffd): pipelines, calendars, A2P 10DLC",
+  "product": "both",
+  "status": "Open",
+  "exit": "Test lead moves through the pipeline"
+ },
+ {
+  "id": "r03",
+  "week": 1,
+  "task": "RB2B pixel on masar10x.io and unstaffd.com",
+  "product": "both",
+  "status": "Open",
+  "exit": "First identified visitor in GHL"
+ },
+ {
+  "id": "r04",
+  "week": 1,
+  "task": "Apify and MillionVerifier accounts, keys in Make",
+  "product": "both",
+  "status": "Open",
+  "exit": "One actor run and one verification pass"
+ },
+ {
+  "id": "r05",
+  "week": 1,
+  "task": "Import FMCSA census into Clay; filter 3-25 power units, authority under 36 months",
+  "product": "masar",
+  "status": "Open",
+  "exit": "Table with fit score"
+ },
+ {
+  "id": "r06",
+  "week": 1,
+  "task": "growth_daily Google Sheet + Make nightly reporting scenario; dashboard switched to live",
+  "product": "both",
+  "status": "Open",
+  "exit": "Dashboard shows real zeros from the sheet"
+ },
+ {
+  "id": "r07",
+  "week": 2,
+  "task": "Clay tables scored with first lines: Masar fleets, Unstaffd local, Partners",
+  "product": "both",
+  "status": "Open",
+  "exit": "3 tables scored"
+ },
+ {
+  "id": "r08",
+  "week": 2,
+  "task": "Blotato comment-to-DM automations on Instagram and Facebook",
+  "product": "both",
+  "status": "Open",
+  "exit": "Keyword comment triggers DM with link"
+ },
+ {
+  "id": "r09",
+  "week": 2,
+  "task": "First two raw recordings; 20 posts scheduled across all accounts",
+  "product": "both",
+  "status": "Open",
+  "exit": "Posts live on schedule"
+ },
+ {
+  "id": "r10",
+  "week": 2,
+  "task": "Vapi speed-to-lead assistant wired to GHL",
+  "product": "both",
+  "status": "Open",
+  "exit": "Test lead reaches phone in under 60 s"
+ },
+ {
+  "id": "r11",
+  "week": 3,
+  "task": "First Masar sends, ramp to 50 per day per inbox",
+  "product": "masar",
+  "status": "Open",
+  "exit": "First replies and first demo booked"
+ },
+ {
+  "id": "r12",
+  "week": 3,
+  "task": "Partner outreach batch 1: 50 creators, 30 agencies",
+  "product": "unstaffd",
+  "status": "Open",
+  "exit": "First partner call booked"
+ },
+ {
+  "id": "r13",
+  "week": 3,
+  "task": "Free idea-score page and waitlist live",
+  "product": "unstaffd",
+  "status": "Open",
+  "exit": "First 50 waitlist members"
+ },
+ {
+  "id": "r14",
+  "week": 3,
+  "task": "Meta: 20 Unstaffd variants, 10 Masar lead-form variants",
+  "product": "both",
+  "status": "Open",
+  "exit": "CPL measured on each"
+ },
+ {
+  "id": "r15",
+  "week": 4,
+  "task": "Reply triage tuned on real replies",
+  "product": "both",
+  "status": "Open",
+  "exit": "Under 5% misrouted"
+ },
+ {
+  "id": "r16",
+  "week": 4,
+  "task": "Nightly ad rotation live (pause losers, scale winners)",
+  "product": "both",
+  "status": "Open",
+  "exit": "Rotation log in the brief"
+ },
+ {
+  "id": "r17",
+  "week": 4,
+  "task": "Daily 6:30 am ET brief live",
+  "product": "both",
+  "status": "Open",
+  "exit": "Brief arrives 7 days in a row"
+ },
+ {
+  "id": "r18",
+  "week": 4,
+  "task": "Day-30 review; targets reset from real numbers",
+  "product": "both",
+  "status": "Open",
+  "exit": "New targets in the dashboard"
+ },
+ {
+  "id": "r19",
+  "week": 5,
+  "task": "Masar free tools live: cost per mile, IFTA, load profit",
+  "product": "masar",
+  "status": "Open",
+  "exit": "Emails captured"
+ },
+ {
+  "id": "r20",
+  "week": 6,
+  "task": "Comparison and alternative pages for both products",
+  "product": "both",
+  "status": "Open",
+  "exit": "Indexed by Google"
+ },
+ {
+  "id": "r21",
+  "week": 6,
+  "task": "Local-business outbound starts (2 metros, 2 categories)",
+  "product": "unstaffd",
+  "status": "Open",
+  "exit": "First audit replies"
+ },
+ {
+  "id": "r22",
+  "week": 7,
+  "task": "Creator partnership ads with the first signed creators",
+  "product": "unstaffd",
+  "status": "Open",
+  "exit": "CPL vs own ads"
+ },
+ {
+  "id": "r23",
+  "week": 8,
+  "task": "YouTube pre-roll test on trucking channels",
+  "product": "masar",
+  "status": "Open",
+  "exit": "Cost per demo measured"
+ },
+ {
+  "id": "r24",
+  "week": 8,
+  "task": "Day-60 review",
+  "product": "both",
+  "status": "Open",
+  "exit": "Scale or kill per engine"
+ },
+ {
+  "id": "r25",
+  "week": 9,
+  "task": "Scale what works: more inboxes, metros, creators",
+  "product": "both",
+  "status": "Open",
+  "exit": "Volume up without health breaches"
+ },
+ {
+  "id": "r26",
+  "week": 10,
+  "task": "Capterra and G2 listings claimed; real review requests",
+  "product": "masar",
+  "status": "Open",
+  "exit": "Listings live"
+ },
+ {
+  "id": "r27",
+  "week": 11,
+  "task": "Product Hunt launch prep",
+  "product": "unstaffd",
+  "status": "Open",
+  "exit": "Assets and hunters ready"
+ },
+ {
+  "id": "r28",
+  "week": 12,
+  "task": "Nurture and re-sequencing loops",
+  "product": "both",
+  "status": "Open",
+  "exit": "Re-sequence rate measured"
+ },
+ {
+  "id": "r29",
+  "week": 13,
+  "task": "Day-90 review; hand the engine to Unstaffd agents as the trucking niche pack",
+  "product": "both",
+  "status": "Open",
+  "exit": "Niche pack documented"
+ }
+]
