@@ -1,0 +1,52 @@
+# Copy to config.yaml and edit. Secrets (API keys, push topics) go in .env, never here.
+
+watchlist: [TSLA, NVDA, MSFT, AMD, META, AAPL, AMZN, SPY, QQQ]
+
+account:
+  size: 10000
+  allocation_pct: 1.0          # 0.5-1.0: share of the account in one trade (your style)
+  min_premium_stop_pct: 0.10   # stop never tighter than -10% on the option...
+  max_premium_stop_pct: 0.20   # ...and never wider than -20%
+  min_risk_reward: 2.0         # first target must pay >= 2x the risk
+  max_trades_per_day: 4
+  max_losing_trades_per_day: 2 # two losers = done for the day
+  daily_max_loss_pct: 0.35     # stop trading after -35% on the day
+
+options:
+  max_dte: 5                   # 0DTE up to a week
+  prefer_dte: 0                # nearest expiry first (0DTE when it exists)
+  target_delta: 0.45
+  min_delta: 0.30
+  max_delta: 0.65
+  max_spread_pct: 0.08
+  min_open_interest: 500
+  min_volume: 100
+  max_premium: 15.0
+
+strategy:
+  orb_minutes: 15
+  hunt_start: "09:30"
+  hunt_end: "11:00"            # Kay Capitals 90-minute rule
+  allow_afternoon: false       # true = also hunt 11:00-15:00
+  no_new_entries_after: "15:00"
+  flat_by_0dte: "15:45"
+  hold_overnight: false
+  breakout_vol_mult: 1.2
+  retest_tol_pct: 0.15
+  retest_timeout_bars: 20
+  block_inside_ntz: true
+  use_vwap_setups: true
+  use_level_setups: true
+  timeframes: ["09:30=120", "10:00=300", "11:00=600"]   # 2m, then 5m, then 10m
+  trim_fraction: 0.5
+
+feed:
+  provider: alpaca             # alpaca (recommended) | webull
+  alpaca_stock_feed: sip       # sip = real-time, all exchanges (paid plan)
+  alpaca_option_feed: opra     # opra = real-time options (paid plan)
+
+alerts:
+  console: true
+  log_file: signals.jsonl
+
+dashboard_port: 8787

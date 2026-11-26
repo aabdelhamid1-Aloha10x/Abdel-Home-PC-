@@ -11,6 +11,11 @@ alert engine — not a live-polling bot.
   distilled from the Kay Capitals / @kaycapitals YouTube channel), plus the parts that
   stay manual by design, plus the risk rules.
 - `docs/installation.md` — setup steps, alert configuration, what's automatic vs. manual.
+- `signal-engine/` — **live Python signal engine**: streams real-time stock trades and
+  option quotes (Alpaca SIP/OPRA, or Webull OpenAPI), runs the same playbook second by
+  second, picks a 0–5 DTE contract, applies the stop / R:R / sizing rules, and pushes
+  ENTRY → TRIM → STOP/EXIT alerts to your phone. Orders are still placed by you on Webull.
+  See `signal-engine/README.md`.
 
 ## Important context
 

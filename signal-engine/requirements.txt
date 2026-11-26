@@ -1,0 +1,6 @@
+pydantic>=2.6
+PyYAML>=6.0
+requests>=2.31
+alpaca-py>=0.40            # live data feed (recommended)
+# webull-openapi-python-sdk>=3.1   # optional: only if feed.provider = webull
+pytest>=8                  # tests
