@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Mac auto-start. Replace /PATH/TO with the folder that holds signal-engine, then:
+     cp scripts/com.kcsignals.daemon.plist ~/Library/LaunchAgents/
+     launchctl load ~/Library/LaunchAgents/com.kcsignals.daemon.plist -->
+<plist version="1.0"><dict>
+  <key>Label</key><string>com.kcsignals.daemon</string>
+  <key>ProgramArguments</key><array><string>/PATH/TO/signal-engine/scripts/start-daemon.sh</string></array>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><true/>
+  <key>StandardOutPath</key><string>/tmp/kcsignals.log</string>
+  <key>StandardErrorPath</key><string>/tmp/kcsignals.log</string>
+</dict></plist>

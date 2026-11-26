@@ -4,46 +4,65 @@ watchlist: [TSLA, NVDA, MSFT, AMD, META, AAPL, AMZN, SPY, QQQ]
 
 account:
   size: 10000
-  allocation_pct: 1.0          # 0.5-1.0: share of the account in one trade (your style)
-  min_premium_stop_pct: 0.10   # stop never tighter than -10% on the option...
-  max_premium_stop_pct: 0.20   # ...and never wider than -20%
-  min_risk_reward: 2.0         # first target must pay >= 2x the risk
-  max_trades_per_day: 4
-  max_losing_trades_per_day: 2 # two losers = done for the day
-  daily_max_loss_pct: 0.35     # stop trading after -35% on the day
+  sizing_mode: bell_curve       # Kay Capitals sizing (or "fixed" + allocation_pct)
+  size_ladder: [0.05, 0.10, 0.15, 0.20]   # $500 first trade -> up a rung per win, down per loss; cap $2k
+  grow_tiers: true              # cap doubles when the account doubles ($20k -> $4k cap)
+  min_premium_stop_pct: 0.10
+  max_premium_stop_pct: 0.20
+  min_risk_reward: 2.0
+  max_trades_per_day: 6
+  max_consecutive_losses: 3     # 3 losses in a row = done for the day
+  daily_max_loss_pct: 0.10
+  afternoon_only_if_red: true   # up by 11:00 -> call it a day
 
 options:
-  max_dte: 5                   # 0DTE up to a week
-  prefer_dte: 0                # nearest expiry first (0DTE when it exists)
-  target_delta: 0.45
-  min_delta: 0.30
+  max_dte: 5
+  prefer_dte: 0                 # nearest expiry first
+  target_delta: 0.50            # at the money
+  min_delta: 0.35
   max_delta: 0.65
   max_spread_pct: 0.08
   min_open_interest: 500
   min_volume: 100
-  max_premium: 15.0
+  max_premium: 20.0
 
 strategy:
   orb_minutes: 15
-  hunt_start: "09:30"
-  hunt_end: "11:00"            # Kay Capitals 90-minute rule
-  allow_afternoon: false       # true = also hunt 11:00-15:00
+  hunt_start: "09:45"           # no trades in the first 15 minutes
+  hunt_end: "11:00"
+  allow_afternoon: false
   no_new_entries_after: "15:00"
   flat_by_0dte: "15:45"
-  hold_overnight: false
+  timeframes: ["120@09:30-10:00", "300@09:30-16:00", "600@11:00-16:00"]   # 2m early, 5m all day, 10m late
+  volume_len: 5
   breakout_vol_mult: 1.2
   retest_tol_pct: 0.15
-  retest_timeout_bars: 20
   block_inside_ntz: true
+  use_break_retest: true
   use_vwap_setups: true
   use_level_setups: true
-  timeframes: ["09:30=120", "10:00=300", "11:00=600"]   # 2m, then 5m, then 10m
+  use_fib_pullbacks: true
+  use_level_flags: true
+  fib_min_confluence: 1
+  chop_max_failed_orb: 2
+  levels_each_side: 3
   trim_fraction: 0.5
+  trail_after_t2: true
+  allow_adds: true
+  news_blackouts: []            # e.g. ["2026-12-10 13:55-14:30"] for FOMC
 
 feed:
-  provider: alpaca             # alpaca (recommended) | webull
-  alpaca_stock_feed: sip       # sip = real-time, all exchanges (paid plan)
-  alpaca_option_feed: opra     # opra = real-time options (paid plan)
+  provider: alpaca
+  alpaca_stock_feed: sip        # real-time, all exchanges (Algo Trader Plus)
+  alpaca_option_feed: opra      # real-time options (Algo Trader Plus)
+
+execution:
+  mode: "off"                   # off = signals only (trade on Webull) | paper | live
+  entry_timeout_s: 10
+  max_order_dollars: 4000
+
+schedule:
+  start: "09:00"                # daemon wakes up at 9:00 ET on trading days
 
 alerts:
   console: true

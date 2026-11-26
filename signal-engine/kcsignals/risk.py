@@ -1,19 +1,17 @@
 """Turns a chart setup + chosen contract into a sized signal, or rejects it.
 
-Rules (from config.account):
-  * Stop: whichever comes first — the underlying closes back through the structural stop,
-    or the option loses its premium stop. The premium stop is the option loss projected
-    at the structural stop, clamped to [min_premium_stop_pct, max_premium_stop_pct].
-    If the structure needs a much wider stop than your max, the trade is skipped
-    (a 20% stop on a setup that needs 40% just gets stopped out by noise).
-  * Targets: the next S/R levels in the trade direction, priced as option premiums.
-    Any target that pays less than min_risk_reward x risk is dropped; if none remain,
-    the trade is skipped.
-  * Size: allocation_pct of current equity / (premium x 100), rounded down.
-  * Day guard: max trades, max losing trades, max daily loss.
+Sizing (Kay Capitals "bell curve", default):
+  position $ = ladder rung x tier base. Rungs default to 5% / 10% / 15% / 20%.
+  The first trade of the day is on the first rung ($500 on $10k). A win moves up one rung,
+  a loss moves down one. The top rung is the cap: $2k until the account reaches $20k,
+  then the base doubles. 3 losses in a row ends the day.
+Stop: chart stop (back through the line / beyond the trigger candle), priced on the
+  option and clamped to 10-20%. A setup that needs >30% is skipped as noise-prone.
+Targets: levels only. Anything paying < 2R on the option is dropped. No targets left = no trade.
 """
 from __future__ import annotations
 
+import math
 import uuid
 from dataclasses import dataclass, field
 from datetime import date, datetime
@@ -30,24 +28,51 @@ class DayBook:
     realized: float = 0.0
     trades: int = 0
     losers: int = 0
+    loss_streak: int = 0
+    rung: int = 0
     open_ids: set[str] = field(default_factory=set)
 
     def roll(self, day: date, equity: float) -> None:
         if day != self.day:
-            self.day, self.start_equity, self.realized, self.trades, self.losers = day, equity, 0.0, 0, 0
+            self.day, self.start_equity, self.realized = day, equity, 0.0
+            self.trades = self.losers = self.loss_streak = self.rung = 0
 
     @property
     def equity(self) -> float:
         return self.start_equity + self.realized
 
+    def record(self, pnl: float, ladder_len: int) -> None:
+        if pnl < 0:
+            self.losers += 1
+            self.loss_streak += 1
+            self.rung = max(0, self.rung - 1)
+        else:
+            self.loss_streak = 0
+            self.rung = min(ladder_len - 1, self.rung + 1)
+
+
+def tier_base(equity: float, cfg: AccountCfg) -> float:
+    if not cfg.grow_tiers or equity < cfg.size * 2:
+        return cfg.size
+    return cfg.size * 2 ** int(math.log2(equity / cfg.size))
+
+
+def position_dollars(book: DayBook, cfg: AccountCfg) -> tuple[float, float]:
+    """(this trade's $ size, the $ cap)"""
+    if cfg.sizing_mode == "fixed":
+        d = book.equity * cfg.allocation_pct
+        return d, d
+    base = tier_base(book.equity, cfg)
+    return base * cfg.size_ladder[book.rung], base * cfg.size_ladder[-1]
+
 
 def day_guard(book: DayBook, cfg: AccountCfg) -> str | None:
     if book.open_ids:
-        return "already in a trade (one position at a time with this allocation)"
+        return "already in a trade"
     if book.trades >= cfg.max_trades_per_day:
         return f"max {cfg.max_trades_per_day} trades/day reached"
-    if book.losers >= cfg.max_losing_trades_per_day:
-        return f"{book.losers} losing trades today — done for the day"
+    if book.loss_streak >= cfg.max_consecutive_losses:
+        return f"{book.loss_streak} losses in a row — done for the day"
     if book.realized <= -cfg.daily_max_loss_pct * book.start_equity:
         return f"daily max loss ({cfg.daily_max_loss_pct:.0%}) hit — done for the day"
     return None
@@ -58,8 +83,9 @@ def build_signal(setup: Setup, q: OptionQuote, spot: float, now: datetime,
     blocked = day_guard(book, cfg)
     if blocked:
         return None, blocked
+    if not setup.targets_underlying:
+        return None, "no level to target in the trade direction"
 
-    # Pay a little over mid so the limit actually fills on a fast 0DTE.
     entry = round(min(q.ask, q.mid + 0.25 * (q.ask - q.bid)), 2)
     if entry <= 0:
         return None, "no valid price"
@@ -67,37 +93,32 @@ def build_signal(setup: Setup, q: OptionQuote, spot: float, now: datetime,
     at_stop = project_premium(q, spot, setup.stop_underlying, now, entry)
     struct_pct = max(0.0, (entry - at_stop) / entry)
     if struct_pct > cfg.max_premium_stop_pct * 1.5:
-        return None, (f"structure needs a {struct_pct:.0%} premium stop (> {cfg.max_premium_stop_pct:.0%} max); "
-                      "stop would be inside the noise — skipped")
+        return None, (f"chart stop needs {struct_pct:.0%} of premium (> {cfg.max_premium_stop_pct:.0%} max) — skipped")
     stop_pct = min(max(struct_pct, cfg.min_premium_stop_pct), cfg.max_premium_stop_pct)
     stop_prem = round(entry * (1 - stop_pct), 2)
     risk = entry - stop_prem
 
-    targets, rr_list = [], []
+    pairs = []
     for lvl in setup.targets_underlying:
         p = round(project_premium(q, spot, lvl, now, entry), 2)
-        rr = (p - entry) / risk if risk > 0 else 0
-        if rr >= cfg.min_risk_reward:
-            targets.append(p)
-            rr_list.append(rr)
-    if not targets:
+        if (p - entry) / risk >= cfg.min_risk_reward:
+            pairs.append((lvl, p))
+    if not pairs:
         best = max((project_premium(q, spot, l, now, entry) - entry) / risk for l in setup.targets_underlying)
-        return None, f"best target pays only {best:.1f}R (< {cfg.min_risk_reward:.0f}R) — skipped"
-    keep = [i for i, _ in enumerate(setup.targets_underlying)
-            if round(project_premium(q, spot, setup.targets_underlying[i], now, entry), 2) in targets]
-    setup.targets_underlying = [setup.targets_underlying[i] for i in keep][:3]
-    targets = targets[:3]
+        return None, f"nearest levels pay only {best:.1f}R (< {cfg.min_risk_reward:.0f}R) — skipped"
+    pairs = pairs[:3]
+    setup.targets_underlying = [u for u, _ in pairs]
 
-    capital = book.equity * cfg.allocation_pct
-    contracts = int(capital // (entry * 100))
-    if contracts < 1:
-        return None, f"1 contract costs ${entry * 100:,.0f}, more than the ${capital:,.0f} allocation"
+    dollars, cap = position_dollars(book, cfg)
+    cost = entry * 100
+    if cost > cap:
+        return None, f"1 contract costs ${cost:,.0f}, over the ${cap:,.0f} position cap"
+    contracts = max(1, int(dollars // cost))
 
     sig = Signal(
         id=uuid.uuid4().hex[:8], setup=setup, contract=q, contracts=contracts,
-        entry_premium=entry, stop_premium=stop_prem, targets_premium=targets,
-        risk_reward=round(rr_list[0], 2), stop_pct=round(stop_pct, 3),
-        capital_used=round(contracts * entry * 100, 2),
-        max_loss_dollars=round(contracts * risk * 100, 2), created=now,
+        entry_premium=entry, stop_premium=stop_prem, targets_premium=[p for _, p in pairs],
+        risk_reward=round((pairs[0][1] - entry) / risk, 2), stop_pct=round(stop_pct, 3),
+        capital_used=round(contracts * cost, 2), max_loss_dollars=round(contracts * risk * 100, 2), created=now,
     )
     return sig, "ok"

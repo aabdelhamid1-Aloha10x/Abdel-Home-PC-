@@ -14,8 +14,9 @@ alert engine — not a live-polling bot.
 - `signal-engine/` — **live Python signal engine**: streams real-time stock trades and
   option quotes (Alpaca SIP/OPRA, or Webull OpenAPI), runs the same playbook second by
   second, picks a 0–5 DTE contract, applies the stop / R:R / sizing rules, and pushes
-  ENTRY → TRIM → STOP/EXIT alerts to your phone. Orders are still placed by you on Webull.
-  See `signal-engine/README.md`.
+  ENTRY → TRIM → ADD → STOP/EXIT alerts to your phone, with a live chart dashboard.
+  Starts itself at 9:00 ET each trading day. Orders: you on Webull (default), or
+  automatic in an Alpaca paper/live account. See `signal-engine/README.md`.
 
 ## Important context
 

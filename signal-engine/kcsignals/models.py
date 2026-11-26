@@ -102,12 +102,14 @@ class Signal:
 class EventType(str, Enum):
     ENTRY = "ENTRY"
     TRIM = "TRIM"            # take partial profit, move stop to breakeven
+    ADD = "ADD"              # re-add size on a new setup while the stop is at breakeven
     STOP = "STOP"
     TARGET_FINAL = "TARGET_FINAL"
     TIME_EXIT = "TIME_EXIT"
     BREAKEVEN_EXIT = "BREAKEVEN_EXIT"
     INFO = "INFO"
     RISK_BLOCK = "RISK_BLOCK"
+    ORDER = "ORDER"          # auto-trading: order placed / filled / rejected
 
 
 @dataclass(slots=True)

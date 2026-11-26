@@ -16,9 +16,10 @@ from .timeutil import to_et
 log = logging.getLogger("kcsignals.alerts")
 
 PRIORITY = {EventType.ENTRY: "urgent", EventType.STOP: "urgent", EventType.TRIM: "high",
-            EventType.TARGET_FINAL: "high", EventType.TIME_EXIT: "high", EventType.BREAKEVEN_EXIT: "high"}
+            EventType.TARGET_FINAL: "high", EventType.TIME_EXIT: "high", EventType.BREAKEVEN_EXIT: "high",
+            EventType.ADD: "high", EventType.ORDER: "default"}
 COLORS = {EventType.ENTRY: "\033[1;32m", EventType.STOP: "\033[1;31m", EventType.TRIM: "\033[1;33m",
-          EventType.TARGET_FINAL: "\033[1;36m", EventType.RISK_BLOCK: "\033[2m", EventType.INFO: "\033[2m"}
+          EventType.TARGET_FINAL: "\033[1;36m", EventType.ADD: "\033[1;32m", EventType.ORDER: "\033[1;35m", EventType.RISK_BLOCK: "\033[2m", EventType.INFO: "\033[2m"}
 
 
 class Alerter:

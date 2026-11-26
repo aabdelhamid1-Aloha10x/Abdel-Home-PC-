@@ -50,16 +50,19 @@ class AlpacaFeed(Feed):
             log.warning("Not on SIP/OPRA: data is partial or delayed. Signals will be late/wrong.")
 
     async def history_1m(self, symbol, start, end):
-        from alpaca.data.requests import StockBarsRequest
-        from alpaca.data.timeframe import TimeFrame
+        return await self.history_bars(symbol, start, end, 1)
 
-        req = StockBarsRequest(symbol_or_symbols=symbol, timeframe=TimeFrame.Minute, start=start, end=end,
-                               feed=self.stock_feed)
+    async def history_bars(self, symbol, start, end, minutes):
+        from alpaca.data.requests import StockBarsRequest
+        from alpaca.data.timeframe import TimeFrame, TimeFrameUnit
+
+        tf = TimeFrame.Hour if minutes == 60 else TimeFrame(minutes, TimeFrameUnit.Minute)
+        req = StockBarsRequest(symbol_or_symbols=symbol, timeframe=tf, start=start, end=end, feed=self.stock_feed)
         res = await asyncio.to_thread(self.hist.get_stock_bars, req)
         out = []
         for b in res.data.get(symbol, []):
             vw = (b.vwap or b.close) * b.volume
-            out.append(Bar(symbol, b.timestamp, 60, b.open, b.high, b.low, b.close, b.volume, vw))
+            out.append(Bar(symbol, b.timestamp, minutes * 60, b.open, b.high, b.low, b.close, b.volume, vw))
         return out
 
     async def option_chain(self, symbol, side, exp_from, exp_to, spot):

@@ -21,6 +21,14 @@ class Feed(ABC):
     async def history_1m(self, symbol: str, start: datetime, end: datetime) -> list[Bar]:
         """1-minute bars, extended hours included, oldest first."""
 
+    async def history_bars(self, symbol: str, start: datetime, end: datetime, minutes: int) -> list[Bar]:
+        """Bars of any size (extended hours included). Default: resample 1-minute bars."""
+        bars = await self.history_1m(symbol, start, end)
+        if minutes == 1:
+            return bars
+        from ..levels import resample
+        return resample(bars, minutes * 60)
+
     @abstractmethod
     async def option_chain(self, symbol: str, side: Side, exp_from: date, exp_to: date,
                            spot: float) -> list[OptionQuote]:

@@ -115,3 +115,35 @@ size over time. Use this system to find good, disciplined setups and manage risk
 don't treat a daily-percent target as a rule you trade around, or it will pressure you
 into oversizing on marginal setups. The day-stop in section 7 matters more than any
 upside target.
+
+## 9. LTP system from the free course video (youtu.be/0Kq61FY6PTY)
+
+Added after reading the full transcript of his ~3-hour free course. These rules are
+now encoded in `signal-engine/`. Where they differ from sections above, the video wins
+for the engine's defaults.
+
+- **Tickers:** blue chips + SPY/QQQ only (AAPL, NVDA, TSLA, AMD, AMZN, META, MSFT). No small caps.
+- **Contract:** at the money. Nearest expiry.
+- **Indicators:** volume with a 5-period MA, EMA 8 + EMA 21, SMA 200 (+ SMA 400 on the
+  5-min), VWAP (HLC/3, no bands), 15-min ORB, daily open, Fib 0.236 / 0.382.
+- **Levels:** 60-min chart, extended hours ON. Line-chart bends → candles → adjust to wicks,
+  delete levels that are too close. Pre-market high/low, yesterday's high/low, hourly 200
+  SMA, then 3 levels above the PM high and 3 below the PM low. Redraw daily; add intraday
+  rejection levels.
+- **Time:** no trades in the first 15 minutes (price discovery). 2-min chart 9:30–10:00,
+  **5-min all day**, 10-min after 11:00. If you're green by 11:00, call it a day.
+- **First 2-min candle:** if it breaks the PM high or low, that ticker is the priority.
+- **Breakout volume** must beat the volume before it. A break on normal volume is a trap.
+- **Setups:** (a) Fib pullback with confluence: after the first counter-trend candle, Fib
+  from where the trend started to the extreme; enter in 0.236–0.382 where it lines up with
+  EMA 8, VWAP, a level, ORB or the 200/400 SMA. A touch of 0.5 = skip until a new high.
+  (b) Level flag: a flag on top of a key level, enter on the flag break. (c) ORB failure
+  after a pullback. Never chase the breakout candle.
+- **Stop:** the other side of the Fib / the trigger candle's low (≈20% of premium).
+- **Exits:** targets are levels (hourly levels first, then indicators like the 200 SMA).
+  Sell 50% at T1 and stop to breakeven, sell 50% of the rest (round up) at T2, let runners ride.
+- **Adds:** add on each new Fib retest of a working trade ("additions is where the money is made").
+- **Sizing (bell curve):** small first trade ($400–600 on $10k), size up after a win, down
+  after a loss, max position ≈ $2k until the account reaches $20k. **3 losses in a row = done.**
+- **R:R:** win at least twice what you risk.
+- His win-rate and monthly P&L numbers are self-reported; treat them as marketing.

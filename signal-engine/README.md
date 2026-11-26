@@ -1,136 +1,137 @@
-# KC Signals: live options signal engine
+# KC Signals: live options signal engine (Kay Capitals method)
 
-The engine watches your stocks second by second and runs the Kay Capitals
-breakout-and-retest playbook (`../docs/strategy-playbook.md`). When a setup triggers,
-it picks a 0–5 DTE option, applies your risk rules and pushes the trade to your phone:
-**contract, entry limit, stop, targets and size**. It then manages the trade
-live: **sell half at T1 and move the stop to breakeven, sell more at T2 and T3, or exit at the stop or the time limit.**
+This app wakes up at **9:00 ET every trading day** and pulls the pre-market from Alpaca.
+It draws the day's levels and watches your stocks second by second with real-time data. When a setup
+from the Kay Capitals playbook triggers, it gives you the **contract, entry, stop, targets and size**.
+It then manages the trade live: trims, adds, breakeven stops and exits. Signals reach you
+three ways: phone push, terminal, and a **local dashboard with live charts**.
 
-You place the orders yourself on Webull. The engine never trades.
+You choose who places the orders:
+| `execution.mode` | What happens |
+|---|---|
+| `off` (default) | Signals only. You place trades yourself on **Webull**. |
+| `paper` | The engine places every entry, trim, add and exit in your **Alpaca paper account**. |
+| `live` | Same, with **real money** in your Alpaca account. It won't start unless you also set `KC_LIVE_TRADING=I_UNDERSTAND`. |
 
-```
-live trades (SIP) ─► 1-min / 2-min / 5-min / 10-min bars ─► NTZ · ORB · VWAP · S/R levels
-                                                              │
-                         breakout on volume ─► quieter retest that holds = SETUP
-                                                              │
-   live option chain (OPRA) ─► pick contract (0–5 DTE, ~0.45 Δ, tight spread)
-                                                              │
-   your rules: stop 10–20% · first target ≥ 2R · size 50–100% · day limits
-                                                              │
-        ENTRY push ─► option quotes tick by tick ─► TRIM / STOP / BREAKEVEN / TIME EXIT pushes
-```
+## The rules it trades (from the Kay Capitals videos)
 
-## Your rules, and where they live (`config.yaml`)
+**Levels, redrawn every morning**
+- Hourly chart with extended hours: 3 levels above the pre-market high and 3 below the pre-market low.
+- Pre-market high and low, yesterday's high and low, today's open, and the hourly 200 SMA.
+- **NTZ** (No Trading Zone): yesterday's range combined with the pre-market range.
+- **ORB**: the first 15 minutes.
+- Intraday rejection levels.
 
-| Your rule | Setting | Default |
-|---|---|---|
-| 50–100% of the account per trade | `account.allocation_pct` | 1.0 |
-| Stop loss 10–20% | `min_premium_stop_pct` / `max_premium_stop_pct` | 0.10 / 0.20 |
-| Risk:reward at least 1:2 | `min_risk_reward` (measured to the **first** target) | 2.0 |
-| 0DTE up to a week | `options.max_dte`, `prefer_dte` | 5, 0 |
-| TSLA, NVDA, MSFT, AMD… | `watchlist` | 9 names |
+**Indicators**
+- VWAP using HLC/3.
+- EMA 8 and EMA 21.
+- SMA 200 and SMA 400.
+- 5-period volume average.
 
-**How the stop is set.** The chart decides where the idea is wrong: back through the
-broken line, beyond the retest candle. The engine projects what the option would be
-worth at that price, using Black-Scholes at the live IV, and clamps the result into
-your 10–20% band. You get stopped by **whichever hits first**: the option's stop
-price or the stock trading through the line. If the chart needs more than 30% of
-premium (1.5 × your max), the trade is **skipped**, because a 20% stop on that setup
-would get hit by normal noise.
+**Timing**
+- No trades in the first 15 minutes, and none inside the NTZ.
+- New entries from 9:45 to 11:00.
+- 2-minute chart until 10:00, 5-minute chart all day, 10-minute chart after 11:00.
+- If you're green at 11:00, you're done for the day.
 
-**How targets are set.** These are the next support/resistance levels in the trade's direction:
-prior-day high/low, pre-market range, ORB, and swing levels from the last two weeks.
-When no level is close, it uses 2R/3R/4R measured moves. Any target paying less than
-2R on the option is dropped. If none are left, there's no trade.
+**Entries**
+1. **Break and retest** of the NTZ, ORB, VWAP or a key level. The break needs above-average volume. The retest has to come back to the line, hold, and trade lighter volume than the break. Never chase the breakout candle.
+2. **Fib pullback**, the main LTP setup: in a trend (EMA 8 above EMA 21 and price on the right side of VWAP), price pulls back into 0.236–0.382 of the leg. A green "patience" candle closes back in trend, and the zone lines up with EMA 8, VWAP, a level or the 200/400 SMA. A touch of 0.5 cancels it until a new high.
+3. **Level flag**: a tight flag sitting on a level, then a break on volume.
 
-**Guard rails (defaults; you can change them).** One position at a time. Max 4 trades a day.
-**Two losing trades and you're done for the day.** Stop at a −35% day. At
-100% allocation with a 20% stop, one full loss is about −$2,000, so two losers is about −40%.
-These limits keep one bad morning from ending the account.
+**Contract**: at the money (about 0.50 delta), 0–5 days to expiry, nearest expiry first.
 
-## Live data, the important part
+**Exits**
+- **Stop**: the stock breaks back through the line, or the option falls 10–20%, whichever comes first.
+- **Targets**: levels only, and the first one must be at least 2× the risk.
+- Sell half at T1, rounded up, and move the stop to breakeven.
+- Sell half of what's left at T2. The runner's stop then moves up to the T1 price.
+- **Adds**: once the stop is at breakeven, a new setup in the same direction re-buys what you sold. The stop then moves so the whole trade can't go red.
 
-The engine needs **real-time** tape and option quotes. Delayed data puts the levels and
-volume filters in the wrong places (Sumesh says this on the channel too).
+**Sizing (his "bell curve")**
+- First trade of the day is $500, which is 5% of $10k.
+- Move up a step after a win and down a step after a loss: $500, $1,000, $1,500, $2,000.
+- The cap is $2,000 until the account reaches $20,000. Then every step doubles.
+- **3 losses in a row means you're done for the day.**
 
-| Option | Stocks | Options | Cost | Notes |
-|---|---|---|---|---|
-| **Alpaca "Algo Trader Plus"** (recommended) | Real-time SIP stream (all exchanges) | Real-time OPRA stream | ~$99/mo | One API key covers both. You don't have to trade at Alpaca. Open a free account (paper is fine) and buy the data plan. |
-| Webull OpenAPI | Real-time tick stream (MQTT) | **Not streamed**; polled about once a second | Separate "OpenAPI Advanced Quotes" plan: Nasdaq Basic + OPRA Non-display (price not published) | Data you pay for in the Webull app **does not** carry over to the API. See below. |
-| Alpaca free plan | IEX only (~2–3% of volume) | Indicative/delayed | $0 | **Not good enough**: volume filters and levels will be wrong. Use it only for testing the setup. |
+**Chop filter**: after 2 failed ORB breaks, that stock is benched for the day.
 
-### Connecting Webull
+All of these settings are in `config.yaml`.
 
-Webull's official API ("OpenAPI") can supply the data, and later could place orders.
-1. Apply on the Webull website for OpenAPI access (developer.webull.com → *Getting Started*).
-   Review usually takes 1–2 business days.
-2. Once approved, create an **App Key and App Secret** at webull.com → *OpenAPI Management → App
-   Management*. If 2FA is on, the first run asks you to approve in the Webull app.
-3. Buy real-time API data: log in at webullapp.com/quote → avatar → *Advanced Quotes* →
-   **OpenAPI Advanced Quotes** → *Nasdaq Basic* (stocks) and *OPRA Real-Time Non-display*
-   (options).
-4. `pip install webull-openapi-python-sdk`, put the keys in `.env`, set
-   `feed.provider: webull`, and run `python -m kcsignals probe-webull` once. The Webull
-   feed is written against SDK v3.1.2 but **hasn't run against a live account yet**. The probe
-   prints the raw responses so field names can be confirmed before you rely on it.
+## Live data: Alpaca
 
-**My recommendation:** use Alpaca for data and keep charting and placing orders on Webull. Option
-quotes stream live from Alpaca but not from Webull, and that's what the second-by-second exits need.
+Buy Alpaca's **"Algo Trader Plus"** market-data plan, about $99/month. It gives you **SIP** (every US
+exchange, real time) for stocks and **OPRA** (real time) for options.
+1. Sign up at alpaca.markets. The paper account is free, and you don't need to fund anything to get data.
+2. Subscribe to Algo Trader Plus, then create API keys under **Live → API Keys**.
+3. For `paper` mode, also create keys in the **Paper** dashboard. Paper accounts have their own keys.
 
-## Setup (on your own Mac or PC; it must be on during market hours)
+The free plan is IEX-only, which is about 2–3% of volume, with delayed options. Volume filters and levels come out wrong on it, so don't use it for real signals.
+
+## Install (Mac or Windows; the computer must be on and awake on trading days)
 
 ```bash
 cd signal-engine
-python3 -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
+python3 -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-cp config.example.yaml config.yaml                       # edit watchlist / rules
-cp .env.example .env                                     # add your keys
-set -a; source .env; set +a                              # Windows: set each variable
+cp config.example.yaml config.yaml # Windows: copy config.example.yaml config.yaml
+cp .env.example .env               # put your Alpaca keys + ntfy topic in .env
 
-python -m kcsignals demo            # 10-second offline demo, no keys needed
-python -m pytest -q                 # 11 tests
-python -m kcsignals probe-alpaca    # checks keys + that option quotes are ~0-2s old
-python -m kcsignals run             # live; open http://localhost:8787
+python -m kcsignals demo           # offline demo day + charts at http://localhost:8787
+python -m pytest -q                # 17 tests
+python -m kcsignals probe-alpaca   # checks keys, real-time data, hourly history (and your account if mode != off)
 ```
 
-**Phone alerts.** Install the free **ntfy** app, subscribe to a long random topic name
-(for example `abdel-kc-8f3k2q9x`), and put that name in `NTFY_TOPIC`. ENTRY and STOP arrive as
-urgent pushes. Discord and Telegram also work (see `.env.example`).
+**Run it every day automatically**
+- Any OS: `python -m kcsignals daemon`. Leave it running. It sleeps until 9:00 ET, runs through
+  the close, then sleeps until the next trading day. It reads Alpaca's market calendar, so holidays and half days are handled.
+- **Mac auto-start at login**: edit the path in `scripts/com.kcsignals.daemon.plist`, then
+  `cp scripts/com.kcsignals.daemon.plist ~/Library/LaunchAgents/ && launchctl load ~/Library/LaunchAgents/com.kcsignals.daemon.plist`.
+  Logs go to `/tmp/kcsignals.log`.
+- **Windows auto-start**: Task Scheduler → *Create Basic Task* → trigger *When I log on* →
+  action: start `scripts\start-daemon.bat`.
+- Starting the engine now instead of waiting for 9:00: `python -m kcsignals run`.
 
-Start it before **9:00 ET**. It loads two weeks of 1-minute bars for the levels and
-builds the pre-market range live.
+**Dashboard**: open **http://localhost:8787**. Choose a stock and a timeframe (1m/2m/5m/10m). You get
+candles with VWAP, EMA 8/21, SMA 200, the NTZ, ORB, PM/PD high and low, hourly levels, and every
+entry, add and exit marker. The page also shows the open position and a live feed of signals.
 
-## What an alert looks like
+**Phone alerts**: install the free **ntfy** app, subscribe to a long random topic name, and put it in
+`NTFY_TOPIC`. Discord and Telegram also work.
+
+## What an alert looks like (from the demo)
 
 ```
 ENTRY NVDA
-BUY 126x NVDA 11/24 182.5C [NVDA261124C00182500] limit 0.79 (bid 0.77/ask 0.79, Δ 0.47)
-Setup: NTZ_BREAK_RETEST @ 182.08 on 2m; stock 182.2
+BUY 6x NVDA 11/24 182.5C [NVDA261124C00182500] limit 0.79 (bid 0.77/ask 0.79, Δ 0.47)
+Setup: NTZ_BREAK_RETEST @ 182.08; stock 182.2
 STOP: option 0.64 (-19%) or stock through 181.99
-TARGETS: 1.17 (stock 183.04) / 1.45 (stock 183.47) / 1.74 (stock 183.89)  (R:R 2.5 to T1)
-Size: $9,954 in, max loss ≈ $1,890. Plan: sell half at T1, stop to breakeven.
+TARGETS: 1.74 (stock 183.88)  (R:R 6.3 to T1)
+Size: $474, max loss ≈ $90. Sell half at T1, stop to breakeven.
 
-TRIM NVDA
-TARGET 1 hit (~1.12, underlying 183.04): SELL 63 of 126 ... Move stop on the rest to BREAKEVEN 0.79.
+TRIM NVDA   TARGET 1 hit (~1.68, stock 183.88): SELL 3 of 6 ...; stop on the rest to BREAKEVEN 0.79.
+ADD NVDA    ADD 3x ... at ~2.94 (FIB_PULLBACK @ 185.74). Now 6 contracts, stop 1.42 (whole trade stays green at worst).
 ```
 
-That alert is from `python -m kcsignals demo`, a synthetic, textbook breakout day.
-It shows the mechanics. **It is not evidence the strategy makes money.**
+The demo is a synthetic, textbook day. It shows the mechanics. **It is not evidence the strategy makes money.**
 
-## What's verified and what isn't
+## Auto-trading safeguards (paper/live)
+- Entries are limit orders at the signal price + $0.05. If an order doesn't fill within 10 seconds, it's cancelled and the signal is dropped.
+- Exits are market orders, and the engine never sells more contracts than the account holds.
+- `max_order_dollars` (default $4,000) hard-caps any single order, whatever the sizing says.
+- On startup it prints your Alpaca equity, options level (you need level 2+), PDT flag and any open option positions.
+- If a sell fails, you get a push that says **CLOSE IT MANUALLY**.
 
-- ✅ The strategy, contract picker, risk sizing, scale-out and stop logic all pass 11 tests,
-  including a failed breakout that stops out and both call and put days.
-- ⚠️ The Alpaca and Webull live feeds are written against the real SDKs (alpaca-py 0.45,
-  Webull SDK 3.1.2) but **haven't streamed a live session yet**. Run the probes first.
-- ⚠️ Replays price options with Black-Scholes at a fixed IV. Real fills on fast 0DTE
-  moves are worse, especially stops.
-- ⚠️ The engine assumes you took every ENTRY so its day-loss guard stays conservative.
-  If you skip one, restart it or raise the limits.
+## Verified vs. not yet
+- ✅ 17 tests pass. They cover call and put days, a failed breakout that stops out, a Fib pullback with an add, bell-curve sizing, 3 losses in a row ending the day, news blackouts, the first 15 minutes being blocked, the paper executor mirroring every buy and sell, unfilled entries being voided, and the chart data.
+- ⚠️ The Alpaca data feed and order executor are written against alpaca-py 0.45 but **haven't run against a live market or a real account yet**. Run `probe-alpaca` first, then a paper week.
+- ⚠️ Replays price options with Black-Scholes. Real fills on fast 0DTE moves are worse, especially on stops.
+- ⚠️ Some of his rules are discretionary (trend reading, "the stock's nature that day", trendlines). The engine encodes the mechanical parts only.
 
-## Before real money: paper-trade it for 2–4 weeks
+## Recommended path
+1. `demo` → `probe-alpaca` → run the daemon in `off` mode for a week and watch the signals against your Webull charts.
+2. Switch to `paper` for 2–4 weeks. Review `signals.jsonl`: win rate, average R, and whether fills match the alerts.
+3. Only then consider `live`, or keep taking the signals by hand on Webull.
 
-Run it live and take every signal in Webull's **paper trading** account, or just log them.
-`signals.jsonl` records every entry and exit. After 20 or more trades, check the win rate,
-the average R, and whether real fills match the alerts. Only then trade it with money, and
-start with `allocation_pct: 0.5`.
+The Webull data feed (`feeds/webull.py`) still exists as an alternative. It's not needed with Alpaca.

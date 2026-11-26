@@ -107,20 +107,34 @@ def load_trades_csv(path: str) -> list[Trade]:
 
 # ---------------------------------------------------------------- synthetic day
 def synthetic_day(symbol: str = "NVDA", day: date = date(2026, 11, 24), base: float = 180.0,
-                  direction: Side = Side.CALL, fail: bool = False) -> tuple[list[Trade], list[Bar]]:
+                  direction: Side = Side.CALL, fail: bool = False,
+                  fib_pullback: bool = False) -> tuple[list[Trade], list[Bar]]:
     """A textbook day: yesterday's range, quiet pre-market, an opening range, then a
     high-volume break of the NTZ edge, a low-volume retest, and a trend leg."""
     sgn = 1 if direction is Side.CALL else -1
-    prev = day - timedelta(days=1 if day.weekday() > 0 else 3)
-    hist: list[Bar] = []
-    # Yesterday: oscillate between base-2 and base+2, a few swing points.
-    t0 = datetime.combine(prev, time(9, 30), tzinfo=ET)
     import math
-    for i in range(390):
-        p = base + 2.0 * math.sin(i / 40)
-        hist.append(Bar(symbol, t0 + timedelta(minutes=i), 60, p, p + 0.08, p - 0.08, p, 50_000, p * 50_000))
-    y_hi = max(b.high for b in hist)
-    y_lo = min(b.low for b in hist)
+    # Six prior sessions. Older sessions swing wider, so the hourly chart has levels
+    # above and below yesterday's range; yesterday is the tightest (+-2).
+    days, d = [], day
+    while len(days) < 6:
+        d -= timedelta(days=1)
+        if d.weekday() < 5:
+            days.append(d)
+    days.reverse()
+    hist: list[Bar] = []
+    for k, dd in enumerate(days):
+        amp = 2.0 + 0.9 * (len(days) - 1 - k)
+        t0 = datetime.combine(dd, time(4, 0), tzinfo=ET)
+        for i in range(330):                       # pre-market, flat-ish
+            p = base + 0.3 * math.sin(i / 30)
+            hist.append(Bar(symbol, t0 + timedelta(minutes=i), 60, p, p + 0.05, p - 0.05, p, 3_000, p * 3_000))
+        t0 = datetime.combine(dd, time(9, 30), tzinfo=ET)
+        for i in range(390):
+            p = base + amp * math.sin(i / 40 + k)
+            hist.append(Bar(symbol, t0 + timedelta(minutes=i), 60, p, p + 0.08, p - 0.08, p, 50_000, p * 50_000))
+    yb = [b for b in hist if b.start.date() == days[-1] and b.start.time() >= time(9, 30)]
+    y_hi = max(b.high for b in yb)
+    y_lo = min(b.low for b in yb)
     edge = y_hi if sgn > 0 else y_lo
 
     trades: list[Trade] = []
@@ -152,9 +166,16 @@ def synthetic_day(symbol: str = "NVDA", day: date = date(2026, 11, 24), base: fl
     path.append((edge + sgn * 0.25, 30_000))            # 2m retest bar: tags the edge, holds, quiet
     p = edge + sgn * 0.3
     for i in range(60):                                 # trend leg (or a failed breakout)
+        if fib_pullback and i == 28:                    # 10:25: a 5-min pullback into the Fib zone...
+            hi = p
+            for j in range(5):
+                path.append((hi - sgn * 0.33 * (j + 1), 40_000))
+            for j in range(5):                          # ...then a 5-min "patience" candle back up
+                path.append((hi - sgn * 1.55 + sgn * 0.2 * (j + 1), 45_000))
+            p = hi - sgn * 0.5
         p += (-sgn * 0.12) if fail else (sgn * 0.12)
         path.append((p, 70_000))
-    for i in range(200):                                # afternoon chop to the close
+    for i in range(400):                                # afternoon chop to the close
         path.append((p + 0.3 * math.sin(i / 5), 30_000))
 
     t = datetime.combine(day, time(9, 30), tzinfo=ET)
