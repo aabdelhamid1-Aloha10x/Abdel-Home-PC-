@@ -111,6 +111,32 @@ class ScheduleCfg(BaseModel):
     stop_after_close_min: int = 5
 
 
+class CalendarCfg(BaseModel):
+    economic: bool = True                     # auto news blackouts from the economic calendar
+    blackout_before_min: int = 5
+    blackout_after_min: int = 30
+    fomc_after_min: int = 60                  # statement at 14:00 + press conference at 14:30
+    earnings: bool = True
+    reaction_day_action: str = "half_size"    # half_size | block | allow  (day after the report)
+    unknown_time_assume: str = "amc"          # mega-caps nearly always report after the close
+
+
+class NewsCfg(BaseModel):
+    alpaca: bool = True                       # Alpaca/Benzinga real-time headlines
+    sec_8k: bool = True                       # EDGAR 8-Ks (only if SEC_USER_AGENT is set)
+    poll_s: int = 60
+    pause_min: int = 10                       # no new entries on a ticker for N min after its news
+    max_symbols_for_pause: int = 3            # ignore market-wrap stories that tag many tickers
+    block_on_severe: bool = True              # halt / bankruptcy / delisting / restatement -> blocked
+
+
+class BacktestCfg(BaseModel):
+    iv_hv_mult: float = 1.15                  # simulated IV = 20-day realized vol x this
+    min_iv: float = 0.20
+    stats_file: str = "backtest_stats.json"   # engine adds per-setup history to each alert
+    min_trades_for_stats: int = 8
+
+
 class AlertCfg(BaseModel):
     console: bool = True
     ntfy_topic_env: str = "NTFY_TOPIC"
@@ -128,6 +154,9 @@ class Settings(BaseModel):
     feed: FeedCfg = FeedCfg()
     execution: ExecutionCfg = ExecutionCfg()
     schedule: ScheduleCfg = ScheduleCfg()
+    calendar: CalendarCfg = CalendarCfg()
+    news: NewsCfg = NewsCfg()
+    backtest: BacktestCfg = BacktestCfg()
     alerts: AlertCfg = AlertCfg()
     dashboard_port: int = 8787
 

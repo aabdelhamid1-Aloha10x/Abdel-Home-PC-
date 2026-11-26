@@ -25,7 +25,7 @@ button.on{border-color:var(--c);color:var(--c)}
 .card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px}
 #chart{height:520px}@media (max-width:600px){#chart{height:360px}}
 .ev{white-space:pre-wrap;border-left:3px solid var(--mut);padding:6px 8px;margin:6px 0;background:#0b0e13;font-size:12px}
-.ENTRY,.ADD{border-color:var(--g)}.STOP{border-color:var(--r)}.TRIM,.TARGET_FINAL,.TIME_EXIT,.BREAKEVEN_EXIT{border-color:var(--y)}.ORDER{border-color:#bc8cff}
+.ENTRY,.ADD{border-color:var(--g)}.STOP{border-color:var(--r)}.TRIM,.TARGET_FINAL,.TIME_EXIT,.BREAKEVEN_EXIT{border-color:var(--y)}.ORDER{border-color:#bc8cff}.NEWS,.CALENDAR{border-color:var(--c)}
 .mut{color:var(--mut)}.legend span{margin-right:10px}#syms button{margin:0 4px 4px 0}
 </style></head><body>
 <div class="top"><h1>KC Signals</h1><span class="pill" id="day"></span><span class="pill" id="mode"></span>
@@ -34,7 +34,7 @@ button.on{border-color:var(--c);color:var(--c)}
 <div class="top" id="tfs"></div>
 <div class="grid"><div class="card"><div id="chart"></div>
 <div class="legend mut"><span style="color:#ffffff">━ VWAP</span><span style="color:#58a6ff">━ EMA 8</span><span style="color:#bc8cff">━ EMA 21</span><span style="color:#d29922">━ SMA 200</span><span style="color:#f0883e">┅ NTZ</span><span style="color:#39c5cf">┅ ORB</span><span style="color:#8b949e">┄ levels</span></div></div>
-<div><div class="card" id="open"></div><div class="card" style="margin-top:12px;max-height:470px;overflow:auto"><b>Signals &amp; exits</b><div id="ev"></div></div></div></div>
+<div><div class="card" id="open"></div><div class="card" id="today" style="margin-top:12px"></div><div class="card" style="margin-top:12px;max-height:470px;overflow:auto"><b>Signals &amp; exits</b><div id="ev"></div></div></div></div>
 <script>
 let sym=null, tf=300, chart, candles, vol, lines={}, priceLines=[];
 const TFS=[[60,'1m'],[120,'2m'],[300,'5m'],[600,'10m']];
@@ -84,6 +84,11 @@ async function tick(){ try{
   document.getElementById('mode').textContent='orders: '+snap.mode.toUpperCase();
   document.getElementById('acct').innerHTML=`equity $${snap.equity.toLocaleString()} · day <b style="color:${snap.day_pnl>=0?'var(--g)':'var(--r)'}">$${snap.day_pnl.toLocaleString()}</b> · trades ${snap.trades} · size rung ${snap.rung+1}`;
   document.getElementById('open').innerHTML=snap.open.length?snap.open.map(p=>`<b>${p.contract}</b> ×${p.remaining}<br>entry ${p.entry} · last ${p.last} · stop ${p.stop}<br>targets ${p.targets.join(' / ')}`).join('<hr>'):'<span class=mut>No open position</span>';
+  const R=snap.restrictions||{}, B=snap.blackouts||[];
+  document.getElementById('today').innerHTML='<b>Today</b><br>'+((B.length||Object.keys(R).length)?
+    B.map(b=>`⛔ no entries ${b.slice(11)} ET`).join('<br>')+(B.length?'<br>':'')+
+    Object.entries(R).map(([k,v])=>`<b>${k}</b>: ${v.block?'BLOCKED — ':''}${(v.notes||[]).join('; ')}`).join('<br>')
+    :'<span class=mut>No calendar or news restrictions</span>');
   document.getElementById('ev').innerHTML=snap.events.filter(e=>e.type!=='INFO').reverse().map(e=>`<div class="ev ${e.type}"><span class=mut>${e.ts.slice(11,19)}</span> <b>${e.type} ${e.symbol}</b>\n${e.message.replace(/</g,'&lt;')}</div>`).join('');
 }catch(e){} }
 mk(); tick(); setInterval(tick,1000); setInterval(()=>loadChart(false),2000);

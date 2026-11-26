@@ -58,6 +58,39 @@ You choose who places the orders:
 
 All of these settings are in `config.yaml`.
 
+## Automatic news, earnings and economic-calendar protection
+
+At 9:00 ET the engine prints and pushes the day's restrictions. They also show in the dashboard's
+**Today** panel. To see them any time, run `python -m kcsignals today`.
+- **Economic calendar** (Nasdaq, free): CPI, PPI, jobs, GDP, ISM, retail sales, Fed-chair
+  speeches and FOMC.
+  - Any release during market hours blocks new entries from **5 minutes before to 30 minutes after**.
+  - FOMC blocks 13:55–15:00, which covers the 14:00 statement and the 14:30 press conference.
+  - 8:30 releases are flagged as "expect a volatile open".
+- **Earnings** (Nasdaq, free):
+  - If a report falls inside the option's life, only contracts that **expire before the report** are allowed. This avoids the overnight IV crush and usually means 0DTE.
+  - On the **day after** a report, size is cut in half. You can set this to `block` instead.
+- **Company news** (Alpaca's real-time feed, same keys as the data; SEC 8-K filings too if you set `SEC_USER_AGENT`):
+  - Each headline is tagged: earnings, analyst, legal, deal, halt, and so on.
+  - A fresh market-moving headline **pauses new entries on that stock for 10 minutes** and is pushed to you.
+  - A halt, bankruptcy, delisting or restated-financials filing **blocks the stock for the day**.
+
+## Backtest on real history
+
+```bash
+python -m kcsignals backtest                       # last 60 sessions, whole watchlist
+python -m kcsignals backtest --days 120 --symbols TSLA NVDA
+python -m kcsignals backtest --from 2026-09-01 --to 2026-11-25 --with-calendar
+```
+This replays real Alpaca 1-minute bars (cached in `.cache/`) through **the same engine**, with the same
+levels, setups, sizing and exits. Options are priced at the stock's recent realized volatility.
+- It writes `backtest_report.md`, with win rate, average R, how often T1 hit before the stop, and P&L per setup and per stock.
+- It writes `backtest_trades.csv` with every trade.
+- It writes `backtest_stats.json`. After that, **every live alert quotes its setup's history**, for example
+  `backtest FIB_PULLBACK on TSLA: 23 trades, 57% win, avg +0.41R, T1 before stop 61%`.
+
+Option prices in the backtest are modeled, not historical quotes. Treat it as a test of the *setups*. Real 0DTE fills, especially on stops, are worse.
+
 ## Live data: Alpaca
 
 Buy Alpaca's **"Algo Trader Plus"** market-data plan, about $99/month. It gives you **SIP** (every US
@@ -79,7 +112,7 @@ cp config.example.yaml config.yaml # Windows: copy config.example.yaml config.ya
 cp .env.example .env               # put your Alpaca keys + ntfy topic in .env
 
 python -m kcsignals demo           # offline demo day + charts at http://localhost:8787
-python -m pytest -q                # 17 tests
+python -m pytest -q                # 30 tests
 python -m kcsignals probe-alpaca   # checks keys, real-time data, hourly history (and your account if mode != off)
 ```
 
@@ -124,7 +157,7 @@ The demo is a synthetic, textbook day. It shows the mechanics. **It is not evide
 - If a sell fails, you get a push that says **CLOSE IT MANUALLY**.
 
 ## Verified vs. not yet
-- ✅ 17 tests pass. They cover call and put days, a failed breakout that stops out, a Fib pullback with an add, bell-curve sizing, 3 losses in a row ending the day, news blackouts, the first 15 minutes being blocked, the paper executor mirroring every buy and sell, unfilled entries being voided, and the chart data.
+- ✅ 30 tests pass. They include real Nasdaq calendar samples (jobs report, earnings), automatic FOMC blackouts, the earnings expiry limit and half size, news pauses and blocks, and a backtest replay with stats quoted in alerts. They cover call and put days, a failed breakout that stops out, a Fib pullback with an add, bell-curve sizing, 3 losses in a row ending the day, news blackouts, the first 15 minutes being blocked, the paper executor mirroring every buy and sell, unfilled entries being voided, and the chart data.
 - ⚠️ The Alpaca data feed and order executor are written against alpaca-py 0.45 but **haven't run against a live market or a real account yet**. Run `probe-alpaca` first, then a paper week.
 - ⚠️ Replays price options with Black-Scholes. Real fills on fast 0DTE moves are worse, especially on stops.
 - ⚠️ Some of his rules are discretionary (trend reading, "the stock's nature that day", trendlines). The engine encodes the mechanical parts only.

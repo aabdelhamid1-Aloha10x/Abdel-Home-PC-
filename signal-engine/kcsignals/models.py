@@ -110,6 +110,8 @@ class EventType(str, Enum):
     INFO = "INFO"
     RISK_BLOCK = "RISK_BLOCK"
     ORDER = "ORDER"          # auto-trading: order placed / filled / rejected
+    NEWS = "NEWS"            # company headline / filing on a watchlist ticker
+    CALENDAR = "CALENDAR"    # economic events, earnings restrictions for the day
 
 
 @dataclass(slots=True)

@@ -5,3 +5,7 @@ conf/
 __pycache__/
 .pytest_cache/
 .venv/
+.cache/
+backtest_report.md
+backtest_trades.csv
+backtest_stats.json

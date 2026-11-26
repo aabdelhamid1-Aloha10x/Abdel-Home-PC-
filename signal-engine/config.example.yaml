@@ -69,3 +69,24 @@ alerts:
   log_file: signals.jsonl
 
 dashboard_port: 8787
+
+calendar:                       # automatic, from Nasdaq's free calendars
+  economic: true                # CPI/PPI/jobs/GDP/ISM/retail/FOMC/Fed-chair -> no-entry windows
+  blackout_before_min: 5
+  blackout_after_min: 30
+  fomc_after_min: 60
+  earnings: true
+  reaction_day_action: half_size   # day after a report: half_size | block | allow
+  unknown_time_assume: amc
+
+news:                           # Alpaca real-time headlines (+ SEC 8-Ks if SEC_USER_AGENT is set)
+  alpaca: true
+  sec_8k: true
+  poll_s: 60
+  pause_min: 10                 # fresh market-moving headline -> no new entries on that ticker for 10 min
+  block_on_severe: true         # halt / bankruptcy / delisting / restatement -> blocked for the day
+
+backtest:
+  iv_hv_mult: 1.15
+  stats_file: backtest_stats.json
+  min_trades_for_stats: 8

@@ -4,6 +4,8 @@
   python -m kcsignals run            # start the engine right now (stops after the close)
   python -m kcsignals demo           # offline synthetic day + dashboard, no keys needed
   python -m kcsignals replay FILE    # offline: replay a trades CSV (ts,symbol,price,size)
+  python -m kcsignals backtest       # replay the last 60 sessions of real Alpaca history
+  python -m kcsignals today          # print today's calendar restrictions + overnight news
   python -m kcsignals probe-alpaca   # check keys, real-time data, and the trading account
   python -m kcsignals probe-webull   # print raw Webull responses to verify field names
 """
@@ -102,7 +104,9 @@ async def _sleep_until(t: datetime, why: str) -> None:
 
 
 async def _session(settings: Settings, holder: Holder, close: datetime) -> None:
-    engine = Engine(settings, make_feed(settings), executor=make_executor(settings))
+    from .news import NewsMonitor
+    engine = Engine(settings, make_feed(settings), executor=make_executor(settings),
+                    news=NewsMonitor.from_env(settings))
     holder.engine = engine
     await run_engine(engine, until=close + timedelta(minutes=settings.schedule.stop_after_close_min))
 
@@ -190,14 +194,41 @@ async def _probe_webull(settings: Settings):
     print("CONTRACTS", r.status_code, r.text[:800])
 
 
+async def _today(settings: Settings):
+    from .calendar import build_day_plan
+    from .news import NewsMonitor
+    d = datetime.now(ET).date()
+    plan = await asyncio.to_thread(build_day_plan, d, settings.watchlist, settings.calendar, settings.options.max_dte)
+    print(f"== {d}")
+    for n in plan.notes:
+        print("  calendar:", n)
+    for w in plan.blackouts:
+        print("  no new entries:", w)
+    for sym, r in plan.per_symbol.items():
+        print(f"  {sym}: {'; '.join(r.notes)}")
+    mon = NewsMonitor.from_env(settings)
+    if mon is None:
+        print("  news: set ALPACA_API_KEY/SECRET (and optionally SEC_USER_AGENT) for headlines")
+        return
+    for it in await mon.morning(datetime.now(ET)):
+        if it.moving or it.severe:
+            print(f"  NEWS {','.join(it.symbols)} [{', '.join(it.tags)}] {it.headline}")
+
+
 def main():
     ap = argparse.ArgumentParser(prog="kcsignals")
-    ap.add_argument("cmd", choices=["daemon", "run", "demo", "replay", "probe-alpaca", "probe-webull"])
+    ap.add_argument("cmd", choices=["daemon", "run", "demo", "replay", "backtest", "today", "probe-alpaca",
+                                    "probe-webull"])
     ap.add_argument("file", nargs="?")
     ap.add_argument("-c", "--config", default="config.yaml")
     ap.add_argument("--no-dashboard", action="store_true")
     ap.add_argument("--side", choices=["call", "put"], default="call", help="demo direction")
     ap.add_argument("-v", "--verbose", action="store_true")
+    ap.add_argument("--days", type=int, help="backtest: number of recent sessions (default 60)")
+    ap.add_argument("--from", dest="date_from", type=date.fromisoformat, help="backtest start YYYY-MM-DD")
+    ap.add_argument("--to", dest="date_to", type=date.fromisoformat, help="backtest end YYYY-MM-DD")
+    ap.add_argument("--symbols", nargs="+", help="backtest: subset of the watchlist")
+    ap.add_argument("--with-calendar", action="store_true", help="backtest: apply historical econ/earnings rules")
     a = ap.parse_args()
     logging.basicConfig(level=logging.DEBUG if a.verbose else logging.INFO,
                         format="%(asctime)s %(name)s %(levelname)s %(message)s")
@@ -215,6 +246,13 @@ def main():
             if not a.file:
                 raise SystemExit("replay needs a CSV path")
             asyncio.run(_replay(s, a.file))
+        elif a.cmd == "backtest":
+            from .backtest import run_cli
+            if not (a.days or a.date_from):
+                a.days = 60
+            run_cli(s, a)
+        elif a.cmd == "today":
+            asyncio.run(_today(s))
         elif a.cmd == "probe-alpaca":
             asyncio.run(_probe_alpaca(s))
         else:

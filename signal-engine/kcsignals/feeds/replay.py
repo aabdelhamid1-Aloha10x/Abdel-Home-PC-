@@ -25,10 +25,13 @@ def strike_step(spot: float) -> float:
 
 class ReplayFeed(Feed):
     def __init__(self, trades: list[Trade], history: dict[str, list[Bar]] | None = None,
-                 iv: float = 0.45, speed: float = 0.0):
+                 iv: float | dict[str, float] = 0.45, speed: float = 0.0,
+                 history60: dict[str, list[Bar]] | None = None):
         self.trades = sorted(trades, key=lambda t: t.ts)
         self.history = history or {}
-        self.iv = iv
+        self.history60 = history60 or {}
+        self.iv_by = iv if isinstance(iv, dict) else {}
+        self.iv = iv if not isinstance(iv, dict) else 0.45
         self.speed = speed
         self._now = self.trades[0].ts if self.trades else datetime.now(ET)
         self.spot: dict[str, float] = {}
@@ -45,16 +48,22 @@ class ReplayFeed(Feed):
     async def history_1m(self, symbol, start, end):
         return [b for b in self.history.get(symbol, []) if start <= b.start < end]
 
+    async def history_bars(self, symbol, start, end, minutes):
+        if minutes == 60 and symbol in self.history60:
+            return [b for b in self.history60[symbol] if start <= b.start < end]
+        return await super().history_bars(symbol, start, end, minutes)
+
     def _quote(self, sym: str, exp: date, side: Side, k: float) -> OptionQuote:
         s = self.spot[sym]
         t = years_to_expiry(exp, self._now)
-        mid = bs_price(side, s, k, t, self.iv)
-        d, g = bs_greeks(side, s, k, t, self.iv)
+        iv = self.iv_by.get(sym, self.iv)
+        mid = bs_price(side, s, k, t, iv)
+        d, g = bs_greeks(side, s, k, t, iv)
         half = max(0.01, mid * 0.015)
         code = occ(sym, exp, side, k)
         self._meta[code] = (sym, exp, side, k)
         return OptionQuote(code, sym, side, k, exp, round(max(0.01, mid - half), 2), round(mid + half, 2),
-                           d, g, self.iv, volume=2000, open_interest=5000, ts=self._now)
+                           d, g, iv, volume=2000, open_interest=5000, ts=self._now)
 
     async def option_chain(self, symbol, side, exp_from, exp_to, spot):
         step = strike_step(spot)

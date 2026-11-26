@@ -147,7 +147,8 @@ class TradeManager:
         text = (f"{msg} SELL {qty} {sig.contract.occ_symbol}. Trade P&L ≈ ${p.realized:,.0f} · "
                 f"day ≈ ${self.book.realized:,.0f}.")
         return Event(typ, now, sig.setup.symbol, text, sig.id,
-                     {"occ": sig.contract.occ_symbol, "sell": qty, "pnl": round(p.realized, 2)})
+                     {"occ": sig.contract.occ_symbol, "sell": qty, "pnl": round(p.realized, 2),
+                      "t1": p.next_target > 0})
 
     def void(self, sig_id: str) -> None:
         """Entry never filled (auto-trading): forget it without counting a trade."""

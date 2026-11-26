@@ -17,19 +17,20 @@ log = logging.getLogger("kcsignals.alerts")
 
 PRIORITY = {EventType.ENTRY: "urgent", EventType.STOP: "urgent", EventType.TRIM: "high",
             EventType.TARGET_FINAL: "high", EventType.TIME_EXIT: "high", EventType.BREAKEVEN_EXIT: "high",
-            EventType.ADD: "high", EventType.ORDER: "default"}
+            EventType.ADD: "high", EventType.ORDER: "default", EventType.NEWS: "default",
+            EventType.CALENDAR: "default"}
 COLORS = {EventType.ENTRY: "\033[1;32m", EventType.STOP: "\033[1;31m", EventType.TRIM: "\033[1;33m",
-          EventType.TARGET_FINAL: "\033[1;36m", EventType.ADD: "\033[1;32m", EventType.ORDER: "\033[1;35m", EventType.RISK_BLOCK: "\033[2m", EventType.INFO: "\033[2m"}
+          EventType.TARGET_FINAL: "\033[1;36m", EventType.ADD: "\033[1;32m", EventType.ORDER: "\033[1;35m", EventType.NEWS: "\033[1;34m", EventType.CALENDAR: "\033[1;34m", EventType.RISK_BLOCK: "\033[2m", EventType.INFO: "\033[2m"}
 
 
 class Alerter:
-    def __init__(self, cfg: AlertCfg):
+    def __init__(self, cfg: AlertCfg, push: bool = True):
         self.cfg = cfg
         self.recent: list[dict] = []   # for the dashboard
-        self.ntfy = os.getenv(cfg.ntfy_topic_env)
-        self.discord = os.getenv(cfg.discord_webhook_env)
-        self.tg_token = os.getenv(cfg.telegram_token_env)
-        self.tg_chat = os.getenv(cfg.telegram_chat_env)
+        self.ntfy = os.getenv(cfg.ntfy_topic_env) if push else None
+        self.discord = os.getenv(cfg.discord_webhook_env) if push else None
+        self.tg_token = os.getenv(cfg.telegram_token_env) if push else None
+        self.tg_chat = os.getenv(cfg.telegram_chat_env) if push else None
 
     async def send(self, ev: Event) -> None:
         rec = {"type": ev.type.value, "ts": ev.ts.isoformat(), "symbol": ev.symbol,

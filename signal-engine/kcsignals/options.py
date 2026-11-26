@@ -80,12 +80,13 @@ def project_premium(q: OptionQuote, spot_now: float, spot_then: float, now: date
 
 
 def select_contract(chain: list[OptionQuote], side: Side, spot: float, now: datetime,
-                    cfg: OptionsCfg) -> tuple[OptionQuote | None, list[str]]:
-    """Nearest allowed expiry, delta closest to target, liquid, tight spread."""
+                    cfg: OptionsCfg, max_expiry: date | None = None) -> tuple[OptionQuote | None, list[str]]:
+    """Nearest allowed expiry, delta closest to target, liquid, tight spread.
+    max_expiry: latest allowed expiration (e.g. the day of an upcoming earnings report)."""
     today = et_date(now)
     why: list[str] = []
     cands = [q for q in chain if q.side is side and 0 <= (q.expiry - today).days <= cfg.max_dte
-             and q.bid > 0 and q.ask > 0]
+             and q.bid > 0 and q.ask > 0 and (max_expiry is None or q.expiry <= max_expiry)]
     if not cands:
         return None, ["no quoted contracts within max DTE"]
     expiries = sorted({q.expiry for q in cands})

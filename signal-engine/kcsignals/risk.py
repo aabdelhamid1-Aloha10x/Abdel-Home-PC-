@@ -79,7 +79,7 @@ def day_guard(book: DayBook, cfg: AccountCfg) -> str | None:
 
 
 def build_signal(setup: Setup, q: OptionQuote, spot: float, now: datetime,
-                 book: DayBook, cfg: AccountCfg) -> tuple[Signal | None, str]:
+                 book: DayBook, cfg: AccountCfg, size_mult: float = 1.0) -> tuple[Signal | None, str]:
     blocked = day_guard(book, cfg)
     if blocked:
         return None, blocked
@@ -110,6 +110,7 @@ def build_signal(setup: Setup, q: OptionQuote, spot: float, now: datetime,
     setup.targets_underlying = [u for u, _ in pairs]
 
     dollars, cap = position_dollars(book, cfg)
+    dollars, cap = dollars * size_mult, cap * size_mult
     cost = entry * 100
     if cost > cap:
         return None, f"1 contract costs ${cost:,.0f}, over the ${cap:,.0f} position cap"
