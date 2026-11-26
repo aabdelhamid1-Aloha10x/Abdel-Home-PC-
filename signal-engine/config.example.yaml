@@ -49,7 +49,7 @@ strategy:
   trim_fraction: 0.5
   trail_after_t2: true
   allow_adds: true
-  news_blackouts: []            # e.g. ["2026-12-10 13:55-14:30"] for FOMC
+  news_blackouts: []            # e.g. ["2026-12-09 13:55-14:30"] for FOMC
 
 feed:
   provider: alpaca

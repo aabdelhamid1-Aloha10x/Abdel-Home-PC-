@@ -73,7 +73,7 @@ class StrategyCfg(BaseModel):
     trim_fraction: float = 0.5
     trail_after_t2: bool = True               # after T2, runner stop moves from breakeven to T1
     allow_adds: bool = True                   # re-add on a new setup once the stop is at breakeven
-    news_blackouts: list[str] = []            # "2026-12-10 13:55-14:30" (ET) — no entries inside
+    news_blackouts: list[str] = []            # "2026-12-09 13:55-14:30" (ET) — no entries inside
 
 
 class FeedCfg(BaseModel):
